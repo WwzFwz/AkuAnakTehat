@@ -4,7 +4,7 @@
 
 Penerbit token dan pemilik auth-store.
 
-**Pemilik utama:** B. **Port rencana:** 8090. Module Go, Dockerfile, composition root, dan endpoint fondasi sudah tersedia. Verifikasi kompilasi berhasil; integrasi runtime dan bukti demo belum selesai.
+**Pemilik utama:** B. **Port rencana:** 8090. Module Go, Dockerfile, composition root, dan endpoint fondasi sudah tersedia. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap.
 
 ## Komponen
 
@@ -40,5 +40,5 @@ Penerbit token dan pemilik auth-store.
 
 Konfigurasi dan endpoint: [kontrak HTTP](../../docs/api/token-http.md).
 Dari folder service: `go run ./cmd/auth-service`. Variabel secret/key wajib diisi lewat bootstrap lokal.
-Verifikasi awal: `go test ./...` (kompilasi; belum ada test suite perilaku).
-Rotasi Redis belum diverifikasi terhadap Redis nyata; jangan menganggap fondasi ini bukti P3.
+Pemeriksaan module: `go test ./...` dan `go vet ./...`. Suite integrasi HTTP/Redis dijalankan terpisah dari root: `go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m`.
+Rotasi, reuse token, refresh bersamaan, dan pemulihan sesi setelah restart Redis telah diuji pada stack lokal. Demo P3 lengkap tetap menunggu jalur inti.

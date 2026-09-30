@@ -6,7 +6,7 @@ Konfigurasi server PostgreSQL; bukan lokasi skema aplikasi.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** PostgreSQL 16.8, env per service, named volume, dan healthcheck tersedia di Compose. Konfigurasi default dipakai; postgresql.conf belum diperlukan. Persistence runtime belum diverifikasi.
+**Status:** PostgreSQL 16.8, env per service, named volume, dan healthcheck tersedia di Compose. Persistence record setelah restart telah diverifikasi; tabel uji dibersihkan. Skema Aggregator belum dibuat. Lihat [hasil fondasi](../../docs/evidence/foundation/README.md).
 
 ## Rencana file
 

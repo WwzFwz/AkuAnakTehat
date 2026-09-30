@@ -33,6 +33,6 @@ Go 1.24.2, standard library saja; tidak memerlukan database atau broker. Dockerf
 
 ## Verifikasi dan batas
 
-Pemeriksaan kompilasi dijalankan dengan `go test ./...`; belum ada test case perilaku. Docker/integrasi, race, credential lintas domain, since, schema drift, dan outage recovery masih perlu diuji sebelum fondasi dinyatakan tervalidasi. Tidak ada implementasi ingest BNPB di service ini.
+Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Race/load test masih di luar validasi ini. Tidak ada implementasi ingest BNPB di service ini.
 
 Seed sintetis tetap dimuat setiap startup. Data runtime disimpan di memori, hilang saat restart, dan belum memiliki retensi; sesuai penggunaan demo terbatas.

@@ -4,11 +4,13 @@
 
 Compose menyediakan PostgreSQL, Redis, Kafka KRaft, inisialisasi topic, dan empat service fondasi: `bmkg-mock`, `pvmbg-mock`, `auth-service`, `client-api`. Aggregator dan consumer belum menjadi service Compose. Query client-api dengan token valid dapat menghasilkan `503` sampai Aggregator tersedia.
 
-Konfigurasi Compose sudah divalidasi secara statis. Build image, health runtime, dan persistence setelah restart masih perlu diuji; ini belum bukti demo P1–P5.
+Build image, health HTTP, serta persistence PostgreSQL/Redis/Kafka setelah restart telah diuji pada Docker Desktop lokal. Cakupan dan perintah ulang tersedia di [hasil pengujian fondasi](../docs/evidence/foundation/README.md); ini belum bukti demo P1–P5 lengkap.
 
 ## Menjalankan
 
 Prasyarat: Go 1.24.2 dan Docker Engine dengan Compose v2. Linux/macOS dengan Make: `make up`.
+
+Untuk Compose manual pada Linux/macOS, jalankan `export LOCAL_UID=$(id -u) LOCAL_GID=$(id -g)` sebelum `docker compose up`. Make dan CI mengaturnya otomatis. Auth/client-api memakai UID/GID pemilik file agar bisa membaca bind mount secret dengan permission 0600; tidak perlu membuka permission private key ke semua user. Windows Docker Desktop memakai default user non-root 10001.
 
 Windows PowerShell, tanpa Make atau WSL:
 
@@ -19,6 +21,8 @@ docker compose up -d --build
 ```
 
 `docker compose down` menghentikan container dan mempertahankan named volume. Jangan menghapus volume hanya untuk menjalankan ulang sistem.
+
+`docker compose up -d --build --wait --wait-timeout 180` menunggu healthcheck. Mock dan client-api memakai liveness; auth-service memakai readiness Redis. Readiness client-api tetap 503 sampai Aggregator tersedia.
 
 | Komponen | Akses |
 | --- | --- |

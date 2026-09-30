@@ -4,7 +4,7 @@
 
 API downstream dengan verifikasi JWT, otorisasi, dan proyeksi.
 
-**Pemilik utama:** B. **Port rencana:** 8080. Module Go, Dockerfile, composition root, dan endpoint fondasi sudah tersedia. Verifikasi kompilasi berhasil; integrasi runtime dan bukti demo belum selesai.
+**Pemilik utama:** B. **Port rencana:** 8080. Module Go, Dockerfile, composition root, dan endpoint fondasi sudah tersedia. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap.
 
 ## Komponen
 
@@ -43,5 +43,5 @@ API downstream dengan verifikasi JWT, otorisasi, dan proyeksi.
 
 Konfigurasi dan endpoint: [kontrak HTTP](../../docs/api/client-http.md).
 Dari folder service: `go run ./cmd/client-api`. Variabel secret/key wajib diisi lewat bootstrap lokal.
-Verifikasi awal: `go test ./...` (kompilasi; belum ada test suite perilaku).
+Pemeriksaan module: `go test ./...` dan `go vet ./...`. Suite integrasi HTTP/Redis dijalankan terpisah dari root: `go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m`.
 Aggregator belum tersedia pada tahap ini; request data menghasilkan503 dan readiness503, sementara liveness200. Cache tetap belum diimplementasikan.

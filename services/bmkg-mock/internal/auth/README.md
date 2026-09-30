@@ -2,7 +2,7 @@
 
 Validasi format hash SHA-256 dan perbandingan constant-time; kredensial tidak dicatat.
 
-**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
+**Status:** implementasi fondasi tersedia; Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap.
 
 ## File saat ini
 

@@ -1,6 +1,6 @@
 # Kontrak HTTP mock sumber
 
-Status: kontrak dan implementasi fondasi tersedia. Implementasi baru diperiksa kompilasinya; pengujian perilaku, race, serta integrasi Docker belum dilakukan. Tidak ada ingest BNPB pada tahap ini.
+Status: kontrak dan implementasi fondasi tersedia. Kontrak HTTP, kredensial, filter since, schema toggle, outage/recovery, serta startup Docker telah diuji pada stack lokal. Cakupan rinci ada di [hasil fondasi](../evidence/foundation/README.md). Tidak ada ingest BNPB pada tahap ini.
 
 Kedua mock adalah module Go mandiri dan tidak berbagi DTO/business logic. Semua record adalah data demo sintetis. Setiap restart memuat ulang seed tetap; data runtime hanya ada di memori dan ID runtime memakai prefix acak per proses.
 
@@ -86,5 +86,5 @@ Build masing-masing dari direktori service: `go build ./cmd/bmkg-mock` / `go bui
 ## Batas tahap ini
 
 - Kompilasi tidak membuktikan skenario P1–P5 lulus.
-- Uji semantik filter/update warning, credential lintas domain, schema toggle, outage recovery/cancellation, konkurensi/race dan load belum dijalankan.
+- Filter since, credential lintas domain, schema toggle, outage recovery/cancellation lulus suite runtime. Ordering dan watermark eskalasi warning lulus test generator deterministik. Race/load test belum dijalankan.
 - Storage in-memory bertambah sepanjang proses dan belum memiliki retensi; gunakan untuk demo terbatas, bukan deployment produksi.

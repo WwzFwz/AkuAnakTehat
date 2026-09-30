@@ -6,7 +6,7 @@ Konfigurasi broker KRaft dan inisialisasi topic untuk seluruh jalur event.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** konfigurasi Compose dan init topic tersedia; startup broker dan persistence runtime belum diverifikasi.
+**Status:** startup broker, init topic, dan pesan pada topic pengujian yang bertahan setelah restart telah diverifikasi. Lihat [hasil fondasi](../../docs/evidence/foundation/README.md). Producer/consumer bisnis belum dibuat.
 
 ## Rencana file
 

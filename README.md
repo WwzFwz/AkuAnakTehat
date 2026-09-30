@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: kontrak integrasi dan fondasi awal.** Empat kontrak utama tersedia untuk ditinjau bersama. Mock BMKG/PVMBG, Auth Service, kerangka client-api, Compose, dan bootstrap secret sudah memiliki implementasi. Aggregator serta tiga consumer masih berupa rancangan komponen; jalur data ujung ke ujung belum berjalan.
+**Status saat ini: kontrak integrasi dan fondasi dengan validasi runtime lokal.** Mock BMKG/PVMBG, Auth Service, kerangka client-api, Compose, dan bootstrap secret sudah diuji dalam cakupan [pengujian fondasi](docs/evidence/foundation/README.md). Empat kontrak utama tersedia untuk review bersama. Aggregator serta tiga consumer masih berupa rancangan komponen; jalur data ujung ke ujung belum berjalan.
 
 ## Cara membaca
 
@@ -82,6 +82,8 @@ Linux/macOS dengan Make dapat memakai `make up`. Detail port dan kredensial loka
 
 Pemeriksaan lokal: `powershell -NoProfile -File scripts/check/check.ps1` atau `make check` pada shell POSIX.
 
+Setelah stack aktif, jalankan `go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m` dari root (`make smoke` pada POSIX). Suite ini mengubah simulasi mock sementara dan me-restart infrastruktur; jalankan saat tidak ada demo lain. Detail cakupan dan hasil ada di [bukti fondasi](docs/evidence/foundation/README.md).
+
 | File | Isi saat ini |
 | --- | --- |
 | `go.work` | Empat module fondasi; module berikutnya ditambahkan ketika diimplementasikan. |
@@ -94,7 +96,7 @@ README komponen yang belum diimplementasikan tetap memuat rencana file dan konfi
 
 ## Status verifikasi
 
-Keempat module lulus `go test ./...` untuk kompilasi; belum mempunyai test case bisnis. Test bootstrap secret dan validasi statis Compose lulus. Build image, integrasi Redis/JWT, perilaku mock, dan skenario P1–P5 belum diverifikasi. Folder bukti masih berisi petunjuk pengumpulan; CI yang disediakan belum menjadi bukti keberhasilan run di GitHub.
+Build empat image dan startup Compose lulus. Suite runtime memeriksa kontrak mock, schema/outage, JWT, rotasi/reuse refresh, pembatasan raw, persistence PostgreSQL/Redis/Kafka, dan log. Test module tambahan memeriksa proyeksi respons dan watermark eskalasi warning. Hasil rinci: [verifikasi fondasi](docs/evidence/foundation/README.md). Load/race test, jalur Aggregator/consumer, dan P1–P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
 
 ## Dasar dan bantuan penulisan
 

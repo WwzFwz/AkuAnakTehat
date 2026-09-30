@@ -6,7 +6,7 @@ Konfigurasi Redis auth-store milik auth-service.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** Redis 7.4.2 tersedia dalam Compose dengan AOF, password env, named volume, dan healthcheck. redis.conf terpisah belum diperlukan. Restart/TTL runtime belum diverifikasi.
+**Status:** Redis 7.4.2 tersedia dalam Compose dengan AOF, password env, named volume, dan healthcheck. Rotasi/reuse, refresh bersamaan, serta sesi bertahan setelah stop/start telah diuji. Expiry refresh 8 jam belum diuji dengan waktu nyata. Lihat [hasil fondasi](../../docs/evidence/foundation/README.md).
 
 ## Rencana file
 
