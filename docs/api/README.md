@@ -6,24 +6,24 @@ Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan kompone
 
 **Pemilik rencana:** A/B/C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** empat kontrak baseline tersedia untuk review bersama. Kontrak Aggregator, event, port, dan storage mendefinisikan batas tahap jalur inti; keberadaan dokumen tersebut bukan bukti persetujuan anggota atau server/producer/consumer sudah berjalan. Kontrak mock, token, dan client menyertai implementasi awal fondasinya.
 
-## Rencana file
+## Dokumen kontrak
 
-| File yang akan dibuat | Tanggung jawab |
+| File | Tanggung jawab |
 | --- | --- |
-| `aggregator-http.md` | Endpoint/filter/cursor/DTO/error API internal dan autentikasinya. |
-| `hazard-event.md` | Field envelope event, semantik version/event_id/correlation_id, dan contoh payload lengkap. |
-| `aggregator-ports.md` | UnitOfWork/Tx, HazardQuery, dan OutboxStore beserta semantik error. |
-| `storage.md` | Peta kepemilikan data dan rujukan ke migrasi; bukan salinan DDL. |
-| `client-http.md` | Kontrak API downstream, proyeksi dan raw-field rejection. |
-| `token-http.md` | Request/response token dan refresh yang dipakai demo. |
-| `mock-http.md` | Kontrak sumber, admin, kredensial, dan semantik since. |
+| [aggregator-http.md](aggregator-http.md) | Endpoint/filter/cursor/DTO/error API internal dan autentikasinya. |
+| [hazard-event.md](hazard-event.md) | Field envelope event, semantik version/event_id/correlation_id, dan contoh payload lengkap. |
+| [aggregator-ports.md](aggregator-ports.md) | UnitOfWork/Tx, HazardQuery, dan OutboxStore beserta semantik error. |
+| [storage.md](storage.md) | Kepemilikan data, kolom, constraint, dan indeks acuan migrasi. |
+| [client-http.md](client-http.md) | Kontrak API downstream, proyeksi dan raw-field rejection. |
+| [token-http.md](token-http.md) | Request/response token dan refresh pada fondasi. |
+| [mock-http.md](mock-http.md) | Kontrak sumber, admin, kredensial, dan semantik since. |
 
 ## Kontrak dan alur
 
 - Empat titik temu utama: skema Aggregator, envelope Kafka, HTTP internal, dan port di dalam Aggregator.
-- README package menyatakan rencana; file kontrak rinci di atas belum dibuat.
+- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. Signature port Aggregator menjadi deklarasi Go saat jalur inti diimplementasikan.
 
 ## Dependensi
 
