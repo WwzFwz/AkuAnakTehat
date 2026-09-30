@@ -1,0 +1,16 @@
+=== RUN   TestHealth
+--- PASS: TestHealth (0.04s)
+=== RUN   TestMockContracts
+--- PASS: TestMockContracts (5.40s)
+=== RUN   TestPVMBGSchemaAndOutage
+--- PASS: TestPVMBGSchemaAndOutage (2.69s)
+=== RUN   TestTokenRotationAndAuthorization
+--- PASS: TestTokenRotationAndAuthorization (0.11s)
+=== RUN   TestJWTClaimValidation
+--- PASS: TestJWTClaimValidation (0.01s)
+=== RUN   TestPersistenceAndDependencyRecovery
+--- PASS: TestPersistenceAndDependencyRecovery (19.74s)
+=== RUN   TestStructuredLogsDoNotExposeCredentials
+--- PASS: TestStructuredLogsDoNotExposeCredentials (0.38s)
+PASS
+ok  	command-line-arguments	29.423s

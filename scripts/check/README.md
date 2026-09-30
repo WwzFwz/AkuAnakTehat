@@ -8,8 +8,19 @@
 go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m
 ```
 
-Alternatif POSIX: `make smoke`. Gunakan konfigurasi bootstrap default (port 8080/8081/8082/8090, TTL access 60s, generator 10s). Suite saat ini mengharapkan Aggregator belum ada.
+Alternatif POSIX: `make smoke`. Gunakan konfigurasi bootstrap default (port 8080/8081/8082/8090, TTL access 60s, generator 10s). Suite saat ini mengharapkan query Aggregator belum tersedia, meskipun proses ingest sudah aktif.
 
 Suite mengubah state simulasi PVMBG lalu memulihkannya, membuat tabel/topic uji unik lalu menghapusnya, dan stop/start atau restart PostgreSQL, Redis, Kafka, serta auth-service. Jalankan tanpa demo lain yang bersamaan. Tidak menghapus volume. Jika proses dihentikan paksa, cleanup mungkin tidak berjalan; periksa state simulasi dan fixture berprefix `foundation_smoke_` / `foundation-smoke-` sebelum mengulang.
 
 Kredensial dibaca dari file lokal hasil bootstrap dan tidak dicetak. Test negatif JWT memakai private key lokal untuk membuat claim invalid dengan signature yang sah. Sesi login uji kedaluwarsa mengikuti TTL normal Redis. Hasil, cakupan, dan keterbatasan: [verifikasi fondasi](../../docs/evidence/foundation/README.md).
+
+## Jalur ingest A
+
+`make ingest-check` menjalankan dua lapis verifikasi berikut:
+
+```text
+docker compose run --build --rm --env-from-file ./env/aggregator.env ingest-test
+go test ./scripts/check/foundation_test.go ./scripts/check/ingest_test.go -run TestIngestPipeline -v -count=1 -timeout=5m
+```
+
+Test PostgreSQL membuat schema unik `ingest_test_<timestamp>` dan membersihkannya; tidak mengubah tabel produksi. Test live memakai mock asli, menyalakan schema v2 dan outage hang sementara, kemudian memulihkan state dan me-restart Aggregator. Data sintetis hasil ingest serta outbox dipertahankan. Jangan jalankan bersamaan dengan demo/test lain yang mengubah mock. [Hasil ingest](../../docs/evidence/ingest/README.md).

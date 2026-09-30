@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: kontrak integrasi dan fondasi dengan validasi runtime lokal.** Mock BMKG/PVMBG, Auth Service, kerangka client-api, Compose, dan bootstrap secret sudah diuji dalam cakupan [pengujian fondasi](docs/evidence/foundation/README.md). Empat kontrak utama tersedia untuk review bersama. Aggregator serta tiga consumer masih berupa rancangan komponen; jalur data ujung ke ujung belum berjalan.
+**Status saat ini: fondasi dan ingest Aggregator (A) sudah berjalan serta diuji lokal.** Mock → canonical store → pending outbox tersedia, termasuk korelasi tsunami, deduplikasi, watermark, timeout, dan circuit breaker. Lihat [bukti ingest](docs/evidence/ingest/README.md) serta [fondasi](docs/evidence/foundation/README.md). Query/API internal (B), relay Kafka/consumer (C), dan jalur data ujung ke ujung masih perlu dikerjakan.
 
 ## Cara membaca
 
@@ -55,7 +55,7 @@ A/B/C adalah pembagian kerja rancangan, belum nama anggota. Di Aggregator, A mem
 3. B: [HTTP internal Aggregator](docs/api/aggregator-http.md): route, filter, cursor, response, dan error.
 4. A/B/C: [port internal Aggregator](docs/api/aggregator-ports.md): UnitOfWork/Tx, HazardQuery, dan OutboxStore.
 
-Dokumen tersedia di [docs/api](docs/api/README.md), termasuk signature dan contoh payload. Ini baseline untuk review anggota, bukan klaim persetujuan tim atau implementasi Aggregator. Perubahan kontrak perlu diselaraskan dengan seluruh pemakai sebelum jalur inti dikerjakan.
+Dokumen tersedia di [docs/api](docs/api/README.md), termasuk signature dan contoh payload. Implementasi port/skema A sudah tersedia; status B/C dibedakan pada dokumen masing-masing. Perubahan kontrak perlu diselaraskan dengan seluruh pemakai.
 
 ## Urutan implementasi
 
@@ -78,7 +78,7 @@ docker compose config --quiet
 docker compose up -d --build
 ```
 
-Linux/macOS dengan Make dapat memakai `make up`. Detail port dan kredensial lokal ada di [panduan infra](infra/README.md). Client-api menghasilkan 503 untuk query yang membutuhkan Aggregator sampai server tersebut diimplementasikan. Token dan mock dapat dikembangkan terpisah.
+Linux/macOS dengan Make dapat memakai `make up`. Detail port dan kredensial lokal ada di [panduan infra](infra/README.md). Client-api masih menghasilkan 503 untuk query sampai jalur B diimplementasikan. Ingest Aggregator sudah aktif secara independen.
 
 Pemeriksaan lokal: `powershell -NoProfile -File scripts/check/check.ps1` atau `make check` pada shell POSIX.
 
@@ -86,8 +86,8 @@ Setelah stack aktif, jalankan `go test ./scripts/check/foundation_test.go -v -co
 
 | File | Isi saat ini |
 | --- | --- |
-| `go.work` | Empat module fondasi; module berikutnya ditambahkan ketika diimplementasikan. |
-| `docker-compose.yml` | Empat service fondasi, PostgreSQL, Redis, Kafka, inisialisasi topic, network, dan volume. |
+| `go.work` | Lima module: empat fondasi dan Aggregator. |
+| `docker-compose.yml` | Lima aplikasi, PostgreSQL, Redis, Kafka, init topic, serta profile test ingest. |
 | `Makefile` | Shortcut bootstrap, up/down, logs, config, dan check. |
 | `.env.example` | Variabel konfigurasi beserta placeholder non-secret. |
 | `.gitignore` | Abaikan env/kunci/runtime artefak; wajib tersedia sebelum generator secret dijalankan. |
@@ -96,7 +96,7 @@ README komponen yang belum diimplementasikan tetap memuat rencana file dan konfi
 
 ## Status verifikasi
 
-Build empat image dan startup Compose lulus. Suite runtime memeriksa kontrak mock, schema/outage, JWT, rotasi/reuse refresh, pembatasan raw, persistence PostgreSQL/Redis/Kafka, dan log. Test module tambahan memeriksa proyeksi respons dan watermark eskalasi warning. Hasil rinci: [verifikasi fondasi](docs/evidence/foundation/README.md). Load/race test, jalur Aggregator/consumer, dan P1–P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
+Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Load/race test, query/relay/consumer, dan P1–P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
 
 ## Dasar dan bantuan penulisan
 

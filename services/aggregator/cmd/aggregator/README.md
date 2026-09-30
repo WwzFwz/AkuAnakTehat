@@ -6,7 +6,7 @@ Composition root aggregator; tempat merangkai seluruh dependensi runtime.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `main.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
 
 ## Rencana file
 
@@ -24,7 +24,7 @@ Composition root aggregator; tempat merangkai seluruh dependensi runtime.
 
 ## Aturan penting
 
-- Secret wajib tidak ada→gagal startup; dependensi belum siap→retry terbatas/backoff dan readiness503.
+- Secret wajib tidak ada atau migrasi gagal membuat startup gagal. Compose menunggu database healthy dan memakai restart policy. Sesudah startup, polling yang gagal dicoba lagi sesuai interval/breaker; kegagalan DB membuat readiness ingest 503.
 - Jangan menjadikan semua dependency wajib hidup untuk liveness.
 - Selesaikan pekerjaan sesuai deadline shutdown; commit consumer hanya pekerjaan yang sudah selesai.
 

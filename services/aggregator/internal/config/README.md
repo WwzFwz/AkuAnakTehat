@@ -2,11 +2,11 @@
 
 [Panduan service](../../README.md) · [Peta repository](../../../../README.md)
 
-Konfigurasi lokal aggregator; nama variabel berikut adalah usulan yang perlu disepakati.
+Konfigurasi ingest Aggregator; `config.go` adalah sumber nama dan nilai default yang diterapkan.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `config.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
 
 ## Rencana file
 
@@ -22,9 +22,11 @@ Konfigurasi lokal aggregator; nama variabel berikut adalah usulan yang perlu dis
 - DATABASE_URL: Akses Canonical Store khusus Aggregator.
 - BMKG_POLL_INTERVAL, PVMBG_POLL_INTERVAL: Default2 s/5 s; overlap10 s.
 - BMKG_TIMEOUT, PVMBG_TIMEOUT: Default1 s/4 s; timeout DB lokal.
-- KAFKA_BROKERS, HAZARD_TOPIC: Producer outbox; polling1 s, publish timeout5 s.
-- INTERNAL_KEY_HASH: Verifikator X-Internal-Key.
-- OUTBOX_NOTIFY_ENABLED, SCHEMA_OBSERVATIONS_ENABLED: Tambahan, default false.
+- BMKG_API_KEY dan PVMBG_TOKEN: kredensial wajib sumber, terpisah.
+- POLL_OVERLAP=10s, DB_TIMEOUT=2s, DB_POOL_SIZE=5 (2–20).
+- BREAKER_FAILURES=3 dan BREAKER_COOLDOWN=10s, per endpoint; probe berikutnya pulih tanpa restart.
+- INTERNAL_KEY dan KAFKA_* yang sudah disiapkan bootstrap baru dipakai saat query/relay B/C dibuat; belum dibaca jalur A.
+- Fitur tambahan schema_observations dan LISTEN/NOTIFY belum diimplementasikan.
 
 ## Dependensi
 

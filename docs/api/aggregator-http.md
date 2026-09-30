@@ -1,6 +1,6 @@
 # HTTP internal Aggregator — kontrak baseline
 
-**Status:** kontrak untuk tahap jalur inti; server Aggregator belum diimplementasikan pada tahap fondasi. Client-api boleh mengimplementasikan klien kontrak ini dan mengembalikan 503 ketika upstream belum tersedia.
+**Status:** kontrak query tahap B. Proses Aggregator ingest A sudah berjalan, tetapi route bisnis masih 503 `query_not_implemented`. `/ready/ingest` memeriksa DB; `/ready` tetap 503 sampai query dibuat. Client-api tetap mengembalikan 503 untuk pembacaan data.
 
 ## Transport dan autentikasi
 

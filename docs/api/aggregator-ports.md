@@ -1,6 +1,6 @@
 # Port internal Aggregator — kontrak baseline
 
-**Status:** kontrak v1 untuk tahap jalur inti. Signature di bawah adalah rancangan dalam dokumentasi, belum file deklarasi Go atau implementasi repository.
+**Status:** port UnitOfWork/Tx, checkpoint, dan status sudah diimplementasikan untuk jalur A. HazardQuery dan OutboxStore/Publisher tetap kontrak tahap B/C.
 
 Port adalah interface kecil di package pemakainya. Adapter PostgreSQL memenuhi port ingest, query, dan outbox; tidak ada import business logic antarservice.
 
@@ -32,6 +32,7 @@ type Tx interface {
     FindHazard(ctx context.Context, source, sourceRefID string) (StoredHazard, bool, error)
     PutHazard(ctx context.Context, record StoredHazard) error
     PutWarning(ctx context.Context, warning Warning) error
+    FindWarning(ctx context.Context, warningID string) (Warning, bool, error)
     WarningsFor(ctx context.Context, relatedEventID string) ([]Warning, error)
     AppendOutbox(ctx context.Context, event OutboxEvent) error
     SaveCheckpoint(ctx context.Context, endpoint string, watermark time.Time) error
@@ -44,12 +45,16 @@ type CheckpointReader interface {
 ```
 
 - `StoredHazard`: HazardEvent, version int64, content_hash []byte, updated_at dan last_seen_at UTC.
+- Nama konkret Go: `hazard.Event`, `hazard.Record`, `tsunami.Warning`; tipe payload outbox/karantina dan interface berada di `application/ingest/ports.go`.
+- FindWarning menjaga related_event_id immutable untuk warning_id yang sama; perubahan relasi dikarantina agar hazard lama tidak kehilangan korelasi diam-diam.
 - `Warning`: field kontrak TsunamiWarning serta unknown fields yang diperlukan untuk attributes.
 - `OutboxEvent`: event_id UUID, hazard_id UUID, version int64, payload JSON envelope lengkap, created_at UTC. Correlation ID berada dalam payload.
 - `RejectedRecord`: source, endpoint, payload JSON, reason, correlation_id, observed_at UTC.
 - bool dari FindHazard/ReadCheckpoint berarti record ditemukan. Tidak ditemukan bukan error transport/DB.
 - PutHazard tidak menaikkan version diam-diam. Application menghitung perubahan dalam Tx; adapter menegakkan constraint dan konsistensi transaksi.
 - Nama checkpoint tetap: `bmkg.seismic-events`, `bmkg.tsunami-warnings`, `pvmbg.volcanic-reports`.
+
+`StatusStore.RecordPoll(ctx, endpoint, ok, degraded, code, attemptedAt)` mencatat hasil endpoint dan menghitung status sumber. Source DEGRADED bila hanya sebagian endpoint sehat atau terdapat record karantina; DOWN bila seluruh endpoint gagal. HTTP sukses tetapi commit gagal tidak memajukan checkpoint. Breaker menghitung kegagalan fetch sumber; kegagalan DB tetap dicoba pada siklus berikutnya.
 
 ## B — HazardQuery
 

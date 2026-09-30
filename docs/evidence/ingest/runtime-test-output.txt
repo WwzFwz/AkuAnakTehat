@@ -1,0 +1,5 @@
+=== RUN   TestIngestPipeline
+    ingest_test.go:86: mock -> canonical store -> pending outbox; schema drift, isolated outage, recovery and restart passed
+--- PASS: TestIngestPipeline (48.74s)
+PASS
+ok  	command-line-arguments	49.684s

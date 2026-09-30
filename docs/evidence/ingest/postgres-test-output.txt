@@ -1,0 +1,3 @@
+=== RUN   TestIngestPostgres
+--- PASS: TestIngestPostgres (1.55s)
+PASS

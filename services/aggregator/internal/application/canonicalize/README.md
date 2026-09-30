@@ -6,7 +6,7 @@ Pemetaan data sumber ke HazardEvent; pemilik tipe input yang digunakan adapter d
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `input.go`, `mapper.go`, `mapper_test.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
 
 ## Rencana file
 

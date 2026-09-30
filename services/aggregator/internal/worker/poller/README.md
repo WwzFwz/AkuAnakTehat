@@ -6,7 +6,7 @@ Penjadwal polling independen per sumber, dengan satu jalur penulisan per sumber.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `breaker.go`, `poller.go`, `poller_test.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
 
 ## Rencana file
 

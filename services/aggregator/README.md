@@ -4,7 +4,7 @@
 
 Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 
-**Pemilik utama:** A. **Port rencana:** 9000. Semua komponen masih berupa dokumentasi; tidak ada binary, module Go, Dockerfile, atau endpoint yang sudah berjalan.
+**Pemilik utama:** A. **Port internal:** 9000. Jalur ingest A sudah berjalan: mock → tolerant reader → canonicalize/korelasi → transaksi PostgreSQL → pending outbox. Query/API internal (B) dan relay Kafka/consumer (C) belum diimplementasikan. [Bukti pengujian](../../docs/evidence/ingest/README.md).
 
 ## Komponen
 
@@ -18,6 +18,7 @@ Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 | [`internal/adapter/inbound/http`](internal/adapter/inbound/http/README.md) | B | Inti/pendukung | Transport API internal Aggregator: routing, autentikasi internal, validasi input, dan serialisasi hasil query. |
 | [`internal/adapter/outbound/bmkg`](internal/adapter/outbound/bmkg/README.md) | A | Inti/pendukung | HTTP client dan tolerant decoder untuk BMKG; tidak berisi aturan pemetaan severity. |
 | [`internal/adapter/outbound/pvmbg`](internal/adapter/outbound/pvmbg/README.md) | A | Inti/pendukung | HTTP client dan tolerant decoder untuk PVMBG; tidak berisi aturan pemetaan severity. |
+| [`internal/adapter/outbound/sourcehttp`](internal/adapter/outbound/sourcehttp/README.md) | A | Inti/pendukung | Transport HTTP lokal service, timeout, batas respons, dan penolakan redirect. |
 | [`internal/adapter/outbound/postgres`](internal/adapter/outbound/postgres/README.md) | A/B/C | Inti/pendukung | Implementasi penyimpanan Aggregator, dengan pemisahan kepemilikan file untuk transaksi ingest, query, dan outbox. |
 | [`internal/adapter/outbound/kafka`](internal/adapter/outbound/kafka/README.md) | C | Inti/pendukung | Producer ke topic event kanonik; tidak mengetahui daftar atau alamat consumer. |
 | [`internal/worker/poller`](internal/worker/poller/README.md) | A | Inti/pendukung | Penjadwal polling independen per sumber, dengan satu jalur penulisan per sumber. |
@@ -44,3 +45,18 @@ Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 - Timeout lokal, batas konkurensi yang relevan, health, log terstruktur, dan correlation ID termasuk baseline.
 - Cache, LISTEN/NOTIFY, schema_observations, dan propagasi deadline lewat header adalah tambahan; jangan menjadikannya prasyarat fungsi inti.
 - Service dapat dimulai sebagai proses sendiri; kesiapan dependensi dilaporkan oleh readiness. Jangan mengembalikan sukses palsu untuk fitur yang belum dibuat.
+
+## Menjalankan dan melanjutkan
+
+`docker compose up -d --build --wait aggregator` menjalankan migrasi embedded dan dua worker sumber. Jalankan mock melalui `make up` atau Compose root agar polling berhasil. Tidak ada port host Aggregator; koneksi hanya pada network source/store/edge.
+
+- `/health`: liveness. `/ready/ingest`: DB dapat diakses.
+- `/ready` dan `/internal/hazards...` masih 503 `query_not_implemented`, sehingga client-api tidak menganggap query sudah siap.
+- BMKG 2s, PVMBG 5s, jitter maksimum 10%, overlap 10s. HTTP timeout BMKG 1s/PVMBG 4s; transaksi DB 2s. Satu siklus tidak overlap dengan siklus berikutnya.
+- Checkpoint kosong mengambil seluruh histori seed. Berikutnya memakai waktu mulai request sukses dikurangi overlap; mock warning harus menafsirkan since sebagai waktu perubahan dan jam sumber harus selaras.
+- Deployment tahap ini satu instance Aggregator. Tidak ada koordinasi leader polling untuk banyak replica.
+- `source_endpoint_status` menyimpan hasil setiap endpoint; satu endpoint BMKG sukses tidak menutupi kegagalan endpoint lain.
+
+B dapat menggunakan model `hazard.Event`/`Record` dan skema migrasi untuk repository query. C membaca snapshot JSON immutable di `outbox.payload`, lalu mengisi `outbox.published_at` hanya setelah ACK broker. Penulisan outbox sudah ada; relay belum ada.
+
+Pengujian: `go test ./...` dan `go vet ./...` dari module ini; `make ingest-check` dari root pada POSIX, atau perintah Compose/Go pada [bukti ingest](../../docs/evidence/ingest/README.md).

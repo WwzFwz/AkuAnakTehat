@@ -6,7 +6,7 @@ Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `health.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
 
 ## Rencana file
 
@@ -18,7 +18,7 @@ Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
 ## Kontrak dan alur
 
-- /health menunjukkan proses hidup; /ready menunjukkan kesiapan melayani fungsi service.
+- /health menunjukkan proses hidup; /ready/ingest memeriksa database. /ready tetap 503 hingga query B tersedia.
 - Field log minimum: service, correlation_id, operation, latency_ms, dan hasil.
 
 ## Dependensi
@@ -29,7 +29,7 @@ Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
 - Jangan log Authorization, X-*-Key, token, password, atau payload raw sebelum proyeksi.
 - ID diteruskan lewat HTTP/Kafka dalam alur yang sama; ukur latensi outbound.
-- Aggregator tetap ready ketika sumber/Kafka mati jika fungsi yang bergantung DB masih dapat dilayani.
+- Readiness ingest tetap 200 ketika sumber mati selama database tersedia; status sumber tersimpan terpisah. Kafka belum dipakai jalur A.
 - Untuk service tanpa package ini, utilitas lokal ditempatkan pada http/consumer; tidak membuat shared module bisnis.
 
 ## Langkah implementasi dan verifikasi

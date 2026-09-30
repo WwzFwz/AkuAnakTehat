@@ -26,6 +26,7 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 ## Aturan penting
 
 - Workflow executable sudah tersedia untuk fondasi; tidak menjalankan demo P1–P5.
+- Setelah fondasi, workflow menguji transaksi ingest dalam schema PostgreSQL terisolasi dan alur live mock → canonical store/outbox, termasuk outage/recovery. Ini tetap bukan P1–P5 lengkap.
 - Pin toolchain/action yang disepakati; jangan mengklaim scan bersih sebelum dijalankan.
 - Jangan memasukkan secret ke log CI atau artefak publik.
 - Build sukses bukan bukti semua skenario tugas telah selesai.

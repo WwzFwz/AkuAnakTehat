@@ -1,6 +1,6 @@
 # Penyimpanan — batas dan skema baseline
 
-**Status:** baseline kepemilikan dan rancangan tabel untuk review bersama. Fondasi menyediakan konfigurasi server PostgreSQL/Redis/Kafka dan kode state Auth Service. DDL Canonical Store serta SQLite consumer dibuat pada tahap jalur inti.
+**Status:** DDL Canonical Store dan repository ingest sudah tersedia pada jalur A. SQLite consumer tetap tahap C. Migrasi SQL adalah sumber skema executable; dokumen ini merangkum kontraknya.
 
 | Store | Pemilik akses langsung | Pemakai tidak langsung |
 | --- | --- | --- |
@@ -10,23 +10,26 @@
 | SQLite view/dedup | Masing-masing consumer | Endpoint view melalui service pemilik |
 | Data mock in-memory | Masing-masing mock | Aggregator melalui HTTP |
 
-## Tabel Canonical Store yang harus dibuat pada tahap berikutnya
+## Tabel Canonical Store
 
 | Tabel | Isi dan constraint utama |
 | --- | --- |
 | hazard_events | UUID hazard_id PK; unique(source,source_ref_id); field kanonik bertipe; attributes JSONB; version/content_hash/updated_at/last_seen_at internal; koordinat NOT NULL. |
 | outbox | ID urut; event_id UUID unique; hazard_id/version; snapshot payload JSONB; created_at; published_at nullable untuk ACK. |
 | source_status | Status dan waktu sukses/percobaan terakhir; sumber yang sedang down tetap dapat mempunyai data historis. |
+| source_endpoint_status | State sehat, kegagalan berurutan, dan waktu polling masing-masing endpoint; mencegah keberhasilan satu endpoint menutupi kegagalan endpoint lain. |
 | checkpoints | PK endpoint; watermark UTC, diperbarui bersama transaksi batch terkait. |
 | tsunami_warnings | warning_id unik, related_event_id, seluruh data warning yang diperlukan untuk korelasi ulang. |
 | quarantine | Payload invalid, sumber/endpoint, alasan, correlation_id, dan waktu pencatatan. |
 | schema_migrations | Dikelola migration runner; bukan tabel yang dibuat ulang oleh service lain. |
 
-Migrasi berada di `services/aggregator/migrations/001_initial.up.sql` dan pasangan `.down.sql` ketika dibuat. Referensi gunung berada di folder `reference/` Aggregator. ID fixture sumber yang disepakati: `VOLCANO-DEMO-01` dan `VOLCANO-DEMO-02`; nama/koordinat final perlu ditulis pada implementasi referensi.
+Migrasi tersedia di `services/aggregator/migrations/001_initial.up.sql` dan pasangan `.down.sql`, dijalankan dengan golang-migrate/iofs. Referensi `VOLCANO-DEMO-01`/`VOLCANO-DEMO-02` tersedia pada `reference/volcanoes.json`; nama/koordinat berlabel sintetis.
 
 ## Detail field untuk kontrak repository
 
 Semua timestamp menggunakan TIMESTAMPTZ/UTC. Nama SQL menggunakan snake_case. Ini adalah acuan migrasi pertama; setelah DDL dibuat, perubahan berikutnya dilacak melalui migrasi dan dokumentasi ini diperbarui.
+
+Waktu kanonik dinormalisasi ke mikrodetik agar hash stabil setelah round-trip PostgreSQL. `quarantine.payload` berisi `{"raw_json":"<teks record asli>"}` supaya record dengan angka/escape yang tidak dapat direpresentasikan JSONB tetap dapat dikarantina. `outbox` menegakkan unique(hazard_id,version) dan FK ke hazard.
 
 | Tabel | Field kontrak |
 | --- | --- |

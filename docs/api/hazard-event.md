@@ -1,6 +1,6 @@
 # Envelope event kanonik — kontrak baseline
 
-**Status:** kontrak integrasi untuk jalur inti berikutnya. Fondasi menyiapkan topic Kafka; belum ada producer outbox atau consumer bisnis yang berjalan.
+**Status:** ingest A sudah menulis envelope ini sebagai snapshot outbox dalam transaksi yang sama dengan hazard. Topic Kafka tersedia; relay producer dan consumer bisnis belum diimplementasikan.
 
 Topic: `bnpb.hazard-events.v1`. Key: `hazard_id`. Satu partisi, satu broker, replication factor 1, dan retensi tujuh hari pada baseline.
 
@@ -38,6 +38,7 @@ Contoh di atas sintetis, bukan bukti kejadian atau hasil pengujian.
 - `published_at` pada envelope adalah waktu producer menyiapkan payload publikasi, bukan waktu ACK broker. Pertahankan nilainya bersama payload outbox saat retry. Kolom `outbox.published_at` mempunyai arti terpisah: waktu ACK dicatat oleh relay.
 - `ingested_at` adalah penerimaan pertama record logis; pembaruan tidak menggantinya. `occurred_at` berasal dari sumber.
 - `attributes` mempertahankan nilai JSON asli; unknown fields dibaca secara toleran. Perubahan destruktif memerlukan kontrak/topic versi lain.
+- Warning relevan dimasukkan ke `attributes.tsunami_warnings`, diurutkan berdasarkan warning_id. Bila unknown field sumber memakai nama yang dipesan (`tsunami_warnings`/`source_extensions`), nilainya dipertahankan di `attributes.source_extensions` untuk menghindari penimpaan.
 - Ringkasan publik: hazard_id, source, hazard_type, severity, area_name, occurred_at, ingested_at. source_ref_id, latitude, longitude, dan attributes adalah Mentah.
 - Kafka ini untuk consumer internal. Field mentah tidak disajikan ke Media melalui topic ini.
 

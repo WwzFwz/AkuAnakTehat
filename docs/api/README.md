@@ -23,7 +23,7 @@ Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan kompone
 ## Kontrak dan alur
 
 - Empat titik temu utama: skema Aggregator, envelope Kafka, HTTP internal, dan port di dalam Aggregator.
-- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. Signature port Aggregator menjadi deklarasi Go saat jalur inti diimplementasikan.
+- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. UnitOfWork/Tx/checkpoint/status dan migrasi sudah tersedia untuk jalur A; port query/relay masih kontrak B/C.
 
 ## Dependensi
 

@@ -2,7 +2,7 @@
 
 [Peta repository](../README.md)
 
-Compose menyediakan PostgreSQL, Redis, Kafka KRaft, inisialisasi topic, dan empat service fondasi: `bmkg-mock`, `pvmbg-mock`, `auth-service`, `client-api`. Aggregator dan consumer belum menjadi service Compose. Query client-api dengan token valid dapat menghasilkan `503` sampai Aggregator tersedia.
+Compose menyediakan PostgreSQL, Redis, Kafka KRaft, init topic, empat service fondasi, serta Aggregator ingest. Consumer dan relay Kafka belum dibuat. Query client-api tetap `503` sampai query internal Aggregator (B) tersedia.
 
 Build image, health HTTP, serta persistence PostgreSQL/Redis/Kafka setelah restart telah diuji pada Docker Desktop lokal. Cakupan dan perintah ulang tersedia di [hasil pengujian fondasi](../docs/evidence/foundation/README.md); ini belum bukti demo P1–P5 lengkap.
 
@@ -22,7 +22,9 @@ docker compose up -d --build
 
 `docker compose down` menghentikan container dan mempertahankan named volume. Jangan menghapus volume hanya untuk menjalankan ulang sistem.
 
-`docker compose up -d --build --wait --wait-timeout 180` menunggu healthcheck. Mock dan client-api memakai liveness; auth-service memakai readiness Redis. Readiness client-api tetap 503 sampai Aggregator tersedia.
+`docker compose up -d --build --wait --wait-timeout 180` menunggu healthcheck. Mock/client-api memakai liveness, auth-service readiness Redis, dan Aggregator `/ready/ingest`. Readiness client-api tetap 503 sampai query B tersedia. Aggregator tidak membuka port host; network saat ini source/store/edge, bus ditambahkan saat relay C dibuat.
+
+Profile `test` berisi container `ingest-test` yang membuat schema PostgreSQL sementara lalu menghapusnya. Jalankan `docker compose run --build --rm --env-from-file ./env/aggregator.env ingest-test`; flag env-file eksplisit diperlukan pada Compose lokal yang tidak meneruskan env_file saat `run`. Lihat [bukti ingest](../docs/evidence/ingest/README.md).
 
 | Komponen | Akses |
 | --- | --- |

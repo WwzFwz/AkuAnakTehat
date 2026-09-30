@@ -6,7 +6,7 @@ Implementasi penyimpanan Aggregator, dengan pemisahan kepemilikan file untuk tra
 
 **Pemilik rencana:** A/B/C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `ingest_integration_test.go`, `ingest_repository.go`, `migrate.go`, `pool.go`, `unit_of_work.go`. Cakupan pengujian ada di [bukti ingest](../../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia. Repository query (B) dan relay/outbox reader (C) belum dibuat.
 
 ## Rencana file
 
