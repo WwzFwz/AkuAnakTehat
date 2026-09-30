@@ -1,0 +1,12 @@
+# Local credentials and generated development files
+.env
+env/*.env
+env/*.json
+env/keys/*.pem
+env/.bootstrap.lock
+.local/
+*.exe
+*.test
+coverage.out
+go.work.sum
+.DS_Store

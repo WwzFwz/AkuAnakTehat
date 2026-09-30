@@ -6,7 +6,7 @@ Konfigurasi server PostgreSQL; bukan lokasi skema aplikasi.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** PostgreSQL 16.8, env per service, named volume, dan healthcheck tersedia di Compose. Konfigurasi default dipakai; postgresql.conf belum diperlukan. Persistence runtime belum diverifikasi.
 
 ## Rencana file
 
@@ -16,7 +16,7 @@ Konfigurasi server PostgreSQL; bukan lokasi skema aplikasi.
 
 ## Kontrak dan alur
 
-- Canonical-db hanya ada di store_net bersama Aggregator.
+- Canonical-db hanya ada di store_net. Aggregator akan ditambahkan pada tahap jalur inti.
 
 ## Dependensi
 

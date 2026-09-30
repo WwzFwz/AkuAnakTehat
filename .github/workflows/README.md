@@ -2,11 +2,11 @@
 
 [Peta repository](../../README.md)
 
-Rencana pemeriksaan CI per module dan pemeriksaan kebocoran secret.
+Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** ci.yml tersedia; eksekusi GitHub Actions belum diverifikasi.
 
 ## Rencana file
 
@@ -16,8 +16,8 @@ Rencana pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 ## Kontrak dan alur
 
-- Matrix delapan service; gunakan GOWORK=off untuk membuktikan module tidak bergantung sibling.
-- Pipeline baru dibuat ketika file kode dan go.mod tersedia.
+- scripts/check/check.sh menjalankan tests generator lalu test/vet setiap service yang memiliki go.mod, dengan GOWORK=off. Folder rancangan tanpa module dilewati.
+- CI memakai Go 1.24.2, memvalidasi Compose tanpa mencetak env, dan membangun empat image fondasi. Job Gitleaks 8.24.2 memindai histori Git dengan output disensor.
 
 ## Dependensi
 
@@ -25,12 +25,12 @@ Rencana pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 ## Aturan penting
 
-- Tidak ada workflow executable pada tahap dokumentasi ini.
+- Workflow executable sudah tersedia untuk fondasi; tidak menjalankan demo P1–P5.
 - Pin toolchain/action yang disepakati; jangan mengklaim scan bersih sebelum dijalankan.
 - Jangan memasukkan secret ke log CI atau artefak publik.
 - Build sukses bukan bukti semua skenario tugas telah selesai.
 
 ## Langkah implementasi dan verifikasi
 
-- Tambahkan workflow setelah bootstrap module.
+- Verifikasi hasil workflow saat dijalankan GitHub Actions.
 - Pisahkan pemeriksaan unit dari demo/integrasi yang memerlukan Compose.

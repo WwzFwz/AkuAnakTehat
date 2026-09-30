@@ -1,0 +1,31 @@
+name: foundation
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.2'
+          cache: false
+      - name: Test independent service modules and bootstrap
+        run: sh scripts/check/check.sh
+      - name: Check Compose configuration
+        run: |
+          sh scripts/secrets/generate.sh
+          docker compose config --quiet
+      - name: Build foundation service images
+        run: docker compose build
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan tracked history for secrets
+        run: docker run --rm -v "$PWD:/repo:ro" zricethezav/gitleaks:v8.24.2 git /repo --redact --no-banner

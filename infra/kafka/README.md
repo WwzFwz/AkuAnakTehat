@@ -6,22 +6,22 @@ Konfigurasi broker KRaft dan inisialisasi topic untuk seluruh jalur event.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** konfigurasi Compose dan init topic tersedia; startup broker dan persistence runtime belum diverifikasi.
 
 ## Rencana file
 
 | File yang akan dibuat | Tanggung jawab |
 | --- | --- |
-| `create-topics.sh` | Menunggu broker siap lalu membuat topic event dan DLQ secara idempoten. |
+| `init-topics.sh` | Membuat topic event dan DLQ secara idempoten setelah healthcheck broker lulus. |
 
 ## Kontrak dan alur
 
 - Topic utama bnpb.hazard-events.v1: satu partisi, replication factor1, retention7 hari.
-- Topic DLQ dibuat sebelum consumer memerlukannya.
+- Topic DLQ bnpb.hazard-events.v1.dlq memakai satu partisi, replication factor 1, retention 7 hari.
 
 ## Dependensi
 
-- Container Kafka dan kafka-init pada bus_net; konfigurasi runtime kelak di docker-compose.yml.
+- Container Kafka dan kafka-init pada bus_net; konfigurasi runtime ada di docker-compose.yml.
 
 ## Aturan penting
 
@@ -32,5 +32,5 @@ Konfigurasi broker KRaft dan inisialisasi topic untuk seluruh jalur event.
 
 ## Langkah implementasi dan verifikasi
 
-- Pin image saat implementasi dan konfigurasi listener internal.
+- Image apache/kafka:3.9.1; listener broker internal kafka:9092.
 - Uji topic init saat start baru dan start ulang.

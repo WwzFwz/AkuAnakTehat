@@ -2,18 +2,18 @@
 
 [Peta repository](../../README.md)
 
-Lokasi runtime pasangan kunci Ed25519; saat ini hanya dokumentasi.
+Lokasi runtime pasangan kunci Ed25519 hasil generator; berkas PEM diabaikan Git.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** generator tersedia dan memvalidasi pasangan key pada pemanggilan berikutnya. Kunci bukan artefak repository.
 
 ## Rencana file
 
 | File yang akan dibuat | Tanggung jawab |
 | --- | --- |
-| `jwt-private.pem` | Rencana artefak lokal hasil generator; jangan di-commit. |
-| `jwt-public.pem` | Rencana artefak lokal untuk verifier client-api. |
+| `jwt-private.pem` | Ed25519 PKCS8 PRIVATE KEY PEM lokal, hanya auth-service. |
+| `jwt-public.pem` | Ed25519 PKIX PUBLIC KEY PEM lokal untuk verifier client-api. |
 
 ## Kontrak dan alur
 
@@ -25,11 +25,11 @@ Lokasi runtime pasangan kunci Ed25519; saat ini hanya dokumentasi.
 
 ## Aturan penting
 
-- Tidak menyimpan secret asli dalam Git. Tambahkan aturan ignore sebelum menjalankan generator.
+- Tidak menyimpan secret asli dalam Git. Aturan ignore tersedia sebelum generator dijalankan.
 - Jangan memakai kunci dokumentasi/example sebagai kunci runtime.
 - Rotasi public key statis memerlukan distribusi dan restart verifier sesuai batasan M1.
 
 ## Langkah implementasi dan verifikasi
 
-- Sepakati format PEM dan izin akses berkas.
-- Buat kunci ketika tahap bootstrap implementasi dimulai.
+- Generator memakai izin 0600 pada OS pendukung; Windows menggunakan ACL workspace.
+- Ikuti [bootstrap secret](../../scripts/secrets/README.md); generator tidak merotasi key secara otomatis.

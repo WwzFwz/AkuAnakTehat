@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: struktur folder dan README per komponen.** Belum ada kode aplikasi, deklarasi Go, dependency, Dockerfile, Compose, konfigurasi runtime, atau bukti pengujian. Semua nama file dan operasi yang tercantum dalam README adalah rencana.
+**Status saat ini: kontrak integrasi dan fondasi awal.** Empat kontrak utama tersedia untuk ditinjau bersama. Mock BMKG/PVMBG, Auth Service, kerangka client-api, Compose, dan bootstrap secret sudah memiliki implementasi. Aggregator serta tiga consumer masih berupa rancangan komponen; jalur data ujung ke ujung belum berjalan.
 
 ## Cara membaca
 
@@ -32,12 +32,12 @@ A/B/C adalah pembagian kerja rancangan, belum nama anggota. Di Aggregator, A mem
 
 | Folder | Panduan |
 | --- | --- |
-| `docs/api/` | [Kontrak yang perlu disepakati](docs/api/README.md) |
+| `docs/api/` | [Kontrak baseline untuk review bersama](docs/api/README.md) |
 | `docs/evidence/` | Bukti [P1](docs/evidence/p1/README.md), [P2](docs/evidence/p2/README.md), [P3](docs/evidence/p3/README.md), [P4](docs/evidence/p4/README.md), [P5](docs/evidence/p5/README.md) |
-| `infra/` | [Kafka](infra/kafka/README.md), [PostgreSQL](infra/postgres/README.md), [Redis](infra/redis/README.md) |
+| `infra/` | [Cara menjalankan fondasi](infra/README.md), [Kafka](infra/kafka/README.md), [PostgreSQL](infra/postgres/README.md), [Redis](infra/redis/README.md) |
 | `scripts/` | [Secret bootstrap](scripts/secrets/README.md), [demo](scripts/demo/README.md), [load test](scripts/loadtest/README.md), [trace](scripts/trace/README.md) |
-| `env/keys/` | [Rencana penyimpanan kunci lokal](env/keys/README.md); tidak berisi secret |
-| `.github/workflows/` | [Rencana CI](.github/workflows/README.md) |
+| `env/keys/` | [Penyimpanan kunci lokal](env/keys/README.md); secret hasil bootstrap diabaikan Git |
+| `.github/workflows/` | [CI fondasi](.github/workflows/README.md) |
 
 ## Batas arsitektur
 
@@ -48,14 +48,14 @@ A/B/C adalah pembagian kerja rancangan, belum nama anggota. Di Aggregator, A mem
 - Auth-service memiliki Redis dan private key. Client-api hanya memiliki public key untuk verifikasi.
 - Tidak ada shared business package atau database bersama antarservice.
 
-## Empat kontrak sebelum coding
+## Empat kontrak sebelum jalur inti
 
-1. Skema Canonical Store, dengan sumber DDL pada [migrations](services/aggregator/migrations/README.md).
-2. Envelope event Kafka.
-3. HTTP internal Aggregator: route, filter, cursor, response, dan error.
-4. Port internal Aggregator: UnitOfWork/Tx, HazardQuery, dan OutboxStore.
+1. A: [skema Canonical Store](docs/api/storage.md), acuan DDL pada [migrations](services/aggregator/migrations/README.md).
+2. C: [envelope event Kafka](docs/api/hazard-event.md).
+3. B: [HTTP internal Aggregator](docs/api/aggregator-http.md): route, filter, cursor, response, dan error.
+4. A/B/C: [port internal Aggregator](docs/api/aggregator-ports.md): UnitOfWork/Tx, HazardQuery, dan OutboxStore.
 
-Rencana dokumennya ada di [docs/api](docs/api/README.md). README package bukan pengganti kesepakatan signature dan contoh payload.
+Dokumen tersedia di [docs/api](docs/api/README.md), termasuk signature dan contoh payload. Ini baseline untuk review anggota, bukan klaim persetujuan tim atau implementasi Aggregator. Perubahan kontrak perlu diselaraskan dengan seluruh pemakai sebelum jalur inti dikerjakan.
 
 ## Urutan implementasi
 
@@ -68,21 +68,33 @@ Rencana dokumennya ada di [docs/api](docs/api/README.md). README package bukan p
 
 Fitur tambahan diberi label dalam README terkait. Timeout lokal bukan fitur tambahan.
 
-## Berkas root yang dibuat pada tahap implementasi
+## Menjalankan dan memeriksa fondasi
 
-| File | Rencana |
+Prasyarat: Go 1.24.2 dan Docker dengan Compose v2. Di PowerShell:
+
+```powershell
+powershell -NoProfile -File scripts/secrets/generate.ps1
+docker compose config --quiet
+docker compose up -d --build
+```
+
+Linux/macOS dengan Make dapat memakai `make up`. Detail port dan kredensial lokal ada di [panduan infra](infra/README.md). Client-api menghasilkan 503 untuk query yang membutuhkan Aggregator sampai server tersebut diimplementasikan. Token dan mock dapat dikembangkan terpisah.
+
+Pemeriksaan lokal: `powershell -NoProfile -File scripts/check/check.ps1` atau `make check` pada shell POSIX.
+
+| File | Isi saat ini |
 | --- | --- |
-| `go.work` | Workspace lokal untuk delapan module; build container tetap mandiri. |
-| `docker-compose.yml` | Orkestrasi service, network ownership, volume, dan profile demo consumer ketiga. |
-| `Makefile` | Shortcut bootstrap, build, test, demo, dan trace. |
+| `go.work` | Empat module fondasi; module berikutnya ditambahkan ketika diimplementasikan. |
+| `docker-compose.yml` | Empat service fondasi, PostgreSQL, Redis, Kafka, inisialisasi topic, network, dan volume. |
+| `Makefile` | Shortcut bootstrap, up/down, logs, config, dan check. |
 | `.env.example` | Variabel konfigurasi beserta placeholder non-secret. |
 | `.gitignore` | Abaikan env/kunci/runtime artefak; wajib tersedia sebelum generator secret dijalankan. |
 
-Nama variabel pada README config adalah rancangan, belum konfigurasi yang dapat langsung dijalankan.
+README komponen yang belum diimplementasikan tetap memuat rencana file dan konfigurasi.
 
 ## Status verifikasi
 
-Belum ada pengujian bisnis atau hasil performa. Folder bukti hanya berisi petunjuk pengumpulan. Saat implementasi berjalan, perbarui README sesuai perilaku nyata dan jangan menulis klaim lulus tanpa bukti.
+Keempat module lulus `go test ./...` untuk kompilasi; belum mempunyai test case bisnis. Test bootstrap secret dan validasi statis Compose lulus. Build image, integrasi Redis/JWT, perilaku mock, dan skenario P1–P5 belum diverifikasi. Folder bukti masih berisi petunjuk pengumpulan; CI yang disediakan belum menjadi bukti keberhasilan run di GitHub.
 
 ## Dasar dan bantuan penulisan
 

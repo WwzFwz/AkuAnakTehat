@@ -6,7 +6,7 @@ Konfigurasi Redis auth-store milik auth-service.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** Redis 7.4.2 tersedia dalam Compose dengan AOF, password env, named volume, dan healthcheck. redis.conf terpisah belum diperlukan. Restart/TTL runtime belum diverifikasi.
 
 ## Rencana file
 
@@ -27,6 +27,7 @@ Konfigurasi Redis auth-store milik auth-service.
 - Password tidak ditulis ke redis.conf yang ter-commit.
 - Jangan memakai Redis ini sebagai cache client-api.
 - Dokumentasikan pilihan fsync/persistensi dan keterbatasannya.
+- AOF memakai default appendfsync everysec: crash host dapat kehilangan sekitar satu detik penulisan terakhir. Ini bukan jaminan durability penuh.
 
 ## Langkah implementasi dan verifikasi
 
