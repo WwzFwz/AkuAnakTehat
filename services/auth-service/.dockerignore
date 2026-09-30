@@ -1,0 +1,6 @@
+.git
+.local
+*.test
+*.exe
+.env
+*.pem

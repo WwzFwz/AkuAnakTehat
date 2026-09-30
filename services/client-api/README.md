@@ -4,7 +4,7 @@
 
 API downstream dengan verifikasi JWT, otorisasi, dan proyeksi.
 
-**Pemilik utama:** B. **Port rencana:** 8080. Semua komponen masih berupa dokumentasi; tidak ada binary, module Go, Dockerfile, atau endpoint yang sudah berjalan.
+**Pemilik utama:** B. **Port rencana:** 8080. Module Go, Dockerfile, composition root, dan endpoint fondasi sudah tersedia. Verifikasi kompilasi berhasil; integrasi runtime dan bukti demo belum selesai.
 
 ## Komponen
 
@@ -38,3 +38,10 @@ API downstream dengan verifikasi JWT, otorisasi, dan proyeksi.
 - Timeout lokal, batas konkurensi yang relevan, health, log terstruktur, dan correlation ID termasuk baseline.
 - Cache, LISTEN/NOTIFY, schema_observations, dan propagasi deadline lewat header adalah tambahan; jangan menjadikannya prasyarat fungsi inti.
 - Service dapat dimulai sebagai proses sendiri; kesiapan dependensi dilaporkan oleh readiness. Jangan mengembalikan sukses palsu untuk fitur yang belum dibuat.
+
+## Menjalankan fondasi
+
+Konfigurasi dan endpoint: [kontrak HTTP](../../docs/api/client-http.md).
+Dari folder service: `go run ./cmd/client-api`. Variabel secret/key wajib diisi lewat bootstrap lokal.
+Verifikasi awal: `go test ./...` (kompilasi; belum ada test suite perilaku).
+Aggregator belum tersedia pada tahap ini; request data menghasilkan503 dan readiness503, sementara liveness200. Cache tetap belum diimplementasikan.

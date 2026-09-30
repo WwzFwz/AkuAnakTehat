@@ -6,7 +6,7 @@ Use case pertukaran kredensial dan refresh tanpa login ulang pada alur normal.
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Uji integrasi runtime belum dilakukan. Berkas yang sudah ada: `service.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
 
 ## Rencana file
 
