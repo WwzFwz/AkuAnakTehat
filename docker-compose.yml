@@ -77,6 +77,11 @@ services:
     env_file: ./env/bmkg-mock.env
     ports: ['127.0.0.1:8081:8081']
     networks: [source_net]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8081/health']
+      interval: 5s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
   pvmbg-mock:
@@ -84,10 +89,17 @@ services:
     env_file: ./env/pvmbg-mock.env
     ports: ['127.0.0.1:8082:8082']
     networks: [source_net]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8082/health']
+      interval: 5s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
   auth-service:
     build: ./services/auth-service
+    # Match the owner of mode-0600 bind-mounted secrets on Linux.
+    user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
     env_file: ./env/auth-service.env
     ports: ['127.0.0.1:8090:8090']
     volumes:
@@ -97,15 +109,27 @@ services:
       auth-store:
         condition: service_healthy
     networks: [auth_net]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8090/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
   client-api:
     build: ./services/client-api
+    user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
     env_file: ./env/client-api.env
     ports: ['127.0.0.1:8080:8080']
     volumes:
       - ./env/keys/jwt-public.pem:/run/keys/jwt-public.pem:ro
     networks: [edge_net]
+    # Liveness only: Aggregator readiness belongs to the next milestone step.
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8080/health']
+      interval: 5s
+      timeout: 3s
+      retries: 12
     restart: unless-stopped
 
 networks:

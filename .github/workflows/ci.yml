@@ -7,6 +7,7 @@ permissions:
 jobs:
   go:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -17,10 +18,24 @@ jobs:
         run: sh scripts/check/check.sh
       - name: Check Compose configuration
         run: |
+          echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"
+          echo "LOCAL_GID=$(id -g)" >> "$GITHUB_ENV"
           sh scripts/secrets/generate.sh
           docker compose config --quiet
-      - name: Build foundation service images
-        run: docker compose build
+      - name: Start foundation stack
+        run: docker compose up -d --build --wait --wait-timeout 180
+      - name: Test HTTP contracts, refresh rotation, and persistence
+        env:
+          GOTELEMETRY: 'off'
+          GOTOOLCHAIN: local
+          GOWORK: 'off'
+        run: go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m
+      - name: Inspect service state
+        if: always()
+        run: docker compose ps -a
+      - name: Stop foundation stack
+        if: always()
+        run: docker compose down
   secrets:
     runs-on: ubuntu-latest
     steps:
