@@ -1,37 +1,13 @@
 # store
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+Storage in-memory aman untuk akses bersamaan; snapshot tidak membocorkan slice/pointer mutable.
 
-Penyimpanan in-memory BMKG, dimiliki mock dan aman untuk akses bersamaan.
+**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
+## File saat ini
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+- `memory.go`
 
-## Rencana file
+Filter `since` inklusif. BMKG warning memakai waktu perubahan tersembunyi; PVMBG memakai `reported_at`. Lock dilepas sebelum delay/network. Data runtime hilang saat restart dan belum dibatasi retensi.
 
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `memory.go` | Koleksi data, mutex, dan snapshot respons. |
-| `repository.go` | Operasi insert/update event dan warning serta query since. |
-| `seed.go` | Load fixture historis dengan ID tetap. |
-
-## Kontrak dan alur
-
-- ListSeismicSince(since), ListWarningsSince(since), AddSeismic(event), dan SaveWarning(warning).
-
-## Dependensi
-
-- domain lokal; dipakai generator dan handler HTTP.
-
-## Aturan penting
-
-- since inklusif; urutan hasil deterministik.
-- Jangan memegang mutex saat menunggu delay atau menulis jaringan.
-- Jangan mengembalikan slice/map mutable yang dapat diubah generator secara bersamaan.
-- Filter warning memakai internal_modified_at yang berubah saat eskalasi, bukan estimated_arrival.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan koleksi, load seed, dan snapshot dengan lock singkat.
-- Verifikasi query bersamaan dengan generator tidak menimbulkan data race.
+Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.

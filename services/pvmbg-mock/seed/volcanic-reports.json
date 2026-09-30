@@ -1,0 +1,162 @@
+[
+  {
+    "report_id": "pvmbg-seed-001",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Waspada",
+    "eruption_count_24h": 1,
+    "ash_column_height_m": 500,
+    "reported_at": "2026-09-01T00:01:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-002",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Siaga",
+    "eruption_count_24h": 2,
+    "ash_column_height_m": 1000,
+    "reported_at": "2026-09-01T00:02:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-003",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Awas",
+    "eruption_count_24h": 3,
+    "ash_column_height_m": 1500,
+    "reported_at": "2026-09-01T00:03:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-004",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Normal",
+    "eruption_count_24h": 4,
+    "ash_column_height_m": 2000,
+    "reported_at": "2026-09-01T00:04:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-005",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Waspada",
+    "eruption_count_24h": 5,
+    "ash_column_height_m": 0,
+    "reported_at": "2026-09-01T00:05:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-006",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Siaga",
+    "eruption_count_24h": 6,
+    "ash_column_height_m": 500,
+    "reported_at": "2026-09-01T00:06:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-007",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Awas",
+    "eruption_count_24h": 7,
+    "ash_column_height_m": 1000,
+    "reported_at": "2026-09-01T00:07:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-008",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Normal",
+    "eruption_count_24h": 8,
+    "ash_column_height_m": 1500,
+    "reported_at": "2026-09-01T00:08:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-009",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Waspada",
+    "eruption_count_24h": 9,
+    "ash_column_height_m": 2000,
+    "reported_at": "2026-09-01T00:09:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-010",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Siaga",
+    "eruption_count_24h": 0,
+    "ash_column_height_m": 0,
+    "reported_at": "2026-09-01T00:10:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-011",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Awas",
+    "eruption_count_24h": 1,
+    "ash_column_height_m": 500,
+    "reported_at": "2026-09-01T00:11:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-012",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Normal",
+    "eruption_count_24h": 2,
+    "ash_column_height_m": 1000,
+    "reported_at": "2026-09-01T00:12:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-013",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Waspada",
+    "eruption_count_24h": 3,
+    "ash_column_height_m": 1500,
+    "reported_at": "2026-09-01T00:13:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-014",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Siaga",
+    "eruption_count_24h": 4,
+    "ash_column_height_m": 2000,
+    "reported_at": "2026-09-01T00:14:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-015",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Awas",
+    "eruption_count_24h": 5,
+    "ash_column_height_m": 0,
+    "reported_at": "2026-09-01T00:15:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-016",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Normal",
+    "eruption_count_24h": 6,
+    "ash_column_height_m": 500,
+    "reported_at": "2026-09-01T00:16:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-017",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Waspada",
+    "eruption_count_24h": 7,
+    "ash_column_height_m": 1000,
+    "reported_at": "2026-09-01T00:17:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-018",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Siaga",
+    "eruption_count_24h": 8,
+    "ash_column_height_m": 1500,
+    "reported_at": "2026-09-01T00:18:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-019",
+    "volcano_id": "VOLCANO-DEMO-02",
+    "alert_level": "Awas",
+    "eruption_count_24h": 9,
+    "ash_column_height_m": 2000,
+    "reported_at": "2026-09-01T00:19:00Z"
+  },
+  {
+    "report_id": "pvmbg-seed-020",
+    "volcano_id": "VOLCANO-DEMO-01",
+    "alert_level": "Normal",
+    "eruption_count_24h": 0,
+    "ash_column_height_m": 0,
+    "reported_at": "2026-09-01T00:20:00Z"
+  }
+]

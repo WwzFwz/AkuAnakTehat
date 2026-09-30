@@ -1,38 +1,39 @@
 # pvmbg-mock
 
-[Peta repository](../../README.md) · [Kontrak integrasi](../../docs/api/README.md)
+Mock sumber independen untuk fondasi M1. **Status: implementasi fondasi tersedia; belum menjadi bukti lulus skenario tugas.**
 
-Mock vulkanik dengan delay, outage, dan schema evolution.
+Default port `8082` dapat diubah melalui `HTTP_ADDR`. Kontrak endpoint, autentikasi, environment, seed, dan simulasi dijelaskan dalam [kontrak mock HTTP](../../docs/api/mock-http.md).
 
-**Pemilik utama:** A. **Port rencana:** 8082. Semua komponen masih berupa dokumentasi; tidak ada binary, module Go, Dockerfile, atau endpoint yang sudah berjalan.
+## Menjalankan
+
+Siapkan environment wajib melalui bootstrap secret repository atau konfigurasi lokal, lalu dari direktori service:
+
+```sh
+go run ./cmd/pvmbg-mock
+```
+
+Build container dengan context direktori service:
+
+```sh
+docker build -t pvmbg-mock:local .
+```
+
+Go 1.24.2, standard library saja; tidak memerlukan database atau broker. Dockerfile menjalankan binary sebagai user non-root. Credential kosong/salah format menggagalkan startup. Liveness `/health` dan readiness `/ready` tidak memerlukan credential.
 
 ## Komponen
 
-| Folder | Pemilik | Tahap | Tujuan |
-| --- | --- | --- | --- |
-| [`cmd/pvmbg-mock`](cmd/pvmbg-mock/README.md) | A | Inti/pendukung | Composition root pvmbg-mock; tempat merangkai seluruh dependensi runtime. |
-| [`internal/config`](internal/config/README.md) | A | Inti/pendukung | Konfigurasi lokal pvmbg-mock; nama variabel berikut adalah usulan yang perlu disepakati. |
-| [`internal/domain`](internal/domain/README.md) | A | Inti/pendukung | Kontrak data PVMBG milik mock; tidak bergantung pada model BNPB. |
-| [`internal/store`](internal/store/README.md) | A | Inti/pendukung | Penyimpanan in-memory PVMBG, dimiliki mock dan aman untuk akses bersamaan. |
-| [`internal/generator`](internal/generator/README.md) | A | Inti/pendukung | Pembangkitan data baru PVMBG untuk membuktikan polling berkala. |
-| [`internal/auth`](internal/auth/README.md) | A | Inti/pendukung | Validasi kredensial domain PVMBG. |
-| [`internal/http`](internal/http/README.md) | A | Inti/pendukung | Transport endpoint PVMBG dengan autentikasi dan perilaku simulasi. |
-| [`seed`](seed/README.md) | A | Inti/pendukung | Fixture historis milik PVMBG; data demo, bukan data bencana live. |
-| [`internal/simulation`](internal/simulation/README.md) | A | Inti/pendukung | State dan kontrol runtime delay, outage, serta evolusi skema PVMBG. |
+- [cmd/pvmbg-mock](cmd/pvmbg-mock/README.md)
+- [internal/auth](internal/auth/README.md)
+- [internal/config](internal/config/README.md)
+- [internal/domain](internal/domain/README.md)
+- [internal/generator](internal/generator/README.md)
+- [internal/http](internal/http/README.md)
+- [internal/simulation](internal/simulation/README.md)
+- [internal/store](internal/store/README.md)
+- [seed](seed/README.md)
 
-## Berkas tingkat service yang direncanakan
+## Verifikasi dan batas
 
-| File | Tanggung jawab |
-| --- | --- |
-| `go.mod` | Satu module mandiri untuk service ini; versi Go dipilih dan dipin saat implementasi. |
-| `Dockerfile` | Build dengan konteks folder service sendiri dan runtime minimal non-root. |
-| `.dockerignore` | Mengecualikan secret, artefak lokal, dan berkas yang tidak diperlukan saat build. |
+Pemeriksaan kompilasi dijalankan dengan `go test ./...`; belum ada test case perilaku. Docker/integrasi, race, credential lintas domain, since, schema drift, dan outage recovery masih perlu diuji sebelum fondasi dinyatakan tervalidasi. Tidak ada implementasi ingest BNPB di service ini.
 
-## Batas dan urutan kerja
-
-- Tidak meng-import business logic atau DTO dari module service lain.
-- Interface kecil didefinisikan oleh package pemakai; concrete adapter dirangkai melalui composition root.
-- Sepakati kontrak → implementasikan jalur inti → hubungkan dependensi → jalankan skenario tugas → kumpulkan bukti.
-- Timeout lokal, batas konkurensi yang relevan, health, log terstruktur, dan correlation ID termasuk baseline.
-- Cache, LISTEN/NOTIFY, schema_observations, dan propagasi deadline lewat header adalah tambahan; jangan menjadikannya prasyarat fungsi inti.
-- Service dapat dimulai sebagai proses sendiri; kesiapan dependensi dilaporkan oleh readiness. Jangan mengembalikan sukses palsu untuk fitur yang belum dibuat.
+Seed sintetis tetap dimuat setiap startup. Data runtime disimpan di memori, hilang saat restart, dan belum memiliki retensi; sesuai penggunaan demo terbatas.

@@ -1,0 +1,38 @@
+[
+  {
+    "warning_id": "warning-bmkg-seed-005",
+    "related_event_id": "bmkg-seed-005",
+    "threat_level": "Siaga",
+    "affected_zones": [
+      "Pesisir Demo Sintetis"
+    ],
+    "estimated_arrival": "2026-09-01T01:04:00Z"
+  },
+  {
+    "warning_id": "warning-bmkg-seed-010",
+    "related_event_id": "bmkg-seed-010",
+    "threat_level": "Waspada",
+    "affected_zones": [
+      "Pesisir Demo Sintetis"
+    ],
+    "estimated_arrival": "2026-09-01T01:09:00Z"
+  },
+  {
+    "warning_id": "warning-bmkg-seed-015",
+    "related_event_id": "bmkg-seed-015",
+    "threat_level": "Awas",
+    "affected_zones": [
+      "Pesisir Demo Sintetis"
+    ],
+    "estimated_arrival": "2026-09-01T01:14:00Z"
+  },
+  {
+    "warning_id": "warning-bmkg-seed-020",
+    "related_event_id": "bmkg-seed-020",
+    "threat_level": "Siaga",
+    "affected_zones": [
+      "Pesisir Demo Sintetis"
+    ],
+    "estimated_arrival": "2026-09-01T01:19:00Z"
+  }
+]

@@ -1,0 +1,202 @@
+[
+  {
+    "event_id": "bmkg-seed-001",
+    "magnitude": 4.5,
+    "depth_km": 11,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:01:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-002",
+    "magnitude": 5.0,
+    "depth_km": 12,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:02:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-003",
+    "magnitude": 5.5,
+    "depth_km": 13,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:03:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-004",
+    "magnitude": 6.0,
+    "depth_km": 14,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:04:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-005",
+    "magnitude": 6.5,
+    "depth_km": 15,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:05:00Z",
+    "potential_tsunami": true
+  },
+  {
+    "event_id": "bmkg-seed-006",
+    "magnitude": 7.0,
+    "depth_km": 16,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:06:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-007",
+    "magnitude": 4.0,
+    "depth_km": 17,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:07:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-008",
+    "magnitude": 4.5,
+    "depth_km": 18,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:08:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-009",
+    "magnitude": 5.0,
+    "depth_km": 19,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:09:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-010",
+    "magnitude": 5.5,
+    "depth_km": 20,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:10:00Z",
+    "potential_tsunami": true
+  },
+  {
+    "event_id": "bmkg-seed-011",
+    "magnitude": 6.0,
+    "depth_km": 21,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:11:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-012",
+    "magnitude": 6.5,
+    "depth_km": 22,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:12:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-013",
+    "magnitude": 7.0,
+    "depth_km": 23,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:13:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-014",
+    "magnitude": 4.0,
+    "depth_km": 24,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:14:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-015",
+    "magnitude": 4.5,
+    "depth_km": 25,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:15:00Z",
+    "potential_tsunami": true
+  },
+  {
+    "event_id": "bmkg-seed-016",
+    "magnitude": 5.0,
+    "depth_km": 26,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:16:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-017",
+    "magnitude": 5.5,
+    "depth_km": 27,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:17:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-018",
+    "magnitude": 6.0,
+    "depth_km": 28,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:18:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-019",
+    "magnitude": 6.5,
+    "depth_km": 29,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:19:00Z",
+    "potential_tsunami": false
+  },
+  {
+    "event_id": "bmkg-seed-020",
+    "magnitude": 7.0,
+    "depth_km": 30,
+    "epicenter_lat": -7.5,
+    "epicenter_lon": 110.2,
+    "region_name": "Wilayah Demo Sintetis",
+    "occurred_at": "2026-09-01T00:20:00Z",
+    "potential_tsunami": true
+  }
+]

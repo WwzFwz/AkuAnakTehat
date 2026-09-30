@@ -1,34 +1,14 @@
 # seed
 
-[Panduan service](../README.md) · [Peta repository](../../../README.md)
+Fixture sintetis historis dengan ID tetap, di-embed ke binary dan dimuat saat startup.
 
-Fixture historis milik PVMBG; data demo, bukan data bencana live.
+**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
+## File saat ini
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+- `embed.go`
+- `volcanic-reports.json`
 
-## Rencana file
+Seed bertanggal 1 September 2026 UTC. Query awal tanpa `since` mengambil seluruh seed. Fixture ini bukan kejadian bencana nyata.
 
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `volcanic-reports.json` | Minimal20 laporan v1 dengan ID tetap dan tanpa confidence_level. |
-
-## Kontrak dan alur
-
-- Dimuat oleh store saat startup; format sama dengan entitas sumber kecuali metadata internal simulator yang dikelola loader.
-
-## Dependensi
-
-- domain/store lokal; file ini tidak diakses langsung oleh Aggregator.
-
-## Aturan penting
-
-- Seed konsisten lintas restart dan tidak menduplikasi identitas.
-- volcano_id harus ada pada referensi BNPB yang telah disepakati.
-- Labeli data sintetis dan gunakan timestamp UTC historis.
-
-## Langkah implementasi dan verifikasi
-
-- Buat fixture setelah kontrak domain disepakati.
-- Pastikan initial lookback Aggregator mencakup waktu seed.
+Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.

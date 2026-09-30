@@ -1,37 +1,13 @@
 # store
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+Storage in-memory aman untuk akses bersamaan; snapshot tidak membocorkan slice/pointer mutable.
 
-Penyimpanan in-memory PVMBG, dimiliki mock dan aman untuk akses bersamaan.
+**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
+## File saat ini
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+- `memory.go`
 
-## Rencana file
+Filter `since` inklusif. BMKG warning memakai waktu perubahan tersembunyi; PVMBG memakai `reported_at`. Lock dilepas sebelum delay/network. Data runtime hilang saat restart dan belum dibatasi retensi.
 
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `memory.go` | Koleksi data, mutex, dan snapshot respons. |
-| `repository.go` | Operasi insert dan query laporan berdasarkan since. |
-| `seed.go` | Load fixture historis dengan ID tetap. |
-
-## Kontrak dan alur
-
-- ListReportsSince(since) dan AddReport(report).
-
-## Dependensi
-
-- domain lokal; dipakai generator dan handler HTTP.
-
-## Aturan penting
-
-- since inklusif; urutan hasil deterministik.
-- Jangan memegang mutex saat menunggu delay atau menulis jaringan.
-- Jangan mengembalikan slice/map mutable yang dapat diubah generator secara bersamaan.
-- Filter laporan memakai reported_at; schema toggle tidak mengubah semua seed lama.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan koleksi, load seed, dan snapshot dengan lock singkat.
-- Verifikasi query bersamaan dengan generator tidak menimbulkan data race.
+Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.

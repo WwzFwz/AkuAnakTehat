@@ -1,34 +1,12 @@
 # auth
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+Validasi format hash SHA-256 dan perbandingan constant-time; kredensial tidak dicatat.
 
-Validasi kredensial domain BMKG.
+**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
+## File saat ini
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+- `credentials.go`
 
-## Rencana file
 
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `credentials.go` | Load hash kredensial dari konfigurasi. |
-| `middleware.go` | Validasi X-BMKG-Key pada endpoint data. |
-
-## Kontrak dan alur
-
-- Permintaan data wajib membawa X-BMKG-Key yang valid.
-
-## Dependensi
-
-- config lokal dan HTTP handler.
-
-## Aturan penting
-
-- Perbandingan hash dilakukan constant-time; kredensial tidak dipakai lintas domain.
-- Kredensial salah/missing menghasilkan401/403 sesuai kontrak.
-- Jangan mencatat nilai secret pada log atau pesan error.
-
-## Langkah implementasi dan verifikasi
-
-- Uji kredensial valid, salah, kosong, dan kredensial instansi lain dalam format header endpoint tujuan.
+Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.

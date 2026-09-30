@@ -1,35 +1,13 @@
 # generator
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+Loop periodik yang dapat dibatalkan. ID runtime unik per proses; record baru maksimal setiap 10 detik.
 
-Pembangkitan data baru BMKG untuk membuktikan polling berkala.
+**Status:** implementasi fondasi tersedia; pemeriksaan kompilasi dilakukan pada tahap ini. Pengujian perilaku/integrasi belum dilakukan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
+## File saat ini
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+- `generator.go`
 
-## Rencana file
+Generator menyiapkan warning sebelum/sesudah event serta eskalasi ID warning yang sama. Hanya `Run` yang memanggil `Tick` secara serial.
 
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `generator.go` | Loop periodik yang dapat dihentikan. |
-| `factory.go` | Membangkitkan gempa, warning terkait, dan eskalasi warning. |
-
-## Kontrak dan alur
-
-- Run(ctx) menambahkan minimal satu record baru per10 detik per instansi melalui store lokal.
-
-## Dependensi
-
-- domain dan store lokal.
-
-## Aturan penting
-
-- Mock tidak push ke BNPB; hanya membuat data agar dapat dipoll.
-- ID runtime unik lintas restart; ID seed tetap.
-- Sediakan warning sebelum/sesudah gempa serta eskalasi dengan warning_id sama.
-
-## Langkah implementasi dan verifikasi
-
-- Pastikan interval dapat dipercepat untuk demo.
-- Pisahkan penggunaan waktu/acak agar skenario penting mudah direproduksi.
+Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.
