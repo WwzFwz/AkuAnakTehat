@@ -30,6 +30,14 @@ jobs:
           GOTOOLCHAIN: local
           GOWORK: 'off'
         run: go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m
+      - name: Test ingest transactions against PostgreSQL
+        run: docker compose run --build --rm --env-from-file ./env/aggregator.env ingest-test
+      - name: Test live ingest, drift, and source outage isolation
+        env:
+          GOTELEMETRY: 'off'
+          GOTOOLCHAIN: local
+          GOWORK: 'off'
+        run: go test ./scripts/check/foundation_test.go ./scripts/check/ingest_test.go -run TestIngestPipeline -v -count=1 -timeout=5m
       - name: Inspect service state
         if: always()
         run: docker compose ps -a

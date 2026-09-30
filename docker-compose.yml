@@ -1,6 +1,33 @@
 name: bnpb-m1
 
 services:
+  ingest-test:
+    profiles: [test]
+    build:
+      context: ./services/aggregator
+      target: integration-test
+    env_file: ./env/aggregator.env
+    environment:
+      AGGREGATOR_DB_TEST: '1'
+    depends_on:
+      canonical-db:
+        condition: service_healthy
+    networks: [store_net]
+
+  aggregator:
+    build: ./services/aggregator
+    env_file: ./env/aggregator.env
+    depends_on:
+      canonical-db:
+        condition: service_healthy
+    networks: [source_net, store_net, edge_net]
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9000/ready/ingest']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
   canonical-db:
     image: postgres:16.8-alpine
     env_file: ./env/postgres.env
