@@ -189,4 +189,39 @@ func TestIngestPostgres(t *testing.T) {
 	if health != "HEALTHY" {
 		t.Fatal("source did not recover", health)
 	}
+	t.Run("outbox ACK and cleanup", func(t *testing.T) {
+		pending, err := db.Pending(ctx, 100)
+		if err != nil || len(pending) < 2 {
+			t.Fatal("missing pending snapshots", err)
+		}
+		for i, m := range pending {
+			if len(m.Payload) == 0 || m.EventID == "" || m.CorrelationID == "" {
+				t.Fatal("incomplete relay payload")
+			}
+			if i > 0 && m.ID <= pending[i-1].ID {
+				t.Fatal("outbox order unstable")
+			}
+		}
+		old := time.Now().UTC().Add(-48 * time.Hour)
+		if err = db.MarkPublished(ctx, pending[0].ID, old); err != nil {
+			t.Fatal(err)
+		}
+		if err = db.MarkPublished(ctx, pending[0].ID, time.Now()); err != nil {
+			t.Fatal(err)
+		}
+		if err = db.MarkPublished(ctx, pending[1].ID, time.Now()); err != nil {
+			t.Fatal(err)
+		}
+		deleted, err := db.DeletePublishedBefore(ctx, time.Now().Add(-24*time.Hour))
+		if err != nil || deleted != 1 {
+			t.Fatal("cleanup did not preserve first ACK timestamp", deleted, err)
+		}
+		remaining, err := db.Pending(ctx, 100)
+		if err != nil || len(remaining) != len(pending)-2 {
+			t.Fatal("cleanup touched unpublished rows", err)
+		}
+		if err = db.MarkPublished(ctx, -1, time.Now()); err == nil {
+			t.Fatal("missing row marked as published")
+		}
+	})
 }

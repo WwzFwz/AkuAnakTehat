@@ -1,39 +1,11 @@
 # outbox
 
-[Panduan service](../../../README.md) · [Peta repository](../../../../../README.md)
+[Panduan service](../../../README.md) · [Kontrak port](../../../../../docs/api/aggregator-ports.md)
 
-Relay polling event tersimpan dan housekeeping baris terkirim; tetap di dalam Aggregator.
+**Pemilik:** C. **Status:** diimplementasikan pada ports.go, relay.go, relay_test.go.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Satu relay membaca maksimum 100 pending row urut id tiap 1s, publish sequential, lalu MarkPublished setelah ACK. Kegagalan publish/mark menghentikan batch sehingga row berikutnya tidak mendahului row gagal. Payload dan event_id dipertahankan saat replay. Crash antara ACK dan mark dapat menghasilkan duplikat.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+Tidak ada transaksi DB selama publish jaringan. Pool relay terpisah (2 koneksi) membatasi perebutan koneksi ingest. Housekeeping tiap jam menghapus hanya row published yang ACK-nya lebih tua dari OUTBOX_RETENTION (default 24h). LISTEN/NOTIFY belum diimplementasikan dan tetap tambahan.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `ports.go` | OutboxStore dan Publisher. |
-| `relay.go` | Ambil pending, publish berurutan, lalu tandai published. |
-| `housekeeping.go` | Hapus baris published yang melewati retensi lokal. |
-
-## Kontrak dan alur
-
-- OutboxStore: Pending(ctx, limit), MarkPublished(ctx, id, time), DeletePublishedBefore(ctx, cutoff).
-- Publisher: Publish(ctx, message), sukses berarti broker telah ACK.
-- Run(ctx) memakai polling default 1 s; wake-up NOTIFY adalah tambahan.
-
-## Dependensi
-
-- Port lokal worker; adapter postgres dan Kafka diberikan dari main.
-
-## Aturan penting
-
-- Jangan melewati kegagalan publish lalu menerbitkan versi berikutnya dari hazard yang sama.
-- MarkPublished hanya setelah ACK; crash pada celah ACK/mark dapat menyebabkan duplikat.
-- Housekeeping hanya baris yang sudah published, default lebih tua dari24 jam.
-- Payload pending menyimpan event_id stabil; tidak membuat ID baru setiap retry.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan jalur polling dahulu.
-- Verifikasi Kafka mati lalu pulih dan crash setelah ACK sebelum mark.
+Deployment baseline satu Aggregator/relay. Tidak ada claim lock atau koordinasi multi-replica. Tes unit mensimulasikan kegagalan ACK dan mark; tes PostgreSQL menguji pending/mark/cleanup; `make events-check` menguji outage broker nyata.

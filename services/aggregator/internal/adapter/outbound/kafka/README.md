@@ -1,37 +1,9 @@
 # kafka
 
-[Panduan service](../../../../README.md) · [Peta repository](../../../../../../README.md)
+[Panduan service](../../../../README.md) · [Envelope](../../../../../../docs/api/hazard-event.md)
 
-Producer ke topic event kanonik; tidak mengetahui daftar atau alamat consumer.
+**Pemilik:** C. **Status:** producer.go mengimplementasikan worker/outbox.Publisher dengan franz-go 1.18.1.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Producer memakai idempotency bawaan, acks=all, key hazard_id, dan header event_id/correlation_id. KAFKA_PUBLISH_TIMEOUT default 5s membatasi penantian lokal. Bila ACK belum pasti saat deadline, satu publikasi in-flight tetap dilacak; relay menunggu hasil record yang sama pada siklus berikutnya sebelum mengirim versi berikutnya. Tidak menumpuk publikasi baru setiap timeout.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `producer.go` | Konfigurasi franz-go dan lifecycle producer. |
-| `publish.go` | Publish key/payload/header dan menunggu ACK. |
-
-## Kontrak dan alur
-
-- Implementasi Publisher.Publish(ctx, message) milik worker/outbox.
-- Topic bnpb.hazard-events.v1; key hazard_id; correlation ID dibawa pada header.
-
-## Dependensi
-
-- worker/outbox; franz-go direncanakan saat implementasi.
-
-## Aturan penting
-
-- Producer idempoten, acks=all, timeout awal 5 detik.
-- Sukses hanya setelah ACK; event_id tetap saat replay outbox.
-- Tidak menandai row published; itu tanggung jawab relay melalui store.
-- Satu broker/RF1 tidak menjamin selamat dari kehilangan disk broker.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan publisher dengan timeout dan log latensi.
-- Verifikasi broker unavailable tidak menghilangkan row pending.
+Sukses berarti callback ACK diterima. Replay setelah restart/mark gagal tetap mungkin duplikat sehingga consumer harus idempoten. Producer tidak mengetahui alamat/daftar consumer. Kafka satu broker RF1 bukan jaminan ketahanan terhadap kehilangan disk broker.

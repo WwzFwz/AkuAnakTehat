@@ -4,7 +4,7 @@
 
 Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 
-**Pemilik utama:** A. **Port internal:** 9000. Jalur ingest A sudah berjalan: mock → tolerant reader → canonicalize/korelasi → transaksi PostgreSQL → pending outbox. Query/API internal (B) dan relay Kafka/consumer (C) belum diimplementasikan. [Bukti pengujian](../../docs/evidence/ingest/README.md).
+**Pemilik utama:** A. **Port internal:** 9000. Jalur ingest A sudah berjalan: mock → tolerant reader → canonicalize/korelasi → transaksi PostgreSQL → pending outbox. Relay Kafka (C) sudah aktif; tiga consumer tersedia terpisah. Query/API internal (B) belum diimplementasikan. [Bukti pengujian](../../docs/evidence/ingest/README.md).
 
 ## Komponen
 
@@ -48,7 +48,7 @@ Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 
 ## Menjalankan dan melanjutkan
 
-`docker compose up -d --build --wait aggregator` menjalankan migrasi embedded dan dua worker sumber. Jalankan mock melalui `make up` atau Compose root agar polling berhasil. Tidak ada port host Aggregator; koneksi hanya pada network source/store/edge.
+`docker compose up -d --build --wait aggregator` menjalankan migrasi embedded dan dua worker sumber. Jalankan mock melalui `make up` atau Compose root agar polling berhasil. Tidak ada port host Aggregator; koneksi hanya pada network source/store/edge/bus.
 
 - `/health`: liveness. `/ready/ingest`: DB dapat diakses.
 - `/ready` dan `/internal/hazards...` masih 503 `query_not_implemented`, sehingga client-api tidak menganggap query sudah siap.
@@ -57,6 +57,6 @@ Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 - Deployment tahap ini satu instance Aggregator. Tidak ada koordinasi leader polling untuk banyak replica.
 - `source_endpoint_status` menyimpan hasil setiap endpoint; satu endpoint BMKG sukses tidak menutupi kegagalan endpoint lain.
 
-B dapat menggunakan model `hazard.Event`/`Record` dan skema migrasi untuk repository query. C membaca snapshot JSON immutable di `outbox.payload`, lalu mengisi `outbox.published_at` hanya setelah ACK broker. Penulisan outbox sudah ada; relay belum ada.
+B dapat menggunakan model `hazard.Event`/`Record` dan skema migrasi untuk repository query. C membaca snapshot JSON immutable di `outbox.payload`, lalu mengisi `outbox.published_at` hanya setelah ACK broker. Relay berjalan dengan polling 1s, batch 100, pool DB terpisah 2 koneksi, dan housekeeping published >24h. Lihat [bukti event](../../docs/evidence/events/README.md).
 
 Pengujian: `go test ./...` dan `go vet ./...` dari module ini; `make ingest-check` dari root pada POSIX, atau perintah Compose/Go pada [bukti ingest](../../docs/evidence/ingest/README.md).

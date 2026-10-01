@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -13,6 +14,9 @@ type Config struct {
 	BMKGInterval, PVMBGInterval, Overlap, BMKGTimeout, PVMBGTimeout, DBTimeout, BreakerCooldown time.Duration
 	PoolSize                                                                                    int32
 	BreakerFailures                                                                             int
+	KafkaBrokers                                                                                []string
+	KafkaTopic                                                                                  string
+	PublishTimeout, OutboxInterval, OutboxRetention                                             time.Duration
 }
 
 func env(k, d string) string {
@@ -23,6 +27,24 @@ func env(k, d string) string {
 }
 func Load() (Config, error) {
 	c := Config{Addr: env("HTTP_ADDR", ":9000"), DatabaseURL: os.Getenv("DATABASE_URL"), BMKGURL: env("BMKG_URL", "http://bmkg-mock:8081"), BMKGKey: os.Getenv("BMKG_API_KEY"), PVMBGURL: env("PVMBG_URL", "http://pvmbg-mock:8082"), PVMBGToken: os.Getenv("PVMBG_TOKEN")}
+	c.KafkaBrokers = strings.Split(env("KAFKA_BROKERS", "kafka:9092"), ",")
+	c.KafkaTopic = env("KAFKA_TOPIC", "bnpb.hazard-events.v1")
+	for i, broker := range c.KafkaBrokers {
+		c.KafkaBrokers[i] = strings.TrimSpace(broker)
+		if c.KafkaBrokers[i] == "" {
+			return c, errors.New("invalid KAFKA_BROKERS")
+		}
+	}
+	for _, v := range []struct {
+		key, def string
+		dst      *time.Duration
+	}{{"KAFKA_PUBLISH_TIMEOUT", "5s", &c.PublishTimeout}, {"OUTBOX_POLL_INTERVAL", "1s", &c.OutboxInterval}, {"OUTBOX_RETENTION", "24h", &c.OutboxRetention}} {
+		d, err := time.ParseDuration(env(v.key, v.def))
+		if err != nil || d < time.Millisecond || d > 30*24*time.Hour {
+			return c, errors.New("invalid " + v.key)
+		}
+		*v.dst = d
+	}
 	if c.DatabaseURL == "" || c.BMKGKey == "" || c.PVMBGToken == "" {
 		return c, errors.New("DATABASE_URL, BMKG_API_KEY and PVMBG_TOKEN are required")
 	}

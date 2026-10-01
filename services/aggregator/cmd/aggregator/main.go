@@ -4,12 +4,14 @@ import (
 	"context"
 	"errors"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/bmkg"
+	kafkaproducer "example.com/akuanaktehat/aggregator/internal/adapter/outbound/kafka"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/postgres"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/pvmbg"
 	"example.com/akuanaktehat/aggregator/internal/application/canonicalize"
 	"example.com/akuanaktehat/aggregator/internal/application/ingest"
 	"example.com/akuanaktehat/aggregator/internal/config"
 	"example.com/akuanaktehat/aggregator/internal/observability"
+	"example.com/akuanaktehat/aggregator/internal/worker/outbox"
 	"example.com/akuanaktehat/aggregator/internal/worker/poller"
 	"example.com/akuanaktehat/aggregator/reference"
 	"log/slog"
@@ -43,6 +45,16 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 	defer store.Pool.Close()
+	relayStore, err := postgres.Open(ctx, cfg.DatabaseURL, 2, cfg.DBTimeout)
+	if err != nil {
+		return err
+	}
+	defer relayStore.Pool.Close()
+	producer, err := kafkaproducer.New(cfg.KafkaBrokers, cfg.KafkaTopic, cfg.PublishTimeout)
+	if err != nil {
+		return err
+	}
+	defer producer.Close()
 	refs, err := reference.Load()
 	if err != nil {
 		return errors.New("invalid volcano reference")
@@ -57,6 +69,9 @@ func run(logger *slog.Logger) error {
 	}
 	workers := []*poller.Worker{{Endpoints: []*poller.Endpoint{endpoint(canonicalize.SeismicEndpoint, bm.FetchSeismic), endpoint(canonicalize.WarningEndpoint, bm.FetchWarnings)}, Interval: cfg.BMKGInterval}, {Endpoints: []*poller.Endpoint{endpoint(canonicalize.VolcanicEndpoint, pv.FetchReports)}, Interval: cfg.PVMBGInterval}}
 	var wg sync.WaitGroup
+	relay := &outbox.Relay{Store: relayStore, Publisher: producer, Interval: cfg.OutboxInterval, Retention: cfg.OutboxRetention, BatchSize: 100, Logger: logger}
+	wg.Add(1)
+	go func() { defer wg.Done(); relay.Run(ctx) }()
 	for _, w := range workers {
 		w.Checkpoints = store
 		w.Status = store
