@@ -13,6 +13,7 @@ Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan kompone
 | File | Tanggung jawab |
 | --- | --- |
 | [aggregator-http.md](aggregator-http.md) | Endpoint/filter/cursor/DTO/error API internal dan autentikasinya. |
+| [consumers.md](consumers.md) | Group, SQLite, retry/DLQ, endpoint internal dan konfigurasi consumer. |
 | [hazard-event.md](hazard-event.md) | Field envelope event, semantik version/event_id/correlation_id, dan contoh payload lengkap. |
 | [aggregator-ports.md](aggregator-ports.md) | UnitOfWork/Tx, HazardQuery, dan OutboxStore beserta semantik error. |
 | [storage.md](storage.md) | Kepemilikan data, kolom, constraint, dan indeks acuan migrasi. |
@@ -23,7 +24,7 @@ Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan kompone
 ## Kontrak dan alur
 
 - Empat titik temu utama: skema Aggregator, envelope Kafka, HTTP internal, dan port di dalam Aggregator.
-- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. UnitOfWork/Tx/checkpoint/status dan migrasi sudah tersedia untuk jalur A; port query/relay masih kontrak B/C.
+- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. UnitOfWork/Tx/checkpoint/status dan migrasi sudah tersedia untuk jalur A; Store/Publisher relay C dan tiga consumer sudah berjalan; query masih kontrak tahap B.
 
 ## Dependensi
 

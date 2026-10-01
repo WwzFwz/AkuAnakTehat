@@ -6,7 +6,7 @@ Konfigurasi broker KRaft dan inisialisasi topic untuk seluruh jalur event.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** startup broker, init topic, dan pesan pada topic pengujian yang bertahan setelah restart telah diverifikasi. Lihat [hasil fondasi](../../docs/evidence/foundation/README.md). Producer/consumer bisnis belum dibuat.
+**Status:** startup broker, init topic, dan pesan pada topic pengujian yang bertahan setelah restart telah diverifikasi. Lihat [hasil fondasi](../../docs/evidence/foundation/README.md). Relay dan tiga consumer sudah tersedia; lihat [kontrak consumer](../../docs/api/consumers.md) dan [bukti event](../../docs/evidence/events/README.md).
 
 ## Rencana file
 

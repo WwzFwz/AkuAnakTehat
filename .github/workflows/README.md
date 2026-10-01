@@ -17,7 +17,7 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 ## Kontrak dan alur
 
 - scripts/check/check.sh menjalankan tests generator lalu test/vet setiap service yang memiliki go.mod, dengan GOWORK=off. Folder rancangan tanpa module dilewati.
-- CI memakai Go 1.24.2, memvalidasi Compose tanpa mencetak env, membangun/menjalankan empat image fondasi, lalu menjalankan suite runtime `scripts/check/foundation_test.go`. Stack dihentikan pada akhir job. UID/GID container auth/client mengikuti pemilik secret pada runner Linux. Job Gitleaks 8.24.2 memindai histori Git dengan output disensor.
+- CI memakai Go 1.24.2, memvalidasi Compose tanpa mencetak env, membangun/menjalankan service fondasi, ingest dan consumer, lalu menjalankan suite runtime `scripts/check/foundation_test.go`. Stack dihentikan pada akhir job. UID/GID container auth/client mengikuti pemilik secret pada runner Linux. Job Gitleaks 8.24.2 memindai histori Git dengan output disensor.
 
 ## Dependensi
 

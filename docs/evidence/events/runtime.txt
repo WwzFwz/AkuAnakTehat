@@ -1,0 +1,10 @@
+=== RUN   TestEventPipeline
+    events_test.go:58: mock -> ingest -> PostgreSQL outbox -> Kafka -> dashboard verified
+    events_test.go:66: pemda group joined and replayed history without replacing Aggregator
+    events_test.go:110: replay/stale versions, precise additive fields, SIAGA/AWAS filtering and SQLite restart persistence verified
+    events_test.go:131: invalid record reached DLQ for all three groups; subsequent valid record processed
+    events_test.go:142: paused dashboard caught up; notifier and pemda continued independently
+    events_test.go:157: Kafka outage did not block ingest; retained outbox drained after recovery
+--- PASS: TestEventPipeline (68.18s)
+PASS
+ok  	command-line-arguments	68.868s

@@ -1,0 +1,27 @@
+=== RUN   TestHealth
+--- PASS: TestHealth (0.01s)
+=== RUN   TestMockContracts
+--- PASS: TestMockContracts (7.01s)
+=== RUN   TestPVMBGSchemaAndOutage
+--- PASS: TestPVMBGSchemaAndOutage (2.33s)
+=== RUN   TestTokenRotationAndAuthorization
+--- PASS: TestTokenRotationAndAuthorization (0.03s)
+=== RUN   TestJWTClaimValidation
+=== RUN   TestJWTClaimValidation/exp
+=== RUN   TestJWTClaimValidation/aud
+=== RUN   TestJWTClaimValidation/iss
+=== RUN   TestJWTClaimValidation/iat
+--- PASS: TestJWTClaimValidation (0.01s)
+    --- PASS: TestJWTClaimValidation/exp (0.00s)
+    --- PASS: TestJWTClaimValidation/aud (0.00s)
+    --- PASS: TestJWTClaimValidation/iss (0.00s)
+    --- PASS: TestJWTClaimValidation/iat (0.00s)
+=== RUN   TestPersistenceAndDependencyRecovery
+--- PASS: TestPersistenceAndDependencyRecovery (15.27s)
+=== RUN   TestStructuredLogsDoNotExposeCredentials
+--- PASS: TestStructuredLogsDoNotExposeCredentials (0.35s)
+=== RUN   TestIngestPipeline
+    ingest_test.go:86: mock -> canonical store -> pending outbox; schema drift, isolated outage, recovery and restart passed
+--- PASS: TestIngestPipeline (40.84s)
+PASS
+ok  	command-line-arguments	66.614s

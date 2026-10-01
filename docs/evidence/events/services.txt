@@ -1,0 +1,12 @@
+SERVICE             STATUS                        PORTS
+aggregator          Up 53 seconds (healthy)       9000/tcp
+auth-service        Up About a minute (healthy)   127.0.0.1:8090->8090/tcp
+auth-store          Up About a minute (healthy)   6379/tcp
+bmkg-mock           Up 13 minutes (healthy)       127.0.0.1:8081->8081/tcp
+canonical-db        Up About a minute (healthy)
+client-api          Up 13 minutes (healthy)       127.0.0.1:8080->8080/tcp
+dashboard-updater   Up About a minute (healthy)   127.0.0.1:8091->8091/tcp
+kafka               Up About a minute (healthy)
+notifier            Up About a minute (healthy)   127.0.0.1:8092->8092/tcp
+pemda-portal        Up About a minute (healthy)   127.0.0.1:8093->8093/tcp
+pvmbg-mock          Up 13 minutes (healthy)       127.0.0.1:8082->8082/tcp

@@ -2,7 +2,7 @@
 
 [Peta repository](../README.md)
 
-Compose menyediakan PostgreSQL, Redis, Kafka KRaft, init topic, empat service fondasi, serta Aggregator ingest. Consumer dan relay Kafka belum dibuat. Query client-api tetap `503` sampai query internal Aggregator (B) tersedia.
+Compose menyediakan PostgreSQL, Redis, Kafka KRaft, init topic, empat service fondasi, serta Aggregator ingest. Relay, dashboard-updater, dan notifier aktif; pemda-portal tersedia lewat profile demo. Query client-api tetap `503` sampai query internal Aggregator (B) tersedia.
 
 Build image, health HTTP, serta persistence PostgreSQL/Redis/Kafka setelah restart telah diuji pada Docker Desktop lokal. Cakupan dan perintah ulang tersedia di [hasil pengujian fondasi](../docs/evidence/foundation/README.md); ini belum bukti demo P1–P5 lengkap.
 
@@ -20,9 +20,11 @@ docker compose config --quiet
 docker compose up -d --build
 ```
 
+`docker compose --profile demo up -d --build pemda-portal` menambah subscriber ketiga. `docker compose --profile demo down` menghentikan seluruh profile yang aktif dan mempertahankan volume.
+
 `docker compose down` menghentikan container dan mempertahankan named volume. Jangan menghapus volume hanya untuk menjalankan ulang sistem.
 
-`docker compose up -d --build --wait --wait-timeout 180` menunggu healthcheck. Mock/client-api memakai liveness, auth-service readiness Redis, dan Aggregator `/ready/ingest`. Readiness client-api tetap 503 sampai query B tersedia. Aggregator tidak membuka port host; network saat ini source/store/edge, bus ditambahkan saat relay C dibuat.
+`docker compose up -d --build --wait --wait-timeout 180` menunggu healthcheck. Mock/client-api memakai liveness, auth-service readiness Redis, dan Aggregator `/ready/ingest`. Readiness client-api tetap 503 sampai query B tersedia. Aggregator tidak membuka port host; network source/store/edge/bus. Consumer memakai bus_net/consumer_net tanpa store_net, readiness memeriksa Kafka dan SQLite.
 
 Profile `test` berisi container `ingest-test` yang membuat schema PostgreSQL sementara lalu menghapusnya. Jalankan `docker compose run --build --rm --env-from-file ./env/aggregator.env ingest-test`; flag env-file eksplisit diperlukan pada Compose lokal yang tidak meneruskan env_file saat `run`. Lihat [bukti ingest](../docs/evidence/ingest/README.md).
 
@@ -32,11 +34,14 @@ Profile `test` berisi container `ingest-test` yang membuat schema PostgreSQL sem
 | PVMBG | `http://127.0.0.1:8082` |
 | Auth | `http://127.0.0.1:8090` |
 | Client API | `http://127.0.0.1:8080` |
+| Dashboard | `http://127.0.0.1:8091/view` |
+| Notifier audit | `http://127.0.0.1:8092/processed` |
+| Pemda (profile demo) | `http://127.0.0.1:8093/view` |
 | PostgreSQL | `canonical-db:5432`, hanya `store_net` |
 | Redis | `auth-store:6379`, hanya `auth_net` |
 | Kafka | `kafka:9092`, hanya `bus_net` |
 
-Port HTTP dipublikasikan pada loopback. Database, Redis, dan Kafka tidak memiliki port host. Aggregator kelak memerlukan `source_net`, `store_net`, `edge_net`, dan `bus_net`; client-api tetap hanya di `edge_net`.
+Port HTTP dipublikasikan pada loopback. Database, Redis, dan Kafka tidak memiliki port host. Aggregator memakai `source_net`, `store_net`, `edge_net`, dan `bus_net`; client-api tetap hanya di `edge_net`.
 
 Kredensial per service di `env/*.env` dan kunci lokal di `env/keys/*.pem` diabaikan Git. `env/demo-clients.json` memuat kredensial demo plaintext lokal; jangan masukkan ke evidence/log. `env/clients.json` hanya berisi hash SHA-256. Generator tidak merotasi kredensial yang sudah ada.
 

@@ -1,6 +1,6 @@
 # Envelope event kanonik — kontrak baseline
 
-**Status:** ingest A sudah menulis envelope ini sebagai snapshot outbox dalam transaksi yang sama dengan hazard. Topic Kafka tersedia; relay producer dan consumer bisnis belum diimplementasikan.
+**Status:** ingest A sudah menulis envelope ini sebagai snapshot outbox dalam transaksi yang sama dengan hazard. Relay producer dan tiga consumer sudah diimplementasikan. Detail operasional ada di [kontrak consumer](consumers.md).
 
 Topic: `bnpb.hazard-events.v1`. Key: `hazard_id`. Satu partisi, satu broker, replication factor 1, dan retensi tujuh hari pada baseline.
 

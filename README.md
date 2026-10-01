@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: fondasi dan ingest Aggregator (A) sudah berjalan serta diuji lokal.** Mock → canonical store → pending outbox tersedia, termasuk korelasi tsunami, deduplikasi, watermark, timeout, dan circuit breaker. Lihat [bukti ingest](docs/evidence/ingest/README.md) serta [fondasi](docs/evidence/foundation/README.md). Query/API internal (B), relay Kafka/consumer (C), dan jalur data ujung ke ujung masih perlu dikerjakan.
+**Status saat ini: fondasi, ingest Aggregator (3A), serta relay dan consumer (3C) tersedia.** Jalur event: mock → canonical store/outbox → Kafka → dashboard, notifier, dan pemda dengan SQLite masing-masing. Query/API internal dan kelengkapan client (3B) masih perlu dikerjakan. Lihat [bukti event](docs/evidence/events/README.md), [ingest](docs/evidence/ingest/README.md), dan [fondasi](docs/evidence/foundation/README.md).
 
 ## Cara membaca
 
@@ -55,7 +55,7 @@ A/B/C adalah pembagian kerja rancangan, belum nama anggota. Di Aggregator, A mem
 3. B: [HTTP internal Aggregator](docs/api/aggregator-http.md): route, filter, cursor, response, dan error.
 4. A/B/C: [port internal Aggregator](docs/api/aggregator-ports.md): UnitOfWork/Tx, HazardQuery, dan OutboxStore.
 
-Dokumen tersedia di [docs/api](docs/api/README.md), termasuk signature dan contoh payload. Implementasi port/skema A sudah tersedia; status B/C dibedakan pada dokumen masing-masing. Perubahan kontrak perlu diselaraskan dengan seluruh pemakai.
+Dokumen tersedia di [docs/api](docs/api/README.md), termasuk signature dan contoh payload. Implementasi port/skema A dan Store/Publisher C sudah tersedia; port query B masih berupa kontrak. Perubahan kontrak perlu diselaraskan dengan seluruh pemakai.
 
 ## Urutan implementasi
 
@@ -96,7 +96,7 @@ README komponen yang belum diimplementasikan tetap memuat rencana file dan konfi
 
 ## Status verifikasi
 
-Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Load/race test, query/relay/consumer, dan P1–P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
+Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Relay/consumer memiliki uji unit dan integrasi tersendiri; lihat [bukti event](docs/evidence/events/README.md). Load/race test, query B, dan P1–P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
 
 ## Dasar dan bantuan penulisan
 
