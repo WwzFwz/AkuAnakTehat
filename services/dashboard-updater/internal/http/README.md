@@ -1,36 +1,11 @@
 # http
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Endpoint pembacaan view lokal dan health consumer.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: handler.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+GET /health melaporkan proses hidup. GET /ready memeriksa SQLite dan Kafka dengan deadline total 2s; bukan jaminan lag nol. GET /view mengembalikan envelope mentah internal dengan limit 1..200 (default 100) dan cursor after eksklusif. Respons berbentuk {data: [...], next_cursor: "..."}; string kosong berarti halaman terakhir. Kegagalan DB menghasilkan 503, limit invalid 400. Port host hanya loopback, bukan API Media.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `router.go` | GET /view, /health, dan /ready. |
-| `handler.go` | Pembacaan view lokal dengan limit. |
-| `health.go` | Status proses, broker, dan view store. |
-
-## Kontrak dan alur
-
-- /view mengembalikan data dari SQLite milik consumer, bukan Canonical Store.
-
-## Dependensi
-
-- Port pembacaan application/store lokal.
-
-## Aturan penting
-
-- /health bukan bukti backlog sudah nol; freshness/lag dilaporkan terpisah.
-- Data view dapat memuat field raw; dashboard hanya bind127.0.0.1 pada host demo dan tetap dianggap internal.
-- Health dan log wajib tersedia meski tidak ada UI.
-
-## Langkah implementasi dan verifikasi
-
-- Sepakati semantik readiness saat Kafka tidak tersedia tetapi view lama masih bisa dibaca.
-- Buat respons health ringkas tanpa secret.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).
