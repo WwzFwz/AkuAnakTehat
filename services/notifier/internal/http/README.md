@@ -1,35 +1,11 @@
 # http
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Endpoint health internal notifier.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: handler.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+GET /health untuk liveness; GET /ready memeriksa SQLite dan Kafka dalam 2s. GET /processed mengembalikan ledger internal {data: [{event_id,hazard_id,version,alert,processed_at}], next_cursor}. limit 1..200 (default 100), after adalah event_id eksklusif. alert=true berarti simulator kirim telah dipanggil, bukan bukti penerimaan oleh pihak eksternal. Port hanya loopback.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `router.go` | GET /health dan /ready. |
-| `health.go` | Status proses, broker, dan dedup store. |
-
-## Kontrak dan alur
-
-- Endpoint tersedia di jaringan internal; tidak memerlukan port publik.
-
-## Dependensi
-
-- Status worker dan store lokal.
-
-## Aturan penting
-
-- /health bukan bukti backlog sudah nol; freshness/lag dilaporkan terpisah.
-- Tidak menyediakan endpoint untuk menerbitkan notifikasi bebas.
-- Health dan log wajib tersedia meski tidak ada UI.
-
-## Langkah implementasi dan verifikasi
-
-- Sepakati semantik readiness saat Kafka tidak tersedia tetapi view lama masih bisa dibaca.
-- Buat respons health ringkas tanpa secret.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).

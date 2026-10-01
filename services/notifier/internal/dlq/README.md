@@ -1,37 +1,11 @@
 # dlq
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Penerbitan pesan gagal dengan konteks asal consumer.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: record.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+Membangun record DLQ dengan key/value asli dan header consumer_group, failure_reason, attempts, source_topic, source_partition, source_offset, correlation_id. Consumer menunggu ACK lalu commit offset asal; payload tidak dibungkus ulang. Uji metadata ada di consumer/consumer_test.go.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `message.go` | Payload asli serta group/reason/attempt/topic/partition/offset/correlation ID. |
-| `publisher.go` | Publish DLQ dan tunggu ACK Kafka. |
-
-## Kontrak dan alur
-
-- Publish(ctx,failedMessage) mengembalikan sukses hanya setelah ACK.
-- Topic rancangan: bnpb.hazard-events.v1.dlq.
-
-## Dependensi
-
-- Kafka client lokal; dipanggil consumer setelah retry terbatas.
-
-## Aturan penting
-
-- Commit offset asal dilakukan sesudah publish DLQ berhasil.
-- DLQ dapat berisi duplikat jika crash setelah publish sebelum commit.
-- Masuk DLQ berarti efek bisnis belum berhasil, bukan notifikasi terkirim.
-- Alasan gagal tidak memuat kredensial.
-
-## Langkah implementasi dan verifikasi
-
-- Finalisasi metadata dan klasifikasi retryable/permanent.
-- Verifikasi broker gagal saat publish DLQ tidak membuat consumer melompati event.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).

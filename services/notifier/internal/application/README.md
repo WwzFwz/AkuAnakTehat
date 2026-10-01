@@ -1,36 +1,11 @@
 # application
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Keputusan pengiriman peringatan dan dedup per versi.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: apply.go, apply_test.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+Service.Handle memeriksa dedup (hazard_id, version), mengirim simulasi hanya untuk SIAGA/AWAS, lalu menulis marker persisten. NORMAL/WASPADA tetap dicatat sebagai selesai tanpa kirim. Crash setelah kirim sebelum marker dapat menghasilkan duplikat; tidak ada klaim exactly-once. Pemrosesan sequential oleh satu instance pemilik SQLite.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `notifier.go` | Cek duplikat, periksa severity, kirim, catat. |
-| `ports.go` | DedupStore dan Sender. |
-
-## Kontrak dan alur
-
-- Handle(ctx,event); Seen/Record(hazard_id,version); Send(ctx,event).
-
-## Dependensi
-
-- contract; dedup dan sender mengimplementasikan port application.
-
-## Aturan penting
-
-- SIAGA/AWAS memicu peringatan; enum dibandingkan dengan urutan eksplisit, bukan urutan string.
-- Kirim dahulu lalu catat; crash di celah ini boleh menduplikasi notifikasi.
-- Duplikat berarti pasangan hazard_id/version sama; versi baru adalah perubahan sah.
-- Application tidak meng-commit offset; consumer melakukannya setelah hasil sukses.
-
-## Langkah implementasi dan verifikasi
-
-- Sepakati apa yang dicatat untuk event non-alert dan event duplikat.
-- Verifikasi SIAGA→AWAS menghasilkan dua peringatan sah.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).

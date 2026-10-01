@@ -1,0 +1,128 @@
+package consumer
+
+import (
+	"context"
+	"errors"
+	"example.com/akuanaktehat/notifier/internal/config"
+	"example.com/akuanaktehat/notifier/internal/contract"
+	"example.com/akuanaktehat/notifier/internal/dlq"
+	"github.com/twmb/franz-go/pkg/kgo"
+	"log/slog"
+	"time"
+)
+
+type Processor interface {
+	Handle(context.Context, contract.Event) error
+}
+
+// Delivery makes the acknowledgement boundary explicit and testable.
+type Delivery interface {
+	DeadLetter(context.Context, *kgo.Record, string, int) error
+	Commit(context.Context, *kgo.Record) error
+}
+type Consumer struct {
+	Client    *kgo.Client
+	Config    config.Config
+	Processor Processor
+	Logger    *slog.Logger
+}
+
+func New(c config.Config, p Processor, l *slog.Logger) (*Consumer, error) {
+	client, err := kgo.NewClient(kgo.SeedBrokers(c.Brokers...), kgo.ConsumerGroup(c.Group), kgo.ConsumeTopics(c.Topic), kgo.DisableAutoCommit(), kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()), kgo.BlockRebalanceOnPoll(), kgo.RebalanceTimeout(60*time.Second), kgo.FetchMaxBytes(2<<20), kgo.RequiredAcks(kgo.AllISRAcks()), kgo.RecordDeliveryTimeout(5*time.Second), kgo.DialTimeout(2*time.Second))
+	if err != nil {
+		return nil, errors.New("invalid Kafka consumer configuration")
+	}
+	return &Consumer{client, c, p, l}, nil
+}
+func (c *Consumer) Run(ctx context.Context) error {
+	for ctx.Err() == nil {
+		fetched := c.Client.PollRecords(ctx, 1)
+		if ctx.Err() != nil {
+			c.Client.AllowRebalance()
+			return ctx.Err()
+		}
+		if len(fetched.Errors()) > 0 {
+			c.Client.AllowRebalance()
+			return errors.New("kafka_fetch_failed")
+		}
+		records := fetched.Records()
+		for _, r := range records {
+			err := Process(ctx, r, c.Processor, c, c.Config.Attempts, c.Config.Timeout)
+			if err != nil {
+				c.Client.AllowRebalance()
+				return err
+			}
+		}
+		c.Client.AllowRebalance()
+	}
+	return ctx.Err()
+}
+
+// One record at a time: a failure cannot be hidden by committing a later offset.
+func Process(ctx context.Context, r *kgo.Record, p Processor, d Delivery, attempts int, timeout time.Duration) error {
+	e, err := contract.Decode(r.Key, r.Value)
+	reason := "invalid_event"
+	used := 1
+	if err == nil {
+		reason = "processing_failed"
+		for used = 1; used <= attempts; used++ {
+			attempt, cancel := context.WithTimeout(ctx, timeout)
+			err = p.Handle(attempt, e)
+			cancel()
+			if err == nil {
+				break
+			}
+			if ctx.Err() != nil {
+				return ctx.Err()
+			}
+			if used < attempts {
+				timer := time.NewTimer(200 * time.Millisecond)
+				select {
+				case <-ctx.Done():
+					timer.Stop()
+					return ctx.Err()
+				case <-timer.C:
+				}
+			}
+		}
+		if used > attempts {
+			used = attempts
+		}
+	}
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	if err != nil {
+		if err = d.DeadLetter(ctx, r, reason, used); err != nil {
+			return err
+		}
+	}
+	return d.Commit(ctx, r)
+}
+func (c *Consumer) DeadLetter(ctx context.Context, r *kgo.Record, reason string, attempts int) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	record := dlq.Record(r, c.Config.DLQ, c.Config.Group, reason, attempts)
+	result := make(chan error, 1)
+	c.Client.Produce(ctx, record, func(_ *kgo.Record, err error) { result <- err })
+	select {
+	case <-ctx.Done():
+		return errors.New("dlq_publish_timeout")
+	case err := <-result:
+		if err != nil {
+			return errors.New("dlq_publish_failed")
+		}
+	}
+	c.Logger.Warn("event_dead_lettered", "consumer_group", c.Config.Group, "source_partition", r.Partition, "source_offset", r.Offset, "reason", reason, "attempts", attempts)
+	return nil
+}
+func (c *Consumer) Commit(ctx context.Context, r *kgo.Record) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	if err := c.Client.CommitRecords(ctx, r); err != nil {
+		return errors.New("offset_commit_failed")
+	}
+	return nil
+}
+func (c *Consumer) Ping(ctx context.Context) error { return c.Client.Ping(ctx) }
+func (c *Consumer) Close()                         { c.Client.Close() }

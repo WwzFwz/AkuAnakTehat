@@ -1,38 +1,29 @@
 # notifier
 
-[Peta repository](../../README.md) · [Kontrak integrasi](../../docs/api/README.md)
+[Peta repository](../../README.md) · [Kontrak](../../docs/api/consumers.md)
 
-Consumer notifikasi SIAGA/AWAS dengan dedup persisten.
+Notifikasi SIAGA/AWAS dengan dedup persisten dan pengiriman simulasi.
 
-**Pemilik utama:** C. **Port rencana:** 8092. Semua komponen masih berupa dokumentasi; tidak ada binary, module Go, Dockerfile, atau endpoint yang sudah berjalan.
+**Pemilik:** C. **Status:** implementasi 3C tersedia. Go 1.24.2; franz-go 1.18.1; modernc SQLite 1.36.1. Satu module dan image mandiri, runtime non-root 10001, tanpa shared business package.
+
+`docker compose up -d --build notifier` dari root menjalankan service bersama dependensi Kafka.
+
+Group default `notifier`, topic `bnpb.hazard-events.v1`; terhubung ke bus_net dan consumer_net untuk port demo loopback. Named volume `notifier-data` mempertahankan SQLite setelah restart. Jalankan satu instance untuk satu volume; menghapus SQLite tanpa mengatur ulang offset Kafka tidak membangun ulang view secara otomatis.
+
+Endpoint internal: `http://127.0.0.1:8092/health`, `/ready`, `/processed`. Endpoint baca memiliki pagination; detail konfigurasi dan respons ada di [kontrak consumer](../../docs/api/consumers.md).
 
 ## Komponen
 
-| Folder | Pemilik | Tahap | Tujuan |
-| --- | --- | --- | --- |
-| [`cmd/notifier`](cmd/notifier/README.md) | C | Inti/pendukung | Composition root notifier; tempat merangkai seluruh dependensi runtime. |
-| [`internal/config`](internal/config/README.md) | C | Inti/pendukung | Konfigurasi lokal notifier; nama variabel berikut adalah usulan yang perlu disepakati. |
-| [`internal/contract`](internal/contract/README.md) | C | Inti/pendukung | Kontrak event milik notifier; salinan lokal yang kompatibel dengan envelope producer. |
-| [`internal/consumer`](internal/consumer/README.md) | C | Inti/pendukung | Loop konsumsi Kafka independen untuk notifier. |
-| [`internal/application`](internal/application/README.md) | C | Inti/pendukung | Keputusan pengiriman peringatan dan dedup per versi. |
-| [`internal/dedup`](internal/dedup/README.md) | C | Inti/pendukung | Pencatatan pasangan hazard_id/version yang sudah selesai diproses notifier. |
-| [`internal/sender`](internal/sender/README.md) | C | Inti/pendukung | Adapter simulasi pengiriman peringatan. |
-| [`internal/dlq`](internal/dlq/README.md) | C | Inti/pendukung | Penerbitan pesan gagal dengan konteks asal consumer. |
-| [`internal/http`](internal/http/README.md) | C | Inti/pendukung | Endpoint health internal notifier. |
+- [cmd/notifier](cmd/notifier/README.md): lifecycle dan wiring.
+- [config](internal/config/README.md): config.go.
+- [contract](internal/contract/README.md): event.go, event_test.go.
+- [consumer](internal/consumer/README.md): consumer.go, consumer_test.go.
+- [application](internal/application/README.md): apply.go, apply_test.go.
+- [http](internal/http/README.md): handler.go.
+- [dedup](internal/dedup/README.md): sqlite.go.
+- [sender](internal/sender/README.md): log.go.
+- [dlq](internal/dlq/README.md): record.go.
 
-## Berkas tingkat service yang direncanakan
+## Verifikasi
 
-| File | Tanggung jawab |
-| --- | --- |
-| `go.mod` | Satu module mandiri untuk service ini; versi Go dipilih dan dipin saat implementasi. |
-| `Dockerfile` | Build dengan konteks folder service sendiri dan runtime minimal non-root. |
-| `.dockerignore` | Mengecualikan secret, artefak lokal, dan berkas yang tidak diperlukan saat build. |
-
-## Batas dan urutan kerja
-
-- Tidak meng-import business logic atau DTO dari module service lain.
-- Interface kecil didefinisikan oleh package pemakai; concrete adapter dirangkai melalui composition root.
-- Sepakati kontrak → implementasikan jalur inti → hubungkan dependensi → jalankan skenario tugas → kumpulkan bukti.
-- Timeout lokal, batas konkurensi yang relevan, health, log terstruktur, dan correlation ID termasuk baseline.
-- Cache, LISTEN/NOTIFY, schema_observations, dan propagasi deadline lewat header adalah tambahan; jangan menjadikannya prasyarat fungsi inti.
-- Service dapat dimulai sebagai proses sendiri; kesiapan dependensi dilaporkan oleh readiness. Jangan mengembalikan sukses palsu untuk fitur yang belum dibuat.
+`go test ./...` dan `go vet ./...` dari folder service. `make events-check` dari root menguji aliran sumber, replay, restart, DLQ, subscriber tambahan, consumer offline, serta outage broker. [Hasil](../../docs/evidence/events/README.md).
