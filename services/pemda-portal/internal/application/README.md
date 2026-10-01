@@ -1,35 +1,11 @@
 # application
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Penerapan event ke view hazard terbaru milik consumer.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: apply.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+Service.Handle meneruskan event valid ke port View.Apply. Adapter melakukan satu UPSERT atomik yang hanya mengganti baris ketika version masuk lebih tinggi. Tidak ada request ke Aggregator.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `updater.go` | Terima event dan terapkan hanya versi yang lebih baru. |
-| `ports.go` | ViewStore untuk update atomik dan query view. |
-
-## Kontrak dan alur
-
-- Handle(ctx,event); ApplyIfNewer(ctx,event); List(ctx,limit/cursor).
-
-## Dependensi
-
-- contract; store SQLite mengimplementasikan port application.
-
-## Aturan penting
-
-- Update payload dan version dalam satu transaksi SQLite.
-- Versi lebih kecil/sama diabaikan; jangan menimpa view baru dengan replay lama.
-- Tidak meng-commit offset di application; pengaturan transport berada di consumer.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan upsert bersyarat versi.
-- Verifikasi crash sebelum/sesudah transaksi dan restart dengan volume tetap.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).

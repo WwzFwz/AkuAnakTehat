@@ -1,41 +1,11 @@
 # consumer
 
-[Panduan service](../../README.md) · [Peta repository](../../../../README.md)
+[Panduan service](../../README.md) · [Kontrak consumer](../../../../docs/api/consumers.md)
 
-Loop konsumsi Kafka independen untuk pemda-portal.
+**Pemilik:** C. **Status:** diimplementasikan.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Berkas: consumer.go, consumer_test.go.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+franz-go membaca satu record setiap poll dengan auto-commit dimatikan dan rebalance ditahan selama proses. Efek bisnis dicoba maksimum tiga kali dengan timeout lokal 2s per percobaan dan jeda 200ms. Input invalid langsung ke DLQ. Commit offset hanya sesudah efek persisten selesai atau DLQ di-ACK. Kegagalan DLQ/commit menghentikan proses sehingga restart mengulang offset; tidak melompati record gagal. Group baru membaca dari earliest yang masih tersedia. Group lama melanjutkan offset tersimpan.
 
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `consumer.go` | Koneksi franz-go, subscription, rebalance, dan shutdown. |
-| `processor.go` | Decode lalu panggil application secara berurutan per partisi. |
-| `retry.go` | Retry terbatas dan jalur DLQ setelah kegagalan berulang. |
-| `logging.go` | Log event/offset/correlation ID dan latensi outbound. |
-
-## Kontrak dan alur
-
-- Run(ctx) berlangganan topic bnpb.hazard-events.v1.
-- Port processor: Handle(ctx, event); commit manual mengikuti hasil pemrosesan.
-- Group yang berbeda wajib dipakai dashboard, notifier, dan pemda.
-
-## Dependensi
-
-- contract, application, dan publisher DLQ lokal. Tidak menghubungi Canonical Store.
-
-## Aturan penting
-
-- Offset selesai hanya sesudah efek bisnis persisten atau setelah ACK publish DLQ.
-- Jangan commit melewati pesan sebelumnya yang belum selesai.
-- Earliest berlaku untuk group tanpa offset valid, bukan replay otomatis setiap restart.
-- Rebalance/shutdown tidak boleh meng-commit pekerjaan yang belum selesai.
-
-## Langkah implementasi dan verifikasi
-
-- Implementasikan konsumsi satu partisi dahulu.
-- Verifikasi stop/start consumer, backlog catch-up, dan duplikat setelah crash.
-- Untuk dashboard/pemda, publisher DLQ dapat berupa file lokal di package ini; tidak meng-import kode notifier.
+Jalankan `go test ./...` dan `go vet ./...` dari module service. Integrasi Kafka/SQLite diuji melalui `make events-check` dari root; lihat [bukti](../../../../docs/evidence/events/README.md).
