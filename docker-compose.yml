@@ -20,9 +20,55 @@ services:
     depends_on:
       canonical-db:
         condition: service_healthy
-    networks: [source_net, store_net, edge_net]
+    networks: [source_net, store_net, edge_net, bus_net]
     healthcheck:
       test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9000/ready/ingest']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  dashboard-updater:
+    build: ./services/dashboard-updater
+    ports: ['127.0.0.1:8091:8091']
+    volumes: [dashboard-data:/data]
+    networks: [bus_net, consumer_net]
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8091/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  notifier:
+    build: ./services/notifier
+    ports: ['127.0.0.1:8092:8092']
+    volumes: [notifier-data:/data]
+    networks: [bus_net, consumer_net]
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8092/ready']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+  pemda-portal:
+    profiles: [demo]
+    build: ./services/pemda-portal
+    ports: ['127.0.0.1:8093:8093']
+    volumes: [pemda-data:/data]
+    networks: [bus_net, consumer_net]
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:8093/ready']
       interval: 5s
       timeout: 3s
       retries: 12
@@ -165,6 +211,8 @@ networks:
     internal: true
   auth_net:
   edge_net:
+  # Non-internal network enables loopback port publishing on Docker Desktop.
+  consumer_net:
   bus_net:
     internal: true
 
@@ -172,3 +220,6 @@ volumes:
   canonical-data:
   auth-data:
   kafka-data:
+  dashboard-data:
+  notifier-data:
+  pemda-data:

@@ -6,4 +6,7 @@ use (
 	./services/pvmbg-mock
 	./services/auth-service
 	./services/client-api
+	./services/dashboard-updater
+	./services/notifier
+	./services/pemda-portal
 )

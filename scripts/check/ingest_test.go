@@ -28,8 +28,8 @@ func TestIngestPipeline(t *testing.T) {
 		return query(`SELECT count(DISTINCT source)=2 FROM hazard_events;`) == "t" && query(`SELECT count(*)=3 FROM checkpoints;`) == "t"
 	})
 	wait("both sources healthy", func() bool { return query(`SELECT bool_and(status='HEALTHY') FROM source_status;`) == "t" })
-	if query(`SELECT count(*)>0 AND bool_and(published_at IS NULL) FROM outbox;`) != "t" {
-		t.Fatal("ingest must create pending outbox; relay is not implemented")
+	if query(`SELECT count(*)>0 FROM outbox;`) != "t" {
+		t.Fatal("ingest must create outbox snapshots")
 	}
 	if query(`SELECT count(*) FROM outbox WHERE payload->>'hazard_id'<>hazard_id::text OR (payload->>'version')::bigint<>version OR payload->'hazard'->>'hazard_id'<>hazard_id::text;`) != "0" {
 		t.Fatal("outbox envelope differs from row identity")

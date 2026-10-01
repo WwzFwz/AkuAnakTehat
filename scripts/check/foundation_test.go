@@ -403,19 +403,22 @@ func TestJWTClaimValidation(t *testing.T) {
 		t.Fatal("invalid key type")
 	}
 	for _, field := range []string{"exp", "aud", "iss", "iat"} {
-		claims := map[string]any{"iss": "bnpb-auth", "aud": "bnpb-api", "sub": "media", "jti": "foundation-test", "scope": "hazard:read:summary", "iat": time.Now().Add(-time.Minute).Unix(), "exp": time.Now().Add(time.Minute).Unix()}
-		switch field {
-		case "exp":
-			claims[field] = time.Now().Add(-time.Second).Unix()
-		case "iat":
-			claims[field] = time.Now().Add(time.Minute).Unix()
-		default:
-			claims[field] = "wrong"
-		}
-		payload, _ := json.Marshal(claims)
-		unsigned := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"EdDSA","typ":"JWT"}`)) + "." + base64.RawURLEncoding.EncodeToString(payload)
-		token := unsigned + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(priv, []byte(unsigned)))
-		status(t, request(t, "GET", api+"/v1/hazards", "", map[string]string{"Authorization": "Bearer " + token}), 401)
+		t.Run(field, func(t *testing.T) {
+			claims := map[string]any{"iss": "bnpb-auth", "aud": "bnpb-api", "sub": "media", "jti": "foundation-test", "scope": "hazard:read:summary", "iat": time.Now().Add(-time.Minute).Unix(), "exp": time.Now().Add(time.Minute).Unix()}
+			switch field {
+			case "exp":
+				// Avoid a one-second boundary across the host and Docker VM clocks.
+				claims[field] = time.Now().Add(-5 * time.Minute).Unix()
+			case "iat":
+				claims[field] = time.Now().Add(time.Minute).Unix()
+			default:
+				claims[field] = "wrong"
+			}
+			payload, _ := json.Marshal(claims)
+			unsigned := base64.RawURLEncoding.EncodeToString([]byte(`{"alg":"EdDSA","typ":"JWT"}`)) + "." + base64.RawURLEncoding.EncodeToString(payload)
+			token := unsigned + "." + base64.RawURLEncoding.EncodeToString(ed25519.Sign(priv, []byte(unsigned)))
+			status(t, request(t, "GET", api+"/v1/hazards", "", map[string]string{"Authorization": "Bearer " + token}), 401)
+		})
 	}
 }
 

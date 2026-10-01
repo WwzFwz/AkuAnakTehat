@@ -7,7 +7,7 @@ permissions:
 jobs:
   go:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -38,12 +38,18 @@ jobs:
           GOTOOLCHAIN: local
           GOWORK: 'off'
         run: go test ./scripts/check/foundation_test.go ./scripts/check/ingest_test.go -run TestIngestPipeline -v -count=1 -timeout=5m
+      - name: Test Kafka delivery, SQLite replay, DLQ, and recovery
+        env:
+          GOTELEMETRY: 'off'
+          GOTOOLCHAIN: local
+          GOWORK: 'off'
+        run: make events-check
       - name: Inspect service state
         if: always()
         run: docker compose ps -a
       - name: Stop foundation stack
         if: always()
-        run: docker compose down
+        run: docker compose --profile demo down
   secrets:
     runs-on: ubuntu-latest
     steps:
