@@ -6,7 +6,7 @@ Implementasi penyimpanan Aggregator, dengan pemisahan kepemilikan file untuk tra
 
 **Pemilik rencana:** A/B/C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `ingest_integration_test.go`, `ingest_repository.go`, `migrate.go`, `pool.go`, `unit_of_work.go`. Cakupan pengujian ada di [bukti ingest](../../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia. `outbox_repository.go` (C) sudah tersedia: pending urut id, mark ACK idempoten, cleanup published saja. Repository query (B) belum dibuat.
+**Status:** jalur A dan repository query B sudah diimplementasikan. Berkas query tersedia pada `query_repository.go`; `outbox_repository.go` (C) menyediakan pending urut id, mark ACK idempoten, dan cleanup published saja. Cakupan pengujian ada di [bukti ingest](../../../../../../docs/evidence/ingest/README.md).
 
 ## Rencana file
 

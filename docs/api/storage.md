@@ -16,14 +16,14 @@
 | --- | --- |
 | hazard_events | UUID hazard_id PK; unique(source,source_ref_id); field kanonik bertipe; attributes JSONB; version/content_hash/updated_at/last_seen_at internal; koordinat NOT NULL. |
 | outbox | ID urut; event_id UUID unique; hazard_id/version; snapshot payload JSONB; created_at; published_at nullable untuk ACK. |
-| source_status | Status dan waktu sukses/percobaan terakhir; sumber yang sedang down tetap dapat mempunyai data historis. |
+| source_status | Status, waktu sukses/percobaan terakhir, dan awal stale; sumber yang sedang down tetap dapat mempunyai data historis. |
 | source_endpoint_status | State sehat, kegagalan berurutan, dan waktu polling masing-masing endpoint; mencegah keberhasilan satu endpoint menutupi kegagalan endpoint lain. |
 | checkpoints | PK endpoint; watermark UTC, diperbarui bersama transaksi batch terkait. |
 | tsunami_warnings | warning_id unik, related_event_id, seluruh data warning yang diperlukan untuk korelasi ulang. |
 | quarantine | Payload invalid, sumber/endpoint, alasan, correlation_id, dan waktu pencatatan. |
 | schema_migrations | Dikelola migration runner; bukan tabel yang dibuat ulang oleh service lain. |
 
-Migrasi tersedia di `services/aggregator/migrations/001_initial.up.sql` dan pasangan `.down.sql`, dijalankan dengan golang-migrate/iofs. Referensi `VOLCANO-DEMO-01`/`VOLCANO-DEMO-02` tersedia pada `reference/volcanoes.json`; nama/koordinat berlabel sintetis.
+Migrasi tersedia di `services/aggregator/migrations/001_initial.up.sql` dan `002_source_status_stale_since.up.sql` beserta pasangan `.down.sql`, dijalankan dengan golang-migrate/iofs. Referensi `VOLCANO-DEMO-01`/`VOLCANO-DEMO-02` tersedia pada `reference/volcanoes.json`; nama/koordinat berlabel sintetis.
 
 ## Detail field untuk kontrak repository
 
@@ -38,7 +38,7 @@ Waktu kanonik dinormalisasi ke mikrodetik agar hash stabil setelah round-trip Po
 | checkpoints | endpoint TEXT PK; watermark TIMESTAMPTZ NOT NULL. |
 | tsunami_warnings | warning_id TEXT PK; related_event_id TEXT NOT NULL; payload JSONB NOT NULL; updated_at TIMESTAMPTZ NOT NULL. Payload mempertahankan seluruh field warning dan unknown fields. |
 | quarantine | id BIGSERIAL PK; source/endpoint/reason/correlation_id TEXT NOT NULL; payload JSONB NOT NULL; observed_at TIMESTAMPTZ NOT NULL. |
-| source_status | source TEXT PK; status TEXT NOT NULL; last_success_at TIMESTAMPTZ NULL; last_attempt_at TIMESTAMPTZ NULL; consecutive_failures INTEGER NOT NULL default 0; last_error TEXT NULL. |
+| source_status | source TEXT PK; status TEXT NOT NULL; last_success_at TIMESTAMPTZ NULL; last_attempt_at TIMESTAMPTZ NULL; stale_since TIMESTAMPTZ NULL; consecutive_failures INTEGER NOT NULL default 0; last_error TEXT NULL. |
 
 Constraint: source hanya BMKG/PVMBG; hazard_type hanya SEISMIC/VOLCANIC; severity hanya NORMAL/WASPADA/SIAGA/AWAS; version positif; unique(source,source_ref_id). Warning boleh mendahului gempa sehingga related_event_id tidak memakai FK yang mewajibkan hazard sudah tersedia.
 

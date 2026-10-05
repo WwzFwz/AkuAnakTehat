@@ -140,7 +140,7 @@ func (s *Store) RecordPoll(ctx context.Context, endpoint string, ok, degraded bo
 	if err != nil {
 		return err
 	}
-	_, err = tx.Exec(ctx, `UPDATE source_status SET status=s.state,last_attempt_at=$2,last_success_at=CASE WHEN s.state='HEALTHY' THEN s.success ELSE source_status.last_success_at END,consecutive_failures=s.failures,last_error=s.error FROM (SELECT CASE WHEN bool_and(healthy) THEN 'HEALTHY' WHEN bool_or(healthy) OR bool_or(consecutive_failures=0 AND last_success_at IS NOT NULL) THEN 'DEGRADED' ELSE 'DOWN' END state,min(last_success_at) success,sum(consecutive_failures)::int failures,max(last_error) error FROM source_endpoint_status WHERE source=$1) s WHERE source_status.source=$1`, source, at)
+	_, err = tx.Exec(ctx, `UPDATE source_status SET status=s.state,last_attempt_at=$2,last_success_at=CASE WHEN s.state='HEALTHY' THEN s.success ELSE source_status.last_success_at END,stale_since=CASE WHEN s.state='HEALTHY' THEN NULL WHEN source_status.stale_since IS NULL THEN $2 ELSE source_status.stale_since END,consecutive_failures=s.failures,last_error=s.error FROM (SELECT CASE WHEN bool_and(healthy) THEN 'HEALTHY' WHEN bool_or(healthy) OR bool_or(consecutive_failures=0 AND last_success_at IS NOT NULL) THEN 'DEGRADED' ELSE 'DOWN' END state,min(last_success_at) success,sum(consecutive_failures)::int failures,max(last_error) error FROM source_endpoint_status WHERE source=$1) s WHERE source_status.source=$1`, source, at)
 	if err != nil {
 		return err
 	}

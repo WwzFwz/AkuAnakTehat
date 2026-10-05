@@ -4,7 +4,7 @@
 
 Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 
-**Pemilik utama:** A. **Port internal:** 9000. Jalur ingest A sudah berjalan: mock → tolerant reader → canonicalize/korelasi → transaksi PostgreSQL → pending outbox. Relay Kafka (C) sudah aktif; tiga consumer tersedia terpisah. Query/API internal (B) belum diimplementasikan. [Bukti pengujian](../../docs/evidence/ingest/README.md).
+**Pemilik utama:** A. **Port internal:** 9000. Jalur ingest A sudah berjalan: mock → tolerant reader → canonicalize/korelasi → transaksi PostgreSQL → pending outbox. Relay Kafka (C) sudah aktif; tiga consumer tersedia terpisah. Application query dan repository PostgreSQL B sudah tersedia; HTTP API internal masih menunggu Tahap 3. [Bukti pengujian](../../docs/evidence/ingest/README.md).
 
 ## Komponen
 
@@ -51,7 +51,7 @@ Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
 `docker compose up -d --build --wait aggregator` menjalankan migrasi embedded dan dua worker sumber. Jalankan mock melalui `make up` atau Compose root agar polling berhasil. Tidak ada port host Aggregator; koneksi hanya pada network source/store/edge/bus.
 
 - `/health`: liveness. `/ready/ingest`: DB dapat diakses.
-- `/ready` dan `/internal/hazards...` masih 503 `query_not_implemented`, sehingga client-api tidak menganggap query sudah siap.
+- `/internal/hazards...` masih 503 `query_not_implemented` sampai Tahap 3; application query di belakangnya sudah dapat membaca Canonical Store.
 - BMKG 2s, PVMBG 5s, jitter maksimum 10%, overlap 10s. HTTP timeout BMKG 1s/PVMBG 4s; transaksi DB 2s. Satu siklus tidak overlap dengan siklus berikutnya.
 - Checkpoint kosong mengambil seluruh histori seed. Berikutnya memakai waktu mulai request sukses dikurangi overlap; mock warning harus menafsirkan since sebagai waktu perubahan dan jam sumber harus selaras.
 - Deployment tahap ini satu instance Aggregator. Tidak ada koordinasi leader polling untuk banyak replica.

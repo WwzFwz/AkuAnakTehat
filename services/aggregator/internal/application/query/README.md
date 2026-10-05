@@ -6,7 +6,7 @@ Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** application query dan port sudah diimplementasikan. HTTP inbound masih menunggu Tahap 3.
 
 ## Rencana file
 
@@ -14,7 +14,7 @@ Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan
 | --- | --- |
 | `service.go` | List/get hazard melalui port baca. |
 | `ports.go` | HazardQuery sebagai kebutuhan pembacaan application. |
-| `filter.go` | Filter tipe/severity/since, limit, dan cursor. |
+| `filter.go` | Filter tipe/severity/since, limit, dan cursor opaque. |
 | `result.go` | Page result dan metadata freshness per sumber. |
 
 ## Kontrak dan alur
@@ -35,5 +35,5 @@ Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan
 
 ## Langkah implementasi dan verifikasi
 
-- Sepakati DTO respons dengan client-api.
+- DTO respons sudah mengikuti kontrak Aggregator HTTP dan client-api.
 - Tentukan perilaku endpoint gabungan saat satu sumber belum punya data.

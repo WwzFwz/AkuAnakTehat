@@ -6,7 +6,7 @@ Skema berversi Canonical Store; dimiliki dan dijalankan oleh Aggregator.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `001_initial.down.sql`, `001_initial.up.sql`, `embed.go`. Cakupan pengujian ada di [bukti ingest](../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
+**Status:** jalur A dan migration pendukung query B sudah diimplementasikan. Migration awal dan `002_source_status_stale_since` tersedia; cakupan pengujian ada di [bukti ingest](../../../docs/evidence/ingest/README.md).
 
 ## Rencana file
 
@@ -28,6 +28,7 @@ Skema berversi Canonical Store; dimiliki dan dijalankan oleh Aggregator.
 ## Aturan penting
 
 - attributes JSONB menerima confidence_level tanpa ALTER TABLE.
+- `source_status.stale_since` mencatat awal status non-healthy untuk metadata freshness query.
 - UNIQUE(source, source_ref_id); koordinat kanonik NOT NULL.
 - Outbox menyimpan payload per versi, bukan mengambil isi hazard terbaru saat publish.
 - Skema checkpoint harus benar-benar dibuat; watermark bukan hanya state memori.
