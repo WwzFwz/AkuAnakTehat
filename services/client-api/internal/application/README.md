@@ -6,7 +6,7 @@ Orkestrasi baca downstream: otorisasi, panggil Aggregator, lalu proyeksi.
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `service.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
+**Status:** orchestration list/get, upstream port, authorization, dan projection sudah diimplementasikan. Bukti runtime end-to-end dan P1-P5 lengkap masih terpisah.
 
 ## Rencana file
 

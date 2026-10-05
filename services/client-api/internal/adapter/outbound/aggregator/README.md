@@ -6,7 +6,7 @@ Klien HTTP untuk API internal Aggregator.
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `client.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
+**Status:** HTTP client Aggregator sudah diimplementasikan, termasuk timeout total, retry koneksi terbatas, validasi response, correlation ID, dan klasifikasi error. Bukti P1-P5 lengkap masih terpisah.
 
 ## Rencana file
 
@@ -33,5 +33,5 @@ Klien HTTP untuk API internal Aggregator.
 
 ## Langkah implementasi dan verifikasi
 
-- Implementasikan validasi respons, batas ukuran, penutupan body, dan pengukuran latensi.
+- Validasi respons, batas ukuran, penutupan body, timeout total, dan klasifikasi error sudah diimplementasikan.
 - Verifikasi Aggregator unavailable tidak membuat request menggantung.

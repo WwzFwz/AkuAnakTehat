@@ -25,7 +25,7 @@ Konfigurasi ingest Aggregator; `config.go` adalah sumber nama dan nilai default 
 - BMKG_API_KEY dan PVMBG_TOKEN: kredensial wajib sumber, terpisah.
 - POLL_OVERLAP=10s, DB_TIMEOUT=2s, DB_POOL_SIZE=5 (2–20).
 - BREAKER_FAILURES=3 dan BREAKER_COOLDOWN=10s, per endpoint; probe berikutnya pulih tanpa restart.
-- KAFKA_BROKERS/KAFKA_TOPIC aktif untuk relay C; KAFKA_PUBLISH_TIMEOUT=5s, OUTBOX_POLL_INTERVAL=1s, OUTBOX_RETENTION=24h. Pool relay terpisah 2 koneksi. INTERNAL_KEY belum dipakai hingga query B tersedia.
+- KAFKA_BROKERS/KAFKA_TOPIC aktif untuk relay C; KAFKA_PUBLISH_TIMEOUT=5s, OUTBOX_POLL_INTERVAL=1s, OUTBOX_RETENTION=24h. Pool relay terpisah 2 koneksi. INTERNAL_KEY wajib untuk API query B; QUERY_DB_POOL_SIZE default3 membatasi pool baca terpisah.
 - Fitur tambahan schema_observations dan LISTEN/NOTIFY belum diimplementasikan.
 
 ## Dependensi
@@ -40,5 +40,5 @@ Konfigurasi ingest Aggregator; `config.go` adalah sumber nama dan nilai default 
 
 ## Langkah implementasi dan verifikasi
 
-- Finalisasi nama env di .env.example saat file itu dibuat.
+- Nama env query dan internal key tercatat pada `.env.example` serta generator secret.
 - Pisahkan error konfigurasi dari dependensi yang sementara unavailable.

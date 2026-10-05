@@ -6,7 +6,7 @@ Composition root aggregator; tempat merangkai seluruh dependensi runtime.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** jalur A dan wiring relay C sudah diimplementasikan. Main membuka pool relay terpisah dan producer, lalu menjalankan relay bersama poller; Kafka unavailable tidak menghalangi startup ingest. Berkas tersedia: `main.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
+**Status:** jalur A, wiring relay C, dan wiring query HTTP B sudah diimplementasikan. Main membuka pool ingest, relay, dan baca terpisah, lalu menjalankan seluruh worker serta readiness query. Berkas tersedia: `main.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md).
 
 ## Rencana file
 

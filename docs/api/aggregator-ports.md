@@ -1,6 +1,6 @@
 # Port internal Aggregator — kontrak baseline
 
-**Status:** port UnitOfWork/Tx, checkpoint, dan status sudah diimplementasikan untuk jalur A. Store/Publisher pada worker/outbox sudah diimplementasikan untuk C; HazardQuery dan repository baca sudah diimplementasikan untuk tahap B. HTTP inbound masih tahap berikutnya.
+**Status:** port UnitOfWork/Tx, checkpoint, dan status sudah diimplementasikan untuk jalur A. Store/Publisher pada worker/outbox sudah diimplementasikan untuk C; HazardQuery, repository baca, dan HTTP inbound sudah diimplementasikan untuk tahap B.
 
 Port adalah interface kecil di package pemakainya. Adapter PostgreSQL memenuhi port ingest, query, dan outbox; tidak ada import business logic antarservice.
 

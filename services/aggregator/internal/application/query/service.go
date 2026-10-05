@@ -48,7 +48,7 @@ func (s Service) Get(ctx context.Context, id string) (hazard.Event, error) {
 
 func classify(err error) error {
 	switch {
-	case errors.Is(err, ErrInvalidType), errors.Is(err, ErrInvalidSeverity),
+	case errors.Is(err, ErrInvalidQuery), errors.Is(err, ErrInvalidType), errors.Is(err, ErrInvalidSeverity),
 		errors.Is(err, ErrInvalidSince), errors.Is(err, ErrInvalidLimit),
 		errors.Is(err, ErrInvalidCursor), errors.Is(err, ErrNotFound),
 		errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded),

@@ -8,7 +8,7 @@
 go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m
 ```
 
-Alternatif POSIX: `make smoke`. Gunakan konfigurasi bootstrap default (port 8080/8081/8082/8090, TTL access 60s, generator 10s). Suite saat ini mengharapkan query Aggregator belum tersedia, meskipun proses ingest sudah aktif.
+Alternatif POSIX: `make smoke`. Gunakan konfigurasi bootstrap default (port 8080/8081/8082/8090, TTL access 60s, generator 10s). Suite memverifikasi readiness client-api terhadap query Aggregator yang sudah aktif.
 
 Suite mengubah state simulasi PVMBG lalu memulihkannya, membuat tabel/topic uji unik lalu menghapusnya, dan stop/start atau restart PostgreSQL, Redis, Kafka, serta auth-service. Jalankan tanpa demo lain yang bersamaan. Tidak menghapus volume. Jika proses dihentikan paksa, cleanup mungkin tidak berjalan; periksa state simulasi dan fixture berprefix `foundation_smoke_` / `foundation-smoke-` sebelum mengulang.
 

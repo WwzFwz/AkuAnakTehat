@@ -3,12 +3,14 @@ package main
 import (
 	"context"
 	"errors"
+	httpapi "example.com/akuanaktehat/aggregator/internal/adapter/inbound/http"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/bmkg"
 	kafkaproducer "example.com/akuanaktehat/aggregator/internal/adapter/outbound/kafka"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/postgres"
 	"example.com/akuanaktehat/aggregator/internal/adapter/outbound/pvmbg"
 	"example.com/akuanaktehat/aggregator/internal/application/canonicalize"
 	"example.com/akuanaktehat/aggregator/internal/application/ingest"
+	queryapp "example.com/akuanaktehat/aggregator/internal/application/query"
 	"example.com/akuanaktehat/aggregator/internal/config"
 	"example.com/akuanaktehat/aggregator/internal/observability"
 	"example.com/akuanaktehat/aggregator/internal/worker/outbox"
@@ -50,6 +52,11 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 	defer relayStore.Pool.Close()
+	queryStore, err := postgres.Open(ctx, cfg.DatabaseURL, cfg.QueryPoolSize, cfg.DBTimeout)
+	if err != nil {
+		return err
+	}
+	defer queryStore.Pool.Close()
 	producer, err := kafkaproducer.New(cfg.KafkaBrokers, cfg.KafkaTopic, cfg.PublishTimeout)
 	if err != nil {
 		return err
@@ -81,7 +88,9 @@ func run(logger *slog.Logger) error {
 		wg.Add(1)
 		go func(w *poller.Worker) { defer wg.Done(); w.Run(ctx) }(w)
 	}
-	srv := &http.Server{Addr: cfg.Addr, Handler: observability.Handler(store.Ping, logger), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 5 * time.Second, IdleTimeout: 60 * time.Second}
+	queryService := queryapp.Service{Repository: queryStore}
+	internalAPI := httpapi.New(queryService, cfg.InternalKey, cfg.DBTimeout)
+	srv := &http.Server{Addr: cfg.Addr, Handler: observability.Handler(store.Ping, queryStore.Ping, internalAPI, logger), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 10 * time.Second, WriteTimeout: 5 * time.Second, IdleTimeout: 60 * time.Second}
 	exited := make(chan error, 1)
 	go func() { exited <- srv.ListenAndServe() }()
 	logger.Info("ingest_started", "address", cfg.Addr)

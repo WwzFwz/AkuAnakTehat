@@ -141,8 +141,8 @@ func TestHealth(t *testing.T) {
 		waitHTTP(t, base+"/health", 200)
 	}
 	waitHTTP(t, auth+"/ready", 200)
-	// The Aggregator is deliberately absent in the foundation stack.
-	status(t, request(t, "GET", api+"/ready", "", nil), 503)
+	// Aggregator query readiness is now part of the full Compose stack.
+	status(t, request(t, "GET", api+"/ready", "", nil), 200)
 }
 
 func TestMockContracts(t *testing.T) {
@@ -340,10 +340,10 @@ func TestTokenRotationAndAuthorization(t *testing.T) {
 	for _, path := range []string{"/v1/hazards?fields=attributes", "/v1/hazards?include=raw", "/v1/hazards/demo/raw"} {
 		status(t, request(t, "GET", api+path, "", bearer(p)), 403)
 	}
-	status(t, request(t, "GET", api+"/v1/hazards", "", bearer(p)), 503)
+	status(t, request(t, "GET", api+"/v1/hazards", "", bearer(p)), 200)
 	for _, id := range []string{"field-team", "bnpb-ops"} {
 		privileged := login(t, id)
-		status(t, request(t, "GET", api+"/v1/hazards?include=raw", "", bearer(privileged)), 503)
+		status(t, request(t, "GET", api+"/v1/hazards?include=raw", "", bearer(privileged)), 200)
 	}
 	parts := strings.Split(p.Access, ".")
 	parts[1] = base64.RawURLEncoding.EncodeToString([]byte(`{"sub":"attacker"}`))

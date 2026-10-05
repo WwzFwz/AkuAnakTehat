@@ -39,9 +39,9 @@ API downstream dengan verifikasi JWT, otorisasi, dan proyeksi.
 - Cache, LISTEN/NOTIFY, schema_observations, dan propagasi deadline lewat header adalah tambahan; jangan menjadikannya prasyarat fungsi inti.
 - Service dapat dimulai sebagai proses sendiri; kesiapan dependensi dilaporkan oleh readiness. Jangan mengembalikan sukses palsu untuk fitur yang belum dibuat.
 
-## Menjalankan fondasi
+## Menjalankan
 
 Konfigurasi dan endpoint: [kontrak HTTP](../../docs/api/client-http.md).
 Dari folder service: `go run ./cmd/client-api`. Variabel secret/key wajib diisi lewat bootstrap lokal.
 Pemeriksaan module: `go test ./...` dan `go vet ./...`. Suite integrasi HTTP/Redis dijalankan terpisah dari root: `go test ./scripts/check/foundation_test.go -v -count=1 -timeout=8m`.
-Aggregator belum tersedia pada tahap ini; request data menghasilkan503 dan readiness503, sementara liveness200. Cache tetap belum diimplementasikan.
+Aggregator query sudah tersedia; request data bergantung pada readiness Aggregator. Cache tetap belum diimplementasikan.

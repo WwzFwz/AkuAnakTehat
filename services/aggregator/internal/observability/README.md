@@ -6,7 +6,7 @@ Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
 **Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `health.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
+**Status:** health/readiness Aggregator sudah mencakup jalur ingest dan query. Logging request menyertakan correlation ID dan latency.
 
 ## Rencana file
 
@@ -18,7 +18,7 @@ Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
 ## Kontrak dan alur
 
-- /health menunjukkan proses hidup; /ready/ingest memeriksa database. /ready tetap 503 hingga query B tersedia.
+- /health menunjukkan proses hidup; /ready/ingest memeriksa database ingest; /ready memeriksa pool query.
 - Field log minimum: service, correlation_id, operation, latency_ms, dan hasil.
 
 ## Dependensi

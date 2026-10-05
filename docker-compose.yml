@@ -22,7 +22,7 @@ services:
         condition: service_healthy
     networks: [source_net, store_net, edge_net, bus_net]
     healthcheck:
-      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9000/ready/ingest']
+      test: [CMD, wget, -q, -O, /dev/null, 'http://127.0.0.1:9000/ready']
       interval: 5s
       timeout: 3s
       retries: 12

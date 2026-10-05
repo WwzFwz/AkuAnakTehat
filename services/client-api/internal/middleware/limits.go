@@ -16,10 +16,26 @@ type Limits struct {
 	slots       chan struct{}
 }
 
+type RejectReason uint8
+
+const (
+	Allowed RejectReason = iota
+	RateLimited
+	ConcurrencyLimited
+)
+
 func New(rate, burst, concurrent int) *Limits {
 	return &Limits{clients: map[string]bucket{}, rate: rate, burst: burst, slots: make(chan struct{}, concurrent)}
 }
-func (l *Limits) Enter(id string) (func(), bool) {
+
+func (l *Limits) Enter(id string) (func(), RejectReason) {
+	select {
+	case l.slots <- struct{}{}:
+	default:
+		return nil, ConcurrencyLimited
+	}
+	release := func() { <-l.slots }
+
 	l.mu.Lock()
 	now := time.Now()
 	b, ok := l.clients[id]
@@ -32,7 +48,8 @@ func (l *Limits) Enter(id string) (func(), bool) {
 			}
 			if len(l.clients) >= 1000 {
 				l.mu.Unlock()
-				return nil, false
+				release()
+				return nil, RateLimited
 			}
 		}
 		b = bucket{tokens: float64(l.burst), updated: now}
@@ -46,12 +63,8 @@ func (l *Limits) Enter(id string) (func(), bool) {
 	l.clients[id] = b
 	l.mu.Unlock()
 	if !allowed {
-		return nil, false
+		release()
+		return nil, RateLimited
 	}
-	select {
-	case l.slots <- struct{}{}:
-		return func() { <-l.slots }, true
-	default:
-		return nil, false
-	}
+	return release, Allowed
 }

@@ -1,6 +1,6 @@
 # HTTP internal Aggregator — kontrak baseline
 
-**Status:** kontrak query tahap B. Proses Aggregator ingest A sudah berjalan, tetapi route bisnis masih 503 `query_not_implemented`. `/ready/ingest` memeriksa DB; `/ready` tetap 503 sampai query dibuat. Client-api tetap mengembalikan 503 untuk pembacaan data.
+**Status:** kontrak query tahap B dan implementasi HTTP internal sudah tersedia. `/ready/ingest` memeriksa DB ingest; `/ready` memeriksa pool query. Client-api membaca data melalui route ini.
 
 ## Transport dan autentikasi
 

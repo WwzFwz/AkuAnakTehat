@@ -42,9 +42,13 @@ func New(app application.Service, verifier authn.Verifier, limits *middleware.Li
 			return
 		}
 		release, ok := limits.Enter(claims.Subject)
-		if !ok {
+		if ok != middleware.Allowed {
 			w.Header().Set("Retry-After", "1")
-			write(w, 429, map[string]string{"error": "rate_limited"})
+			code := "rate_limited"
+			if ok == middleware.ConcurrencyLimited {
+				code = "upstream_overloaded"
+			}
+			write(w, http.StatusTooManyRequests, map[string]string{"error": code})
 			return
 		}
 		defer release()
@@ -89,11 +93,23 @@ func New(app application.Service, verifier authn.Verifier, limits *middleware.Li
 		path := strings.TrimPrefix(r.URL.Path, "/v1/hazards")
 		var response any
 		if path == "" || path == "/seismic" || path == "/volcanic" {
+			routeType := ""
 			if path == "/seismic" {
-				q.Set("type", "SEISMIC")
+				routeType = "SEISMIC"
 			}
 			if path == "/volcanic" {
-				q.Set("type", "VOLCANIC")
+				routeType = "VOLCANIC"
+			}
+			if q.Has("type") && q.Get("type") == "" {
+				write(w, 400, map[string]string{"error": "invalid_type"})
+				return
+			}
+			if routeType != "" && q.Has("type") && q.Get("type") != routeType {
+				write(w, 400, map[string]string{"error": "invalid_type"})
+				return
+			}
+			if routeType != "" {
+				q.Set("type", routeType)
 			}
 			if typ := q.Get("type"); typ != "" && typ != "SEISMIC" && typ != "VOLCANIC" {
 				write(w, 400, map[string]string{"error": "invalid_type"})
@@ -101,16 +117,23 @@ func New(app application.Service, verifier authn.Verifier, limits *middleware.Li
 			}
 			limit := pageDefault
 			if severity := q.Get("severity"); severity != "" && severity != "NORMAL" && severity != "WASPADA" && severity != "SIAGA" && severity != "AWAS" {
-				write(w, 400, map[string]string{"error": "invalid_query"})
+				write(w, 400, map[string]string{"error": "invalid_severity"})
+				return
+			}
+			if q.Has("severity") && q.Get("severity") == "" {
+				write(w, 400, map[string]string{"error": "invalid_severity"})
 				return
 			}
 			if since := q.Get("since"); since != "" {
 				parsed, err := time.Parse(time.RFC3339, since)
 				if err != nil {
-					write(w, 400, map[string]string{"error": "invalid_query"})
+					write(w, 400, map[string]string{"error": "invalid_since"})
 					return
 				}
 				q.Set("since", parsed.UTC().Format(time.RFC3339Nano))
+			} else if q.Has("since") {
+				write(w, 400, map[string]string{"error": "invalid_since"})
+				return
 			}
 			if q.Has("limit") {
 				limit, err = strconv.Atoi(q.Get("limit"))
@@ -123,9 +146,19 @@ func New(app application.Service, verifier authn.Verifier, limits *middleware.Li
 				write(w, 400, map[string]string{"error": "invalid_cursor"})
 				return
 			}
+			if q.Has("cursor") && q.Get("cursor") == "" {
+				write(w, 400, map[string]string{"error": "invalid_cursor"})
+				return
+			}
 			q.Set("limit", strconv.Itoa(limit))
 			response, err = app.List(r.Context(), claims.Scope, q, fields, raw)
 		} else {
+			for key := range q {
+				if key != "fields" && key != "include" {
+					write(w, 400, map[string]string{"error": "invalid_query"})
+					return
+				}
+			}
 			id := strings.TrimPrefix(strings.TrimSuffix(path, "/raw"), "/")
 			if id == "" || strings.Contains(id, "/") || len(id) > 128 {
 				write(w, 404, map[string]string{"error": "not_found"})
@@ -152,6 +185,16 @@ func respondError(w http.ResponseWriter, err error) {
 		status, code = 400, "invalid_fields"
 	case errors.Is(err, application.ErrNotFound):
 		status, code = 404, "not_found"
+	case errors.Is(err, application.ErrInvalidType):
+		status, code = 400, "invalid_type"
+	case errors.Is(err, application.ErrInvalidSeverity):
+		status, code = 400, "invalid_severity"
+	case errors.Is(err, application.ErrInvalidSince):
+		status, code = 400, "invalid_since"
+	case errors.Is(err, application.ErrInvalidLimit):
+		status, code = 400, "invalid_limit"
+	case errors.Is(err, application.ErrInvalidCursor):
+		status, code = 400, "invalid_cursor"
 	case errors.Is(err, application.ErrQuery):
 		status, code = 400, "invalid_query"
 	case errors.Is(err, application.ErrOverloaded):

@@ -6,7 +6,7 @@ Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** application query dan port sudah diimplementasikan. HTTP inbound masih menunggu Tahap 3.
+**Status:** application query, port, repository, dan HTTP inbound sudah diimplementasikan. Wiring runtime tersedia pada composition root Aggregator.
 
 ## Rencana file
 

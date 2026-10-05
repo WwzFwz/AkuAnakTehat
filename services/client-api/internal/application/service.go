@@ -11,6 +11,11 @@ import (
 var ErrUnavailable = errors.New("dependency_unavailable")
 var ErrNotFound = errors.New("not_found")
 var ErrQuery = errors.New("invalid_query")
+var ErrInvalidType = errors.New("invalid_type")
+var ErrInvalidSeverity = errors.New("invalid_severity")
+var ErrInvalidSince = errors.New("invalid_since")
+var ErrInvalidLimit = errors.New("invalid_limit")
+var ErrInvalidCursor = errors.New("invalid_cursor")
 var ErrOverloaded = errors.New("upstream_overloaded")
 
 type Source struct {

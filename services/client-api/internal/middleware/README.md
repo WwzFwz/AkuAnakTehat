@@ -6,7 +6,7 @@ Proteksi trafik inti dan batas resource jalur baca.
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `limits.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
+**Status:** rate limit token bucket dan semaphore konkurensi sudah diimplementasikan. Penolakan rate dan konkurensi menghasilkan alasan `429` yang berbeda.
 
 ## Rencana file
 

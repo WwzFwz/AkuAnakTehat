@@ -6,7 +6,7 @@ Transport API internal Aggregator: routing, autentikasi internal, validasi input
 
 **Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
+**Status:** HTTP internal Aggregator sudah diimplementasikan pada Tahap 3.
 
 ## Rencana file
 
@@ -38,5 +38,5 @@ Transport API internal Aggregator: routing, autentikasi internal, validasi input
 
 ## Langkah implementasi dan verifikasi
 
-- Finalisasi kontrak HTTP dengan B.
-- Hubungkan use case, auth internal, timeout, dan handler health/readiness.
+- Kontrak HTTP sudah difinalisasi pada `docs/api/aggregator-http.md`.
+- Use case, auth internal, timeout, correlation ID, dan handler health/readiness sudah terhubung.

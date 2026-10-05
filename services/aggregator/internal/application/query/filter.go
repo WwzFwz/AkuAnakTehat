@@ -16,6 +16,7 @@ const (
 )
 
 var (
+	ErrInvalidQuery    = errors.New("invalid_query")
 	ErrInvalidType     = errors.New("invalid_type")
 	ErrInvalidSeverity = errors.New("invalid_severity")
 	ErrInvalidSince    = errors.New("invalid_since")
