@@ -69,7 +69,10 @@ func TestQueryPostgres(t *testing.T) {
 	insert("00000000-0000-0000-0000-000000000003", "BMKG", "SEISMIC", "NORMAL", base.Add(time.Minute))
 	insert("00000000-0000-0000-0000-000000000004", "BMKG", "SEISMIC", "WASPADA", base.Add(time.Minute))
 	stale := base.Add(10 * time.Minute)
-	if _, err = db.Pool.Exec(ctx, `UPDATE source_status SET status='HEALTHY',stale_since=NULL WHERE source='BMKG'; UPDATE source_status SET status='DOWN',stale_since=$1 WHERE source='PVMBG'`, stale); err != nil {
+	if _, err = db.Pool.Exec(ctx, `UPDATE source_status SET status='HEALTHY',stale_since=NULL WHERE source='BMKG'`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = db.Pool.Exec(ctx, `UPDATE source_status SET status='DOWN',stale_since=$1 WHERE source='PVMBG'`, stale); err != nil {
 		t.Fatal(err)
 	}
 

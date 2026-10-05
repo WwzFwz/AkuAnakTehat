@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: fondasi, ingest Aggregator (3A), relay/consumer (3C), query internal, dan client-api (3B) tersedia.** Jalur event: mock → canonical store/outbox → Kafka → dashboard, notifier, dan pemda dengan SQLite masing-masing. CLI Tim Lapangan, k6, dan evidence P1-P5 masih perlu dikerjakan. Lihat [bukti event](docs/evidence/events/README.md), [ingest](docs/evidence/ingest/README.md), dan [fondasi](docs/evidence/foundation/README.md).
+**Status saat ini: fondasi, ingest Aggregator (3A), relay/consumer (3C), query internal, client-api (3B), CLI Tim Lapangan, dan script k6 tersedia.** Jalur event: mock → canonical store/outbox → Kafka → dashboard, notifier, dan pemda dengan SQLite masing-masing. Verifikasi runtime CLI/k6 serta evidence P1-P5 masih perlu dilengkapi. Lihat [bukti event](docs/evidence/events/README.md), [ingest](docs/evidence/ingest/README.md), dan [fondasi](docs/evidence/foundation/README.md).
 
 ## Cara membaca
 
@@ -36,6 +36,7 @@ A/B/C adalah pembagian kerja rancangan, belum nama anggota. Di Aggregator, A mem
 | `docs/evidence/` | Bukti [P1](docs/evidence/p1/README.md), [P2](docs/evidence/p2/README.md), [P3](docs/evidence/p3/README.md), [P4](docs/evidence/p4/README.md), [P5](docs/evidence/p5/README.md) |
 | `infra/` | [Cara menjalankan fondasi](infra/README.md), [Kafka](infra/kafka/README.md), [PostgreSQL](infra/postgres/README.md), [Redis](infra/redis/README.md) |
 | `scripts/` | [Secret bootstrap](scripts/secrets/README.md), [demo](scripts/demo/README.md), [load test](scripts/loadtest/README.md), [trace](scripts/trace/README.md) |
+| `tools/field-cli/` | CLI HTTP mandiri untuk Tim Lapangan |
 | `env/keys/` | [Penyimpanan kunci lokal](env/keys/README.md); secret hasil bootstrap diabaikan Git |
 | `.github/workflows/` | [CI fondasi](.github/workflows/README.md) |
 
@@ -96,7 +97,7 @@ README komponen yang belum diimplementasikan tetap memuat rencana file dan konfi
 
 ## Status verifikasi
 
-Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Relay/consumer memiliki uji unit dan integrasi tersendiri; lihat [bukti event](docs/evidence/events/README.md). Query B dan client-api memiliki unit test; load/race test, runtime end-to-end, dan P1-P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
+Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Relay/consumer memiliki uji unit dan integrasi tersendiri; lihat [bukti event](docs/evidence/events/README.md). Query B, client-api, dan CLI memiliki unit test; script k6 sudah lolos validasi konfigurasi. Runtime end-to-end, hasil load test, dan P1-P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
 
 ## Dasar dan bantuan penulisan
 
