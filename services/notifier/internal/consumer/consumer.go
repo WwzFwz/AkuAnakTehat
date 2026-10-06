@@ -2,12 +2,14 @@ package consumer
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"example.com/akuanaktehat/notifier/internal/config"
 	"example.com/akuanaktehat/notifier/internal/contract"
 	"example.com/akuanaktehat/notifier/internal/dlq"
 	"github.com/twmb/franz-go/pkg/kgo"
 	"log/slog"
+	"sync/atomic"
 	"time"
 )
 
@@ -21,10 +23,11 @@ type Delivery interface {
 	Commit(context.Context, *kgo.Record) error
 }
 type Consumer struct {
-	Client    *kgo.Client
-	Config    config.Config
-	Processor Processor
-	Logger    *slog.Logger
+	Client       *kgo.Client
+	Config       config.Config
+	Processor    Processor
+	Logger       *slog.Logger
+	pingInFlight atomic.Bool
 }
 
 func New(c config.Config, p Processor, l *slog.Logger) (*Consumer, error) {
@@ -32,7 +35,7 @@ func New(c config.Config, p Processor, l *slog.Logger) (*Consumer, error) {
 	if err != nil {
 		return nil, errors.New("invalid Kafka consumer configuration")
 	}
-	return &Consumer{client, c, p, l}, nil
+	return &Consumer{Client: client, Config: c, Processor: p, Logger: l}, nil
 }
 func (c *Consumer) Run(ctx context.Context) error {
 	for ctx.Err() == nil {
@@ -47,11 +50,19 @@ func (c *Consumer) Run(ctx context.Context) error {
 		}
 		records := fetched.Records()
 		for _, r := range records {
+			started := time.Now()
 			err := Process(ctx, r, c.Processor, c, c.Config.Attempts, c.Config.Timeout)
 			if err != nil {
 				c.Client.AllowRebalance()
 				return err
 			}
+
+			var trace struct {
+				EventID       string `json:"event_id"`
+				CorrelationID string `json:"correlation_id"`
+			}
+			_ = json.Unmarshal(r.Value, &trace)
+			c.Logger.Info("record_completed", "event_id", trace.EventID, "correlation_id", trace.CorrelationID, "consumer_group", c.Config.Group, "partition", r.Partition, "offset", r.Offset, "latency_ms", time.Since(started).Milliseconds())
 		}
 		c.Client.AllowRebalance()
 	}
@@ -124,5 +135,26 @@ func (c *Consumer) Commit(ctx context.Context, r *kgo.Record) error {
 	}
 	return nil
 }
-func (c *Consumer) Ping(ctx context.Context) error { return c.Client.Ping(ctx) }
-func (c *Consumer) Close()                         { c.Client.Close() }
+func (c *Consumer) Ping(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	// franz-go v1.18.1 Ping can wait for a connection handshake past ctx's
+	// deadline. Bound the HTTP caller's wait and allow at most one unfinished
+	// probe, so repeated readiness requests cannot accumulate goroutines.
+	if !c.pingInFlight.CompareAndSwap(false, true) {
+		return errors.New("Kafka readiness probe in progress")
+	}
+	result := make(chan error, 1)
+	go func() {
+		defer c.pingInFlight.Store(false)
+		result <- c.Client.Ping(ctx)
+	}()
+	select {
+	case err := <-result:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
+func (c *Consumer) Close() { c.Client.Close() }
