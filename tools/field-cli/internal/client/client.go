@@ -128,6 +128,16 @@ func (s *TokenSource) Invalidate() {
 	s.mu.Unlock()
 }
 
+// A late 401 from an older request must not invalidate a freshly rotated token.
+func (s *TokenSource) invalidateToken(token string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.access == token {
+		s.access = ""
+		s.expiresAt = time.Time{}
+	}
+}
+
 func (s *TokenSource) set(pair tokenResponse) {
 	s.access = pair.AccessToken
 	s.refresh = pair.RefreshToken
@@ -189,7 +199,7 @@ func New(cfg Config) (*Client, error) {
 		return nil, err
 	}
 	transport := http.DefaultTransport.(*http.Transport).Clone()
-	httpClient := &http.Client{Transport: transport, Timeout: cfg.Timeout}
+	httpClient := &http.Client{Transport: transport, Timeout: cfg.Timeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	return &Client{
 		apiURL:     apiURL,
 		httpClient: httpClient,
@@ -291,7 +301,7 @@ func (c *Client) do(ctx context.Context, path string, query url.Values) ([]byte,
 			return nil, readErr
 		}
 		if resp.StatusCode == http.StatusUnauthorized && attempt == 0 {
-			c.tokens.Invalidate()
+			c.tokens.invalidateToken(token)
 			token, err = c.tokens.Token(ctx)
 			if err != nil {
 				return nil, err
@@ -331,7 +341,7 @@ func readBody(r io.Reader) ([]byte, error) {
 
 func parseBaseURL(raw string) (*url.URL, error) {
 	u, err := url.Parse(strings.TrimRight(strings.TrimSpace(raw), "/"))
-	if err != nil || u.Scheme == "" || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") {
+	if err != nil || u.Scheme == "" || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Scheme != "http" && u.Scheme != "https") {
 		return nil, ErrInvalidConfiguration
 	}
 	u.RawQuery = ""

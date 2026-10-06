@@ -9,7 +9,7 @@ Push-Location $repoRoot
 try {
     go test ./scripts/secrets/generate.go ./scripts/secrets/generate_test.go
     if ($LASTEXITCODE -ne 0) { throw 'Secret generator tests failed.' }
-    foreach ($module in (Get-ChildItem services -Filter go.mod -Recurse)) {
+    foreach ($module in (Get-ChildItem services,tools -Filter go.mod -Recurse)) {
         Push-Location $module.DirectoryName
         try {
             Write-Host "Checking $($module.Directory.Name)"

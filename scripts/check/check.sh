@@ -5,7 +5,7 @@ cd "$repo_root"
 export GOTELEMETRY=off GOTOOLCHAIN=local GOWORK=off
 export GOCACHE="$repo_root/.local/go-cache" GOMODCACHE="$repo_root/.local/go-mod-cache"
 go test ./scripts/secrets/generate.go ./scripts/secrets/generate_test.go
-for module in services/*/go.mod; do
+for module in services/*/go.mod tools/*/go.mod; do
   [ -f "$module" ] || continue
   (cd "$(dirname "$module")" && go test ./... && go vet ./...)
 done

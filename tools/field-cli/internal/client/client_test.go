@@ -138,6 +138,34 @@ func TestPrintJSON(t *testing.T) {
 	}
 }
 
+func TestTokenRedirectDoesNotForwardCredentials(t *testing.T) {
+	var received atomic.Int32
+	destination := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { received.Add(1) }))
+	defer destination.Close()
+	source := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, destination.URL, http.StatusTemporaryRedirect)
+	}))
+	defer source.Close()
+	c, err := New(Config{APIURL: source.URL, AuthURL: source.URL, ClientID: "field-team", ClientSecret: "test-secret"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = c.List(context.Background(), ListOptions{Limit: 1}); err == nil {
+		t.Fatal("redirect accepted")
+	}
+	if received.Load() != 0 {
+		t.Fatal("credentials followed redirect")
+	}
+}
+func TestLateUnauthorizedPreservesRotatedToken(t *testing.T) {
+	s := NewTokenSource(nil, "http://localhost", "client", "secret")
+	s.set(tokenResponse{AccessToken: "new", RefreshToken: "rotated", ExpiresIn: 60})
+	s.invalidateToken("old")
+	if s.access != "new" {
+		t.Fatal("stale 401 invalidated rotated token")
+	}
+}
+
 type writerFunc func([]byte) (int, error)
 
 func (w writerFunc) Write(p []byte) (int, error) { return w(p) }

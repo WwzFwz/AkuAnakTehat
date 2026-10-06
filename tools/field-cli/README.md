@@ -35,9 +35,19 @@ rotation invalidates the previous token. A single retry is made after a `401`.
 ./field-cli.exe list --type VOLCANIC --limit 20
 ./field-cli.exe list --cursor <opaque-cursor>
 ./field-cli.exe list --raw
+./field-cli.exe list --raw --limit 1 --watch 65s --count 2
 ./field-cli.exe get <hazard-id>
 ./field-cli.exe get <hazard-id> --raw
 ```
 
 Responses are printed as indented JSON. Service error codes are reported
 without including response bodies, access tokens, or client secrets.
+
+`--watch` with `--count` keeps a single process and token session alive. The
+65-second example crosses the default 60-second access-token TTL and refreshes
+before the next read. Each output is one JSON document. This is a finite demo
+session; the CLI does not persist tokens on disk between invocations.
+
+The module participates in root `go.work` and `make check`. Redirects are refused
+for both auth and API requests. Environment credentials are resolved after flag
+parsing so `--help` cannot print the secret as a default flag value.

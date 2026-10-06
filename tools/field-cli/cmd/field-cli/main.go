@@ -68,6 +68,8 @@ func runList(args []string, stdout, stderr io.Writer) error {
 	limit := fs.Int("limit", 100, "number of hazards to request (1-500)")
 	cursor := fs.String("cursor", "", "opaque pagination cursor")
 	raw := fs.Bool("raw", false, "request raw fields; requires hazard:read:raw")
+	watch := fs.Duration("watch", 0, "repeat in the same token session at this interval")
+	count := fs.Int("count", 1, "number of requests when watching")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -78,18 +80,29 @@ func runList(args []string, stdout, stderr io.Writer) error {
 	if err != nil {
 		return err
 	}
-	body, err := api.List(context.Background(), client.ListOptions{
-		Type:     *typeFlag,
-		Severity: *severity,
-		Since:    *since,
-		Limit:    *limit,
-		Cursor:   *cursor,
-		Raw:      *raw,
-	})
-	if err != nil {
-		return err
+	if *watch < 0 || *count < 1 || (*count > 1 && *watch == 0) {
+		return errors.New("count must be positive and repeated requests require a positive watch interval")
 	}
-	return client.PrintJSON(stdout, body)
+	for i := 0; i < *count; i++ {
+		if i > 0 {
+			time.Sleep(*watch)
+		}
+		body, err := api.List(context.Background(), client.ListOptions{
+			Type:     *typeFlag,
+			Severity: *severity,
+			Since:    *since,
+			Limit:    *limit,
+			Cursor:   *cursor,
+			Raw:      *raw,
+		})
+		if err != nil {
+			return err
+		}
+		if err = client.PrintJSON(stdout, body); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func runGet(args []string, stdout, stderr io.Writer) error {
@@ -135,7 +148,7 @@ func normalizeGetArgs(args []string) ([]string, error) {
 		arg := args[i]
 		if strings.HasPrefix(arg, "-") {
 			flags = append(flags, arg)
-			name := strings.SplitN(arg, "=", 2)[0]
+			name := "--" + strings.TrimLeft(strings.SplitN(arg, "=", 2)[0], "-")
 			if valueFlags[name] && !strings.Contains(arg, "=") {
 				if i+1 >= len(args) {
 					return nil, fmt.Errorf("flag %s requires a value", name)
@@ -162,10 +175,11 @@ func addConnectionFlags(fs *flag.FlagSet) (*connectionFlags, error) {
 		return nil, err
 	}
 	flags := &connectionFlags{
-		apiURL:       envOr("FIELD_CLI_API_URL", "http://127.0.0.1:8080"),
-		authURL:      envOr("FIELD_CLI_AUTH_URL", "http://127.0.0.1:8090"),
-		clientID:     envOr("FIELD_CLI_CLIENT_ID", "field-team"),
-		clientSecret: os.Getenv("FIELD_CLI_CLIENT_SECRET"),
+		apiURL:   envOr("FIELD_CLI_API_URL", "http://127.0.0.1:8080"),
+		authURL:  envOr("FIELD_CLI_AUTH_URL", "http://127.0.0.1:8090"),
+		clientID: envOr("FIELD_CLI_CLIENT_ID", "field-team"),
+		// Do not make the environment secret a flag default: -help prints defaults.
+		clientSecret: "",
 		timeout:      timeout,
 	}
 	fs.StringVar(&flags.apiURL, "api-url", flags.apiURL, "client-api base URL")
@@ -177,6 +191,9 @@ func addConnectionFlags(fs *flag.FlagSet) (*connectionFlags, error) {
 }
 
 func newAPIClient(flags *connectionFlags) (*client.Client, error) {
+	if flags.clientSecret == "" {
+		flags.clientSecret = os.Getenv("FIELD_CLI_CLIENT_SECRET")
+	}
 	if flags.clientID == "" || flags.clientSecret == "" {
 		return nil, errors.New("client credentials are required via FIELD_CLI_CLIENT_SECRET or --client-secret")
 	}
