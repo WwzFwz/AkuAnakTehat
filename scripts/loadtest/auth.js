@@ -8,8 +8,14 @@ export const PVMBG_URL = (__ENV.PVMBG_URL || 'http://127.0.0.1:8082').replace(/\
 export const HTTP_TIMEOUT = __ENV.K6_HTTP_TIMEOUT || '5s';
 
 export const controlled429 = new Counter('controlled_429');
+export const auth429 = new Counter('auth_429');
 export const systemErrorRate = new Rate('system_error_rate');
 export const businessLatency = new Trend('business_latency', true);
+export const authErrorRate = new Rate('auth_error_rate');
+export const businessRequests = new Counter('business_requests');
+export const successfulRequests = new Counter('successful_requests');
+export const expiredAccessRetries = new Counter('expired_access_retries');
+const credentials = __ENV.CLIENTS_FILE ? JSON.parse(open(__ENV.CLIENTS_FILE)) : [];
 
 function encodeForm(values) {
   return Object.keys(values)
@@ -45,6 +51,10 @@ export class TokenSession {
   constructor() {
     this.clientID = __ENV.FIELD_CLI_CLIENT_ID || __ENV.CLIENT_ID || 'field-team';
     this.clientSecret = __ENV.FIELD_CLI_CLIENT_SECRET || __ENV.CLIENT_SECRET || '';
+    if (!this.clientSecret) {
+      const credential = credentials.find((entry) => entry.client_id === this.clientID);
+      this.clientSecret = credential ? credential.client_secret : '';
+    }
     this.accessToken = '';
     this.refreshToken = '';
     this.expiresAt = 0;
@@ -84,16 +94,15 @@ export class TokenSession {
     for (let attempt = 0; attempt < 4; attempt += 1) {
       response = http.post(`${AUTH_URL}/oauth/token`, encodeForm(values), tokenParams());
       if (response.status !== 429) {
-        if (response.status >= 500 || response.status === 0) {
-          systemErrorRate.add(1, { kind: 'auth' });
-        }
+        authErrorRate.add(response.status !== 200, { kind: 'auth' });
         return response;
       }
-      controlled429.add(1, { kind: 'auth' });
+      auth429.add(1);
       if (attempt < 3) {
         sleep(1);
       }
     }
+    authErrorRate.add(1, { kind: 'auth' });
     return response;
   }
 
@@ -122,6 +131,7 @@ export class TokenSession {
       if (response.status !== 401 || attempt === 1) {
         return response;
       }
+      expiredAccessRetries.add(1);
       this.invalidate();
       token = this.token();
     }
@@ -133,8 +143,12 @@ export function observe(response, tags = {}, expectedStatuses = [200]) {
   const status = response.status;
   const labels = Object.assign({}, tags);
   controlled429.add(status === 429 ? 1 : 0, labels);
-  systemErrorRate.add(status !== 429 && expectedStatuses.indexOf(status) === -1 ? 1 : 0, labels);
-  businessLatency.add(response.timings.duration, labels);
+  businessRequests.add(1, labels);
+  // Exclude controlled rejection from BOTH numerator and denominator.
+  if (status !== 429) systemErrorRate.add(expectedStatuses.indexOf(status) === -1, labels);
+  successfulRequests.add(status === 200 ? 1 : 0, labels);
+  // Fast rejection must not make the successful-request p95 look better.
+  if (status === 200) businessLatency.add(response.timings.duration, labels);
 }
 
 export function sourceStatus(body, source) {

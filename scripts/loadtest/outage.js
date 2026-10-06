@@ -48,6 +48,8 @@ export const options = {
     outage_status_observed: ['rate>0'],
     recovery_available: ['rate>0.5'],
     system_error_rate: ['rate<0.01'],
+    auth_error_rate: ['rate<0.01'],
+    successful_requests: ['count>0'],
   },
 };
 

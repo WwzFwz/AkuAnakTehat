@@ -2,7 +2,7 @@ import { check, sleep } from 'k6';
 import { TokenSession, observe } from './auth.js';
 
 const vus = Number(__ENV.VUS || 50);
-const duration = __ENV.DURATION || '60s';
+const duration = __ENV.DURATION || '90s';
 const pause = Number(__ENV.SLEEP || 0.1);
 const session = new TokenSession();
 
@@ -18,6 +18,8 @@ export const options = {
   },
   thresholds: {
     system_error_rate: ['rate<0.01'],
+    auth_error_rate: ['rate<0.01'],
+    successful_requests: ['count>0'],
     'controlled_429': ['count>=0'],
   },
 };

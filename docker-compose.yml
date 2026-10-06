@@ -1,6 +1,22 @@
 name: bnpb-m1
 
 services:
+  loadtest:
+    profiles: [tools]
+    image: grafana/k6:0.57.0
+    user: "${LOCAL_UID:-10001}:${LOCAL_GID:-10001}"
+    env_file: ./env/demo.env
+    environment:
+      API_URL: http://client-api:8080
+      AUTH_URL: http://auth-service:8090
+      PVMBG_URL: http://pvmbg-mock:8082
+      CLIENTS_FILE: /run/demo-clients.json
+    volumes:
+      - ./scripts/loadtest:/scripts:ro
+      - ./env/demo-clients.json:/run/demo-clients.json:ro
+      - ./docs/evidence/integration/load:/results
+    networks: [edge_net, auth_net, source_net]
+
   ingest-test:
     profiles: [test]
     build:
