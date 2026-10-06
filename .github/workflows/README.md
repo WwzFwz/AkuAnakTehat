@@ -16,7 +16,7 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 ## Kontrak dan alur
 
-- scripts/check/check.sh menjalankan tests generator lalu test/vet setiap service yang memiliki go.mod, dengan GOWORK=off. Folder rancangan tanpa module dilewati.
+- scripts/check/check.sh menjalankan tests generator lalu test/vet setiap service dan tool yang memiliki go.mod, dengan GOWORK=off. Folder rancangan tanpa module dilewati.
 - CI memakai Go 1.24.2, memvalidasi Compose tanpa mencetak env, membangun/menjalankan service fondasi, ingest dan consumer, lalu menjalankan suite runtime `scripts/check/foundation_test.go`. Stack dihentikan pada akhir job. UID/GID container auth/client mengikuti pemilik secret pada runner Linux. Job Gitleaks 8.24.2 memindai histori Git dengan output disensor.
 
 ## Dependensi
@@ -25,8 +25,7 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 ## Aturan penting
 
-- Workflow executable sudah tersedia untuk fondasi; tidak menjalankan demo P1–P5.
-- Setelah fondasi, workflow menguji transaksi ingest dalam schema PostgreSQL terisolasi dan alur live mock → canonical store/outbox, termasuk outage/recovery. Ini tetap bukan P1–P5 lengkap.
+- Setelah fondasi, workflow menguji transaksi PostgreSQL, ingest, Kafka/SQLite/DLQ, query/otorisasi, expiry token alami, rebuild independen, dan load test k6. Cakupan serta hasil lokal ada di [verifikasi integrasi](../../docs/evidence/integration/README.md).
 - Pin toolchain/action yang disepakati; jangan mengklaim scan bersih sebelum dijalankan.
 - Jangan memasukkan secret ke log CI atau artefak publik.
 - Build sukses bukan bukti semua skenario tugas telah selesai.

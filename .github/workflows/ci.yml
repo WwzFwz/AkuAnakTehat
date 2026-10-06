@@ -44,9 +44,19 @@ jobs:
           GOTOOLCHAIN: local
           GOWORK: 'off'
         run: make events-check
+      - name: Test query integration, natural token expiry, and independent rebuild
+        run: make query-check
+      - name: Measure concurrent reads, sustained connections, and outage recovery
+        run: make load-check
       - name: Inspect service state
         if: always()
         run: docker compose ps -a
+      - name: Preserve load test measurements
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: load-test-results
+          path: docs/evidence/integration/load/
       - name: Stop foundation stack
         if: always()
         run: docker compose --profile demo down

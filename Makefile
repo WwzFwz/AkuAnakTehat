@@ -1,4 +1,4 @@
-.PHONY: secrets up down logs check config smoke ingest-check events-check
+.PHONY: secrets up down logs check config smoke ingest-check events-check query-check load-check
 
 # POSIX Make entry point: let containers read the current user's 0600 secrets.
 export LOCAL_UID := $(shell id -u)
@@ -32,3 +32,9 @@ config: secrets
 events-check:
 	docker compose --profile demo build pemda-portal
 	GOTELEMETRY=off GOTOOLCHAIN=local GOWORK=off go test ./scripts/check/foundation_test.go ./scripts/check/events_test.go -run TestEventPipeline -v -count=1 -timeout=10m
+
+query-check:
+	GOTELEMETRY=off GOTOOLCHAIN=local GOWORK=off go test ./scripts/check/foundation_test.go ./scripts/check/query_test.go -run 'TestQueryIntegration|TestDynamicSchemaAndStaleAPI|TestNaturalExpiryAndFieldCLI|TestIndependentRebuild' -v -count=1 -timeout=8m
+
+load-check:
+	python3 scripts/loadtest/run.py
