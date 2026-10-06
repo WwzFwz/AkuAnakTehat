@@ -1,0 +1,2 @@
+k6.exe v0.57.0 (commit/50afd82c18, go1.23.6, windows/amd64)
+Docker 28.0.4; CPUs=16; MemoryBytes=7936237568; OS=Docker Desktop (containerized)

@@ -1,0 +1,13 @@
+NAME                          IMAGE                       COMMAND                  SERVICE             CREATED              STATUS                        PORTS
+bnpb-m1-aggregator-1          bnpb-m1-aggregator          "/service"               aggregator          23 minutes ago       Up 13 minutes (healthy)       9000/tcp
+bnpb-m1-auth-service-1        bnpb-m1-auth-service        "/service"               auth-service        35 minutes ago       Up 14 minutes (healthy)       127.0.0.1:8090->8090/tcp
+bnpb-m1-auth-store-1          redis:7.4.2-alpine          "docker-entrypoint.sâ€¦"   auth-store          5 days ago           Up 14 minutes (healthy)       6379/tcp
+bnpb-m1-bmkg-mock-1           bnpb-m1-bmkg-mock           "/usr/local/bin/servâ€¦"   bmkg-mock           35 minutes ago       Up 35 minutes (healthy)       127.0.0.1:8081->8081/tcp
+bnpb-m1-canonical-db-1        postgres:16.8-alpine        "docker-entrypoint.sâ€¦"   canonical-db        5 days ago           Up 14 minutes (healthy)
+bnpb-m1-client-api-1          bnpb-m1-client-api          "/service"               client-api          35 minutes ago       Up 35 minutes (healthy)       127.0.0.1:8080->8080/tcp
+bnpb-m1-dashboard-updater-1   bnpb-m1-dashboard-updater   "/usr/local/bin/servâ€¦"   dashboard-updater   14 minutes ago       Up 9 minutes (healthy)        127.0.0.1:8091->8091/tcp
+bnpb-m1-kafka-1               apache/kafka:3.9.1          "/__cacert_entrypoinâ€¦"   kafka               5 days ago           Up 9 minutes (healthy)
+bnpb-m1-kafka-init-1          apache/kafka:3.9.1          "/bin/sh /config/iniâ€¦"   kafka-init          5 days ago           Exited (0) 9 minutes ago
+bnpb-m1-notifier-1            bnpb-m1-notifier            "/usr/local/bin/servâ€¦"   notifier            10 minutes ago       Up 9 minutes (healthy)        127.0.0.1:8092->8092/tcp
+bnpb-m1-pemda-portal-1        bnpb-m1-pemda-portal        "/usr/local/bin/servâ€¦"   pemda-portal        10 minutes ago       Up 9 minutes (healthy)        127.0.0.1:8093->8093/tcp
+bnpb-m1-pvmbg-mock-1          bnpb-m1-pvmbg-mock          "/usr/local/bin/servâ€¦"   pvmbg-mock          About a minute ago   Up About a minute (healthy)   127.0.0.1:8082->8082/tcp

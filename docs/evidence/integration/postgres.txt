@@ -1,0 +1,69 @@
+docker :  Container bnpb-m1-canonical-db-1  Running
+At line:2 char:1
++ docker compose run --build --rm --env-from-file ./env/aggregator.env  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container bnpb...l-db-1  Running:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [ingest-test internal] load build definition from Dockerfile
+#1 transferring dockerfile: 552B 0.0s done
+#1 DONE 0.0s
+
+#2 [ingest-test internal] load metadata for docker.io/library/golang:1.24.2-alpine
+#2 DONE 1.1s
+
+#3 [ingest-test internal] load .dockerignore
+#3 transferring context: 71B done
+#3 DONE 0.0s
+
+#4 [ingest-test build 1/6] FROM docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee
+#4 resolve docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee 0.0s done
+#4 DONE 0.0s
+
+#5 [ingest-test internal] load build context
+#5 transferring context: 4.92kB 0.0s done
+#5 DONE 0.0s
+
+#6 [ingest-test build 2/6] WORKDIR /src
+#6 CACHED
+
+#7 [ingest-test build 3/6] COPY go.mod go.sum ./
+#7 CACHED
+
+#8 [ingest-test build 4/6] RUN go mod download
+#8 CACHED
+
+#9 [ingest-test build 5/6] COPY . .
+#9 CACHED
+
+#10 [ingest-test build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/aggregator
+#10 CACHED
+
+#11 [ingest-test integration-test 1/1] RUN CGO_ENABLED=0 go test -c -o /ingest.test ./internal/adapter/outbound/postgres
+#11 DONE 12.2s
+
+#12 [ingest-test] exporting to image
+#12 exporting layers
+#12 exporting layers 8.5s done
+#12 exporting manifest sha256:189f76f2db4aa45f2759613e54a73246cdfb86e33412d775f852ca0d73e7cb7d 0.0s done
+#12 exporting config sha256:e21081cd869521eab1a67b1716fb66ba4bbcdbc567bd0ae6638f71c22c2c5ca3 0.0s done
+#12 exporting attestation manifest sha256:387f00599833d4e242df4fdbf8485e8e0153995448a02c91aafbbde13af458bc 0.0s done
+#12 exporting manifest list sha256:22a5bbc66682d60ba3321195a907483b68248a0053e82dc14cbd26e70060132f 0.0s done
+#12 naming to docker.io/library/bnpb-m1-ingest-test:latest done
+#12 unpacking to docker.io/library/bnpb-m1-ingest-test:latest
+#12 unpacking to docker.io/library/bnpb-m1-ingest-test:latest 3.7s done
+#12 DONE 12.3s
+
+#13 [ingest-test] resolving provenance for metadata file
+#13 DONE 0.0s
+=== RUN   TestIngestPostgres
+=== RUN   TestIngestPostgres/outbox_ACK_and_cleanup
+--- PASS: TestIngestPostgres (1.50s)
+    --- PASS: TestIngestPostgres/outbox_ACK_and_cleanup (0.01s)
+=== RUN   TestQueryPostgres
+--- PASS: TestQueryPostgres (0.22s)
+PASS

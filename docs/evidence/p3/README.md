@@ -1,40 +1,11 @@
-# p3
+# P3: Identitas, scope, dan refresh token
 
-[Peta repository](../../../README.md)
+`TestQueryIntegration` memakai kredensial Media, Tim Lapangan, dan BNPB yang berbeda; Media mendapat ringkasan dan ditolak saat meminta raw. `TestNaturalExpiryAndFieldCLI` melewati TTL alami 60s, menjalankan dua request CLI berjarak 65s dalam satu sesi, dan membuktikan token kedaluwarsa tetap ditolak. Suite fondasi menguji signature/claim serta reuse refresh token.
 
-Bukti nyata P3: isolasi kredensial, pembatasan field, dan refresh.
+Lihat [hasil dan batas pengujian](../integration/README.md),
+[regresi runtime](../integration/regression.txt), dan
+[kode pengujian](../../../scripts/check/README.md).
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `run-notes.md` | Tanggal, commit, lingkungan, perintah, dan interpretasi hasil. |
-| `output.log` | Log atau respons asli yang sudah disanitasi. |
-| `screenshots/` | Folder opsional tangkapan layar ketika bukti visual diperlukan. |
-
-## Kontrak dan alur
-
-- Dua arah kredensial silang ditolak.
-- Media hanya ringkasan dan permintaan raw403.
-- Expiry alami→refresh otomatis→sukses; token lama ditolak.
-- Hasil pemeriksaan secret dan keberadaan .env.example.
-
-## Dependensi
-
-- Script demo/loadtest dan implementasi yang telah dijalankan.
-
-## Aturan penting
-
-- Saat ini belum ada bukti eksekusi dan tidak ada klaim lulus.
-- Jangan simpan token, secret, atau data sensitif; sanitasi tanpa menghilangkan konteks penting.
-- Setiap angka/claim pada laporan harus merujuk hasil nyata yang dapat ditelusuri.
-- Simpan hasil gagal yang relevan dengan penjelasan; jangan mengubah hasil agar tampak lulus.
-
-## Langkah implementasi dan verifikasi
-
-- Jalankan skenario sesudah komponen terkait selesai.
-- Tambahkan catatan hasil dan tautan bukti dari laporan akhir.
+Bukti ini berasal dari stack lokal. Laporan akhir dan presentasi demo harus
+merujuk hasil nyata beserta batasannya; hasil lokal tidak membuktikan deployment
+multi-host, high availability, atau keberhasilan workflow GitHub Actions.

@@ -1,0 +1,60 @@
+=== RUN   TestProcessingBoundaries
+=== RUN   TestProcessingBoundaries/success
+=== RUN   TestProcessingBoundaries/retry_succeeds
+=== RUN   TestProcessingBoundaries/exhausted
+=== RUN   TestProcessingBoundaries/poison
+=== RUN   TestProcessingBoundaries/DLQ_unavailable
+=== RUN   TestProcessingBoundaries/offset_unavailable
+--- PASS: TestProcessingBoundaries (0.60s)
+    --- PASS: TestProcessingBoundaries/success (0.00s)
+    --- PASS: TestProcessingBoundaries/retry_succeeds (0.20s)
+    --- PASS: TestProcessingBoundaries/exhausted (0.40s)
+    --- PASS: TestProcessingBoundaries/poison (0.00s)
+    --- PASS: TestProcessingBoundaries/DLQ_unavailable (0.00s)
+    --- PASS: TestProcessingBoundaries/offset_unavailable (0.00s)
+=== RUN   TestDLQMetadata
+--- PASS: TestDLQMetadata (0.00s)
+=== RUN   TestPingDeadlineWithUnresponsiveBroker
+--- PASS: TestPingDeadlineWithUnresponsiveBroker (0.05s)
+PASS
+ok  	example.com/akuanaktehat/dashboard-updater/internal/consumer	1.509s
+=== RUN   TestProcessingBoundaries
+=== RUN   TestProcessingBoundaries/success
+=== RUN   TestProcessingBoundaries/retry_succeeds
+=== RUN   TestProcessingBoundaries/exhausted
+=== RUN   TestProcessingBoundaries/poison
+=== RUN   TestProcessingBoundaries/DLQ_unavailable
+=== RUN   TestProcessingBoundaries/offset_unavailable
+--- PASS: TestProcessingBoundaries (0.60s)
+    --- PASS: TestProcessingBoundaries/success (0.00s)
+    --- PASS: TestProcessingBoundaries/retry_succeeds (0.20s)
+    --- PASS: TestProcessingBoundaries/exhausted (0.40s)
+    --- PASS: TestProcessingBoundaries/poison (0.00s)
+    --- PASS: TestProcessingBoundaries/DLQ_unavailable (0.00s)
+    --- PASS: TestProcessingBoundaries/offset_unavailable (0.00s)
+=== RUN   TestDLQMetadata
+--- PASS: TestDLQMetadata (0.00s)
+=== RUN   TestPingDeadlineWithUnresponsiveBroker
+--- PASS: TestPingDeadlineWithUnresponsiveBroker (0.05s)
+PASS
+ok  	example.com/akuanaktehat/notifier/internal/consumer	1.727s
+=== RUN   TestProcessingBoundaries
+=== RUN   TestProcessingBoundaries/success
+=== RUN   TestProcessingBoundaries/retry_succeeds
+=== RUN   TestProcessingBoundaries/exhausted
+=== RUN   TestProcessingBoundaries/poison
+=== RUN   TestProcessingBoundaries/DLQ_unavailable
+=== RUN   TestProcessingBoundaries/offset_unavailable
+--- PASS: TestProcessingBoundaries (0.60s)
+    --- PASS: TestProcessingBoundaries/success (0.00s)
+    --- PASS: TestProcessingBoundaries/retry_succeeds (0.20s)
+    --- PASS: TestProcessingBoundaries/exhausted (0.40s)
+    --- PASS: TestProcessingBoundaries/poison (0.00s)
+    --- PASS: TestProcessingBoundaries/DLQ_unavailable (0.00s)
+    --- PASS: TestProcessingBoundaries/offset_unavailable (0.00s)
+=== RUN   TestDLQMetadata
+--- PASS: TestDLQMetadata (0.00s)
+=== RUN   TestPingDeadlineWithUnresponsiveBroker
+--- PASS: TestPingDeadlineWithUnresponsiveBroker (0.05s)
+PASS
+ok  	example.com/akuanaktehat/pemda-portal/internal/consumer	1.557s

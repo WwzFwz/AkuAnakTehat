@@ -2,7 +2,7 @@
 
 Rancangan repository platform koordinasi kebencanaan BNPB untuk IF4031 Milestone 1.
 
-**Status saat ini: fondasi, ingest Aggregator (3A), relay/consumer (3C), query internal, client-api (3B), CLI Tim Lapangan, dan script k6 tersedia.** Jalur event: mock → canonical store/outbox → Kafka → dashboard, notifier, dan pemda dengan SQLite masing-masing. Verifikasi runtime CLI/k6 serta evidence P1-P5 masih perlu dilengkapi. Lihat [bukti event](docs/evidence/events/README.md), [ingest](docs/evidence/ingest/README.md), dan [fondasi](docs/evidence/foundation/README.md).
+**Status saat ini: jalur 3A, 3B, dan 3C sudah terhubung.** Query internal, client-api, CLI Tim Lapangan, ingest, outbox, serta tiga consumer sudah memiliki pengujian unit dan integrasi. Bukti runtime dan load test terbaru ada di [verifikasi integrasi](docs/evidence/integration/README.md); hasil ini menjadi bahan laporan dan demo M1.
 
 ## Cara membaca
 
@@ -71,7 +71,7 @@ Fitur tambahan diberi label dalam README terkait. Timeout lokal bukan fitur tamb
 
 ## Menjalankan dan memeriksa fondasi
 
-Prasyarat: Go 1.24.2 dan Docker dengan Compose v2. Di PowerShell:
+Prasyarat: Go 1.24.2, Docker dengan Compose v2, dan Python 3 untuk runner load test. Di PowerShell:
 
 ```powershell
 powershell -NoProfile -File scripts/secrets/generate.ps1
@@ -87,9 +87,9 @@ Setelah stack aktif, jalankan `go test ./scripts/check/foundation_test.go -v -co
 
 | File | Isi saat ini |
 | --- | --- |
-| `go.work` | Lima module: empat fondasi dan Aggregator. |
-| `docker-compose.yml` | Lima aplikasi, PostgreSQL, Redis, Kafka, init topic, serta profile test ingest. |
-| `Makefile` | Shortcut bootstrap, up/down, logs, config, dan check. |
+| `go.work` | Sembilan module: delapan service dan CLI Tim Lapangan. |
+| `docker-compose.yml` | Delapan aplikasi (pemda pada profile demo), PostgreSQL, Redis, Kafka, init topic, serta profile test/tools. |
+| `Makefile` | Shortcut bootstrap, up/down, unit/vet, serta pemeriksaan fondasi, ingest, event, query, dan load. |
 | `.env.example` | Variabel konfigurasi beserta placeholder non-secret. |
 | `.gitignore` | Abaikan env/kunci/runtime artefak; wajib tersedia sebelum generator secret dijalankan. |
 
@@ -97,7 +97,9 @@ README komponen yang belum diimplementasikan tetap memuat rencana file dan konfi
 
 ## Status verifikasi
 
-Build/start, test dan vet Aggregator, uji transaksi PostgreSQL terisolasi, serta uji live ingest/schema drift/outage/restart lulus. Suite fondasi juga tetap lulus setelah penambahan Aggregator. Hasil rinci: [verifikasi ingest](docs/evidence/ingest/README.md). Relay/consumer memiliki uji unit dan integrasi tersendiri; lihat [bukti event](docs/evidence/events/README.md). Query B, client-api, dan CLI memiliki unit test; script k6 sudah lolos validasi konfigurasi. Runtime end-to-end, hasil load test, dan P1-P5 lengkap belum dilakukan. Eksekusi workflow GitHub Actions belum dapat dikonfirmasi dari sesi ini.
+Hasil aktual dan batas cakupan dicatat di [verifikasi integrasi](docs/evidence/integration/README.md), termasuk perbaikan review branch `feat/alfan`, pengujian seluruh module, transaksi PostgreSQL, alur event/query, expiry token alami, rebuild komponen independen, dan metrik k6. Jalankan suite runtime **berurutan** karena beberapa test mengubah simulasi sumber atau menghentikan dependensi sementara. Perintah tersedia di [panduan pemeriksaan](scripts/check/README.md).
+
+Eksekusi GitHub Actions di server belum dikonfirmasi dari sesi ini. Penyusunan laporan akhir, gladi demo, tag `milestone-1`, dan pengumpulan tetap pekerjaan terpisah. Fitur tambahan tetap belum menjadi bagian baseline.
 
 ## Dasar dan bantuan penulisan
 

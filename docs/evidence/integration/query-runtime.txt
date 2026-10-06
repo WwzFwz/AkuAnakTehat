@@ -1,0 +1,14 @@
+=== RUN   TestQueryIntegration
+    query_test.go:111: P3: Media allowlist, raw rejection, distinct privileged identities; query filters, pagination, errors and cross-service trace passed
+--- PASS: TestQueryIntegration (0.74s)
+=== RUN   TestDynamicSchemaAndStaleAPI
+    query_test.go:189: P1/P4: old/new JSONB attributes coexist and remain readable without migration; P2: stale volcanic data and healthy seismic reads recover without restart
+--- PASS: TestDynamicSchemaAndStaleAPI (37.44s)
+=== RUN   TestNaturalExpiryAndFieldCLI
+    query_test.go:241: P3: real 60s access TTL elapsed; CLI retained its session across 65s and refreshed automatically; expired token rejected before/after refresh
+--- PASS: TestNaturalExpiryAndFieldCLI (69.32s)
+=== RUN   TestIndependentRebuild
+    query_test.go:269: P4: notifier stopped, rebuilt and started independently; public reads continued and other container start timestamps remained unchanged
+--- PASS: TestIndependentRebuild (20.84s)
+PASS
+ok  	command-line-arguments	129.240s
