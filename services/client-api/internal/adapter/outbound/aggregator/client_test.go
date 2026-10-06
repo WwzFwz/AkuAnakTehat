@@ -2,6 +2,7 @@ package aggregator
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"example.com/akuanaktehat/client-api/internal/application"
 	"net/http"
@@ -58,4 +59,29 @@ func TestClientListValidatesResponse(t *testing.T) {
 
 func mapValues(key, value string) url.Values {
 	return url.Values{key: []string{value}}
+}
+
+func TestRawNumbersSurviveAndTrailingJSONFails(t *testing.T) {
+	for _, suffix := range []string{"", " {}"} {
+		t.Run(suffix, func(t *testing.T) {
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Write([]byte(`{"hazard_id":"test","attributes":{"large":9007199254740993}}` + suffix))
+			}))
+			defer server.Close()
+			h, err := New(server.URL, "key", time.Second).Get(context.Background(), "test")
+			if suffix != "" {
+				if err == nil {
+					t.Fatal("trailing JSON accepted")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			n := h["attributes"].(map[string]any)["large"]
+			if n != json.Number("9007199254740993") {
+				t.Fatal("raw number rounded", n)
+			}
+		})
+	}
 }

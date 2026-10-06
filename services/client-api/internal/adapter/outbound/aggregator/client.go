@@ -1,6 +1,7 @@
 package aggregator
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"example.com/akuanaktehat/client-api/internal/application"
@@ -23,6 +24,10 @@ func New(base, key string, timeout time.Duration) *Client {
 	return &Client{BaseURL: strings.TrimRight(base, "/"), Key: key, Timeout: timeout, HTTP: &http.Client{Timeout: timeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }, Transport: &http.Transport{Proxy: http.ProxyFromEnvironment, DialContext: (&net.Dialer{Timeout: timeout, KeepAlive: 30 * time.Second}).DialContext, MaxIdleConns: 100, MaxIdleConnsPerHost: 100, MaxConnsPerHost: 100, IdleConnTimeout: 60 * time.Second, ResponseHeaderTimeout: timeout}}}
 }
 func (c *Client) fetch(ctx context.Context, path string, out any) error {
+	start := time.Now()
+	defer func() {
+		observability.Logger().Info("upstream_request", "operation", "aggregator_get", "correlation_id", observability.ID(ctx), "latency_ms", time.Since(start).Milliseconds())
+	}()
 	if c.Timeout > 0 {
 		var cancel context.CancelFunc
 		ctx, cancel = context.WithTimeout(ctx, c.Timeout)
@@ -49,8 +54,16 @@ func (c *Client) fetch(ctx context.Context, path string, out any) error {
 	if resp.StatusCode != http.StatusOK {
 		return classifyUpstream(resp.StatusCode, b)
 	}
-	if out != nil && json.Unmarshal(b, out) != nil {
-		return application.ErrUnavailable
+	if out != nil {
+		decoder := json.NewDecoder(bytes.NewReader(b))
+		decoder.UseNumber()
+		if decoder.Decode(out) != nil {
+			return application.ErrUnavailable
+		}
+		var extra any
+		if decoder.Decode(&extra) != io.EOF {
+			return application.ErrUnavailable
+		}
 	}
 	return nil
 }

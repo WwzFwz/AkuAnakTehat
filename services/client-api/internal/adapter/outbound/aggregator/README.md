@@ -27,7 +27,8 @@ Klien HTTP untuk API internal Aggregator.
 ## Aturan penting
 
 - Timeout lokal maksimal1,5 s sejak baseline.
-- X-Internal-Key dan X-Correlation-ID dikirim; secret tidak dicatat.
+- X-Internal-Key dan X-Correlation-ID dikirim; secret tidak dicatat. Log `upstream_request` memuat correlation ID dan latency panggilan.
+- Decode memakai `UseNumber` agar angka raw besar tidak dibulatkan; respons dengan trailing JSON ditolak.
 - Retry koneksi maksimal sekali jika budget waktu masih cukup.
 - Header propagasi deadline adalah tambahan; jangan menghilangkan timeout lokal jika fitur itu mati.
 
