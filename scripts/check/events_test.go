@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -58,14 +60,33 @@ func TestEventPipeline(t *testing.T) {
 	t.Log("mock -> ingest -> PostgreSQL outbox -> Kafka -> dashboard verified")
 
 	aggregatorID := docker(t, "", "ps", "-q", "aggregator")
-	docker(t, "", "--profile", "demo", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pemda-portal")
+	// A new group AND empty store prove historical replay on every run, even
+	// when the regular pemda container has already consumed the test records.
+	suffix := fmt.Sprintf("%012x", time.Now().UnixNano()&0xffffffffffff)
+	if err := os.MkdirAll(".local", 0700); err != nil {
+		t.Fatal(err)
+	}
+	override, err := filepath.Abs(filepath.Join(".local", "late-subscriber-"+suffix+".yml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	body := "services:\n  pemda-portal:\n    environment:\n      KAFKA_GROUP_ID: pemda-late-" + suffix + "\n      SQLITE_PATH: /tmp/pemda-late.db\n"
+	if err := os.WriteFile(override, []byte(body), 0600); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		docker(t, "", "--profile", "demo", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pemda-portal")
+		_ = os.Remove(override)
+	})
+	docker(t, "", "-f", "docker-compose.yml", "-f", override, "--profile", "demo", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pemda-portal")
 	wait("late subscriber catches historical event", func() bool { return find(pemda, "/view", "hazard_id", canonical) != nil })
 	if docker(t, "", "ps", "-q", "aggregator") != aggregatorID {
 		t.Fatal("new subscriber replaced producer")
 	}
-	t.Log("pemda group joined and replayed history without replacing Aggregator")
+	t.Log("fresh pemda group and empty store replayed history without replacing Aggregator")
+	// Restore the regular persistent volume/group before restart/dedup checks.
+	docker(t, "", "--profile", "demo", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pemda-portal")
 
-	suffix := fmt.Sprintf("%012x", time.Now().UnixNano()&0xffffffffffff)
 	hazardID := "00000000-0000-4000-8000-" + suffix
 	eventID := "00000001-0000-4000-8000-" + suffix
 	payload := func(version int, severity string) string {
@@ -140,6 +161,12 @@ func TestEventPipeline(t *testing.T) {
 	docker(t, "", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "dashboard-updater")
 	wait("offline group catches up", func() bool { return string(find(dashboard, "/view", "hazard_id", hazardID)["version"]) == "4" })
 	t.Log("paused dashboard caught up; notifier and pemda continued independently")
+	for _, service := range []string{"dashboard-updater", "notifier", "pemda-portal"} {
+		logs := docker(t, "", "logs", "--no-log-prefix", "--tail=200", service)
+		if !strings.Contains(logs, `"correlation_id":"`+suffix+`"`) || !strings.Contains(logs, `"msg":"record_completed"`) {
+			t.Fatal("event trace absent after offset commit", service)
+		}
+	}
 
 	checkpoint := query(`SELECT watermark FROM checkpoints WHERE endpoint='bmkg.seismic-events';`)
 	docker(t, "", "stop", "kafka")
@@ -147,8 +174,14 @@ func TestEventPipeline(t *testing.T) {
 	wait("ingest continues while broker is down", func() bool {
 		return query(`SELECT watermark FROM checkpoints WHERE endpoint='bmkg.seismic-events';`) != checkpoint && query(`SELECT count(*)>0 FROM outbox WHERE published_at IS NULL;`) == "t"
 	})
-	status(t, request(t, "GET", dashboard+"/health", "", nil), 200)
-	status(t, request(t, "GET", dashboard+"/ready", "", nil), 503)
+	for _, address := range []string{dashboard, notifier, pemda} {
+		status(t, request(t, "GET", address+"/health", "", nil), 200)
+		started := time.Now()
+		status(t, request(t, "GET", address+"/ready", "", nil), 503)
+		if time.Since(started) > 3500*time.Millisecond {
+			t.Fatal("consumer readiness exceeded dependency deadline", address)
+		}
+	}
 	boundary := query(`SELECT max(id) FROM outbox;`)
 	docker(t, "", "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "kafka")
 	wait("pending events drain after broker recovery", func() bool {

@@ -76,7 +76,7 @@ func TestIngestPipeline(t *testing.T) {
 	if query(`SELECT count(*) FROM hazard_events WHERE hazard_id='`+marker+`';`) != "1" {
 		t.Fatal("restart lost stable hazard identity")
 	}
-	if query(`SELECT count(*) FROM schema_migrations WHERE version=1 AND dirty=false;`) != "1" {
+	if query(`SELECT count(*) FROM schema_migrations WHERE version=2 AND dirty=false;`) != "1" {
 		t.Fatal("migration version changed on restart")
 	}
 	logs := docker(t, "", "logs", "--no-log-prefix", "--tail=400", "aggregator")
