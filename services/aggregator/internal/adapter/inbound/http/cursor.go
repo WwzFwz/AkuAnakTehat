@@ -31,7 +31,7 @@ func parseFilter(values url.Values) (query.HazardFilter, error) {
 	}
 	if values.Has("limit") {
 		limit, err := strconv.Atoi(values.Get("limit"))
-		if err != nil {
+		if err != nil || limit < 1 || limit > query.MaxLimit {
 			return query.HazardFilter{}, query.ErrInvalidLimit
 		}
 		filter.Limit = limit
@@ -50,5 +50,5 @@ func parseFilter(values url.Values) (query.HazardFilter, error) {
 		}
 		filter.Cursor = &cursor
 	}
-	return filter, nil
+	return filter.Normalize()
 }

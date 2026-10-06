@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"example.com/akuanaktehat/aggregator/internal/application/query"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -42,7 +43,12 @@ func (h *handler) list(w http.ResponseWriter, r *http.Request) {
 		writeMappedError(w, r, query.ErrUnavailable)
 		return
 	}
-	filter, err := parseFilter(r.URL.Query())
+	values, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil {
+		writeMappedError(w, r, query.ErrInvalidQuery)
+		return
+	}
+	filter, err := parseFilter(values)
 	if err != nil {
 		writeMappedError(w, r, err)
 		return
@@ -62,7 +68,7 @@ func (h *handler) detail(w http.ResponseWriter, r *http.Request) {
 		writeError(w, r, http.StatusUnauthorized, "invalid_credentials", "internal credential is invalid")
 		return
 	}
-	if len(r.URL.Query()) > 0 {
+	if r.URL.RawQuery != "" {
 		writeMappedError(w, r, query.ErrInvalidQuery)
 		return
 	}

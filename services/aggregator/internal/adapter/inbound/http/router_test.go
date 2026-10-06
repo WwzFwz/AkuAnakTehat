@@ -73,6 +73,10 @@ func TestListRejectsCredentialsAndQuery(t *testing.T) {
 		{name: "wrong key", key: "wrong", path: "/internal/hazards", code: "invalid_credentials"},
 		{name: "unknown parameter", key: "internal-secret", path: "/internal/hazards?unknown=x", code: "invalid_query"},
 		{name: "invalid cursor", key: "internal-secret", path: "/internal/hazards?cursor=bad", code: "invalid_cursor"},
+		{name: "zero limit", key: "internal-secret", path: "/internal/hazards?limit=0", code: "invalid_limit"},
+		{name: "negative limit", key: "internal-secret", path: "/internal/hazards?limit=-1", code: "invalid_limit"},
+		{name: "over limit", key: "internal-secret", path: "/internal/hazards?limit=501", code: "invalid_limit"},
+		{name: "malformed escape", key: "internal-secret", path: "/internal/hazards?severity=%zz", code: "invalid_query"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			fake := &fakeQuery{}

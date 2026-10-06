@@ -39,7 +39,7 @@ func Handler(ingestPing, queryPing func(context.Context) error, internal http.Ha
 		correlationID := ensureCorrelation(w, r)
 		start := time.Now()
 		mux.ServeHTTP(w, r)
-		logger.Debug("http_request", "method", r.Method, "path", r.URL.Path, "correlation_id", correlationID, "latency_ms", time.Since(start).Milliseconds())
+		logger.Info("http_request", "method", r.Method, "path", r.URL.Path, "correlation_id", correlationID, "latency_ms", time.Since(start).Milliseconds())
 	})
 }
 

@@ -13,6 +13,11 @@ import (
 )
 
 func (s *Store) List(ctx context.Context, filter query.HazardFilter) (query.HazardPage, error) {
+	var err error
+	filter, err = filter.Normalize()
+	if err != nil {
+		return query.HazardPage{}, err
+	}
 	ctx, cancel := context.WithTimeout(ctx, s.Timeout)
 	defer cancel()
 
