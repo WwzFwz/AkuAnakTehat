@@ -10,3 +10,6 @@ env/.bootstrap.lock
 coverage.out
 go.work.sum
 .DS_Store
+
+# Local agent instructions, including nested folders and case variants.
+[Aa][Gg][Ee][Nn][Tt][Ss].[Mm][Dd]
