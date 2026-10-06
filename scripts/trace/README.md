@@ -1,35 +1,18 @@
-# trace
+# Trace correlation ID
 
-[Peta repository](../../README.md)
+Dari root repository, jalankan `sh scripts/trace/trace.sh <id>` (POSIX) atau
+`powershell -NoProfile -File scripts/trace/trace.ps1 <id>` (Windows). Bisa juga
+langsung `py scripts/trace/trace.py <id> --tail 5000`.
 
-Mencari log satu correlation ID di seluruh container.
+Membutuhkan Python 3 dan Docker Compose. Script membaca log JSON, mencocokkan
+field `correlation_id` secara persis, lalu mengurutkan hasil menurut timestamp.
+Default 2.000 baris terakhir per container; exit 1 bila tidak ada kecocokan.
+Tidak mengubah container atau konfigurasi, dan tidak mengevaluasi ID sebagai shell.
 
-**Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
+Jalur query dapat ditelusuri dari client-api ke Aggregator. Jalur event memakai
+ID batch poller yang dibawa ke outbox dan consumer. Ini dua alur berbeda; query
+bukan penyebab ingest. `record_completed` berarti pemrosesan/penanganan DLQ dan
+commit offset selesai, bukan selalu sebuah notifikasi baru terkirim.
 
-**Status:** rancangan saja, belum diimplementasikan. Nama file dan operasi di bawah adalah usulan; file tersebut belum dibuat. Sesuaikan signature saat kontrak tim disepakati.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `trace.sh` | Filter log Compose berdasarkan correlation ID persis. |
-| `trace.ps1` | Alternatif Windows bila diperlukan. |
-
-## Kontrak dan alur
-
-- Rencana pemanggilan: scripts/trace/trace.sh <id>.
-
-## Dependensi
-
-- Log JSON semua service dan Docker Compose.
-
-## Aturan penting
-
-- Validasi argumen; hindari evaluasi shell dari ID pengguna.
-- Jangan menganggap correlation ID unik untuk seluruh waktu hidup aplikasi; satu alur punya ID sendiri.
-- Output tidak boleh memuat secret/header sensitif.
-
-## Langkah implementasi dan verifikasi
-
-- Tentukan parser log yang diperlukan dan dokumentasikan prasyarat.
-- Verifikasi alur ingest→outbox→consumer dapat dilacak.
+Jangan menambahkan token, secret, atau header autentikasi ke log aplikasi.
+Contoh hasil aktual ada di [bukti integrasi](../../docs/evidence/integration/README.md).

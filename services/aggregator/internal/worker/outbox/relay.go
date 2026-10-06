@@ -22,13 +22,15 @@ func (r *Relay) Drain(ctx context.Context) error {
 		return err
 	}
 	for _, m := range messages {
+		started := time.Now()
 		if err = r.Publisher.Publish(ctx, m); err != nil {
 			return err
 		}
+		publishLatency := time.Since(started).Milliseconds()
 		if err = r.Store.MarkPublished(ctx, m.ID, time.Now().UTC()); err != nil {
 			return err
 		}
-		r.Logger.Info("outbox_published", "event_id", m.EventID, "hazard_id", m.HazardID, "version", m.Version, "correlation_id", m.CorrelationID)
+		r.Logger.Info("outbox_published", "event_id", m.EventID, "hazard_id", m.HazardID, "version", m.Version, "correlation_id", m.CorrelationID, "publish_latency_ms", publishLatency)
 	}
 	return nil
 }
