@@ -57,7 +57,7 @@ Perbaikannya adalah mencatat setiap percobaan dengan correlation ID yang sama, n
 
 ### G2. Informasi laporan dan penyelesaian kelompok
 
-Kontribusi penulisan per anggota dan rincian tambahan pemakaian LLM masih perlu dikonfirmasi oleh anggota. Status hosted CI, demo sinkron, revisi atau tag pengumpulan, dan formulir belum boleh dinyatakan selesai hanya berdasarkan tes lokal. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md). Placeholder ini merupakan informasi yang belum tersedia, bukan komponen Go yang belum dibuat.
+Kontribusi penulisan kedua anggota telah dikonfirmasi mencakup keseluruhan laporan. Rincian tambahan pemakaian LLM masih perlu dikonfirmasi oleh anggota. Status hosted CI, demo sinkron, revisi atau tag pengumpulan, dan formulir belum boleh dinyatakan selesai hanya berdasarkan tes lokal. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md). Placeholder ini merupakan informasi yang belum tersedia, bukan komponen Go yang belum dibuat.
 
 ## Fitur opsional dan perubahan pembagian file
 

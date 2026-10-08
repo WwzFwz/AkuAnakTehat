@@ -18,12 +18,12 @@ Konfigurasi `.vscode` berada di folder laporan, tidak mengubah pengaturan editor
 | --- | --- |
 | `main.tex` | Urutan penggabungan seluruh bagian. |
 | `preamble.tex` | Font, warna, margin, tabel, listing, macro gambar dan placeholder. |
-| `metadata.tex` | Identitas/tanggal, revisi kode acuan, dan kontribusi penulisan yang belum diketahui. |
+| `metadata.tex` | Identitas/tanggal, revisi kode acuan, dan kontribusi penulisan anggota. |
 | `sections/00-sampul.tex` | Sampul. |
 | `sections/01-kontribusi.tex` | Kontribusi desain, implementasi, dan penulisan sesuai spesifikasi. |
 | `sections/02-deskripsi-sistem.tex` | Tujuan dan lingkup M1. |
 | `sections/03-arsitektur.tex` | Diagram, service, protokol, container, storage ownership. |
-| `sections/04-teknologi-dan-asumsi.tex` | Teknologi, alasan, asumsi dan perubahan dari rancangan awal. |
+| `sections/04-teknologi-dan-asumsi.tex` | Teknologi, alasan pemilihan, asumsi, dan batasan implementasi. |
 | `sections/05-menjalankan-sistem.tex` | Ringkasan start, check, CLI dan trace. |
 | `sections/06-p1-interoperabilitas.tex` | P1: pemetaan, tolerant reader, schema evolution, transaksi. |
 | `sections/07-p2-konkurensi.tex` | P2: isolasi, proteksi, stale, konfigurasi dan hasil load. |
@@ -33,7 +33,7 @@ Konfigurasi `.vscode` berada di folder laporan, tidak mengubah pengaturan editor
 | `sections/11-verifikasi-dan-batasan.tex` | Hasil lokal, kegagalan yang diperbaiki, status CI, batas klaim. |
 | `sections/12-deklarasi-ai.tex` | Deklarasi LLM dan bagian yang perlu dikonfirmasi anggota. |
 | `appendices/a-matriks-kriteria.tex` | Pemetaan tiap kriteria spesifikasi ke mekanisme/bukti. |
-| `appendices/b-indeks-bukti.tex` | Indeks file bukti, contoh trace, placeholder demo. |
+| `appendices/b-indeks-bukti.tex` | Indeks file bukti dan contoh trace. |
 | `references.tex` | Spesifikasi, rancangan awal, kode dan dokumentasi primer. |
 | `diagrams/01-*.puml` sampai `05-*.puml`, `07-*.puml` | Enam sumber diagram arsitektur dan sequence; nomor 06 dipakai grafik pengujian. |
 | `assets/figures/` | PDF/SVG diagram dan PDF/PNG grafik yang sudah bisa dipakai. |

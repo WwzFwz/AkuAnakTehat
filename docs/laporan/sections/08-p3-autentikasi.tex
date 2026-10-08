@@ -34,6 +34,8 @@ Permintaan eksplisit field mentah oleh Media ditolak server dengan 403, termasuk
 \subsection{Rotasi refresh dan batas atomisitas}
 \diagram{04-refresh-token}{Sesi Tim Lapangan, rotasi refresh, serta pemeriksaan token access lama yang sudah kedaluwarsa.}{fig:refresh}
 
+Gambar~\ref{fig:refresh} menunjukkan penerbitan sesi awal melalui kredensial Tim Lapangan, dilanjutkan pembaruan sesi memakai refresh token. Access token yang singkat membatasi masa penggunaan token yang bocor, sedangkan refresh token memungkinkan CLI memperoleh access token baru tanpa meminta pengguna memasukkan kredensial pada setiap pembaruan. Validasi dan penggantian refresh dilakukan dalam satu operasi Redis agar dua permintaan tidak sama-sama berhasil memakai token lama.
+
 Redis menyimpan keluarga sesi dengan expiry tetap. Lua memvalidasi tipe key, keberadaan, family aktif, kecocokan metadata, dan TTL sebelum mutasi. Pada rotasi normal, refresh lama ditandai used dan refresh baru dibuat dengan sisa masa berlaku yang tidak memperpanjang keluarga. Pemakaian kembali refresh lama mencabut keluarga. Semua langkah tersebut atomik terhadap pengamatan state Redis; script juga menyusun validasi sebelum mutasi karena error runtime Lua tidak otomatis melakukan rollback.
 
 Atomisitas Redis tidak mencakup respons HTTP. Jika rotasi berhasil tetapi respons token baru hilang, retry token lama dapat dianggap reuse; client mungkin harus login ulang. Karena itu satu refresh token tidak digunakan secara paralel oleh CLI maupun antar-VU k6. Ini trade-off proteksi replay yang ketat terhadap kelangsungan sesi pada kegagalan jaringan tertentu.

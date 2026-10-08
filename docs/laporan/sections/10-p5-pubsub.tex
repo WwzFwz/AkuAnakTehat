@@ -32,6 +32,8 @@ SQLite memakai volume sendiri, WAL, dan synchronous FULL. Efek view persisten se
 \coderef{services/notifier/internal/application/apply.go}
 \coderef{services/notifier/internal/consumer/consumer.go}
 
+Pemisahan cabang pada Gambar~\ref{fig:consumer} mencegah gangguan penyimpanan diperlakukan sebagai kerusakan pesan. Record valid tetap diperlukan setelah dependensi pulih, sehingga kegagalan SQLite tidak menjadi alasan memindahkannya ke DLQ dan memajukan offset. Konsekuensinya, group yang terdampak menunggu pemulihan, sementara group lain tetap berjalan. Untuk record invalid, DLQ menyimpan bahan pemeriksaan agar satu pesan yang tidak dapat diproses tidak menahan stream selamanya.
+
 \subsection{Alternatif dan trade-off}
 Pemanggilan HTTP setiap consumer dari Aggregator lebih sederhana di awal, tetapi mengikat pengetahuan producer tentang subscriber dan membuat kegagalan subscriber masuk jalur pengiriman. RabbitMQ dengan fan-out queue per consumer merupakan alternatif wajar untuk distribusi tugas, namun mekanisme replay histori dan lifecycle queue tetap perlu dirancang. Kafka dipilih untuk retensi log dan offset group; biaya memori, operasional broker, duplikasi, dan pengelolaan retention diterima pada demo lokal. Evaluasi ini tidak mengklaim Kafka selalu lebih unggul pada semua beban.
 

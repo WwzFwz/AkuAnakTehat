@@ -1,5 +1,5 @@
 % !TeX root = ../main.tex
-\section{Teknologi dan Asumsi}
+\section{Teknologi, Asumsi, dan Batasan}
 \subsection{Teknologi terpilih}
 \begin{tabularx}{\linewidth}{P{0.26\linewidth}Y}
 \toprule Teknologi & Alasan terkait kebutuhan\\\midrule
@@ -17,16 +17,26 @@ k6 0.57.0 & Pengukuran beban berkelanjutan, percentile, throughput, dan error de
 \end{tabularx}
 
 \subsection{Asumsi operasional dan data}
+Asumsi berikut merupakan prasyarat agar mekanisme sistem bekerja sesuai penjelasan laporan. Konsekuensi ketika prasyarat tidak terpenuhi dinyatakan bersama setiap asumsi.
 \begin{enumerate}
-\item Satu host Compose, satu instance per service, satu relay berurutan, dan satu broker Kafka. Konfigurasi ini bukan high availability.
-\item Jaringan demo dianggap lingkungan lokal tepercaya. HTTP internal tidak memakai TLS dan Kafka tidak memakai SASL. Isolasi network dan kredensial mencegah akses aplikasi yang tidak semestinya dalam model ini, tetapi tidak melindungi dari administrator host yang berbahaya.
+\item Sistem dijalankan pada satu host Compose dengan satu instance per service, satu relay berurutan, dan satu broker Kafka. Penambahan penulis atau relay paralel memerlukan koordinasi tambahan agar pemrosesan tetap konsisten.
+\item Jaringan demo dianggap lingkungan lokal tepercaya. HTTP internal tidak memakai TLS dan Kafka tidak memakai SASL. Isolasi network dan kredensial membatasi akses antaraplikasi, tetapi tidak melindungi kerahasiaan lalu lintas dari pihak yang menguasai host atau jaringan tersebut.
 \item ID logis sumber tetap saat record yang sama dipoll ulang. Hazard disatukan melalui pasangan \texttt{(source, source\_ref\_id)}. Stabilitas ID kanonik bergantung pada keberlangsungan Canonical Store.
 \item Mock memakai seed minimal 20 record, generator default setiap 10 detik, dan memori lokal. Restart mock dapat kehilangan data runtime yang belum diambil; mekanisme ini bukan jaminan histori instansi produksi.
 \item \texttt{since} gempa dan laporan bersifat inklusif menurut waktu kejadian atau laporan. Warning tidak memiliki timestamp perubahan pada kontrak wire; mock menyimpan waktu perubahan secara internal untuk filtering. Kompatibilitas dengan mock lain memerlukan interpretasi \texttt{since} warning yang sama.
-\item Watermark memakai waktu mulai request Aggregator dengan overlap 10 detik. Ini mengasumsikan jam dan keterlambatan sumber berada dalam batas yang wajar; data bertimestamp lama di luar overlap dapat terlewat. Tidak ada jaminan toleransi keterlambatan tak terbatas.
+\item Watermark memakai waktu mulai request Aggregator dengan overlap 10 detik. Record baru atau perubahan harus masih tercakup oleh rentang \texttt{since} saat polling berikutnya. Selisih jam dan keterlambatan kemunculan data dapat membuat timestamp berada di luar rentang tersebut, sehingga record terlewat. Overlap bukan jaminan toleransi keterlambatan tak terbatas.
 \item Tabel referensi gunung api tersedia secara statis dan sintetis. \texttt{volcano\_id} yang tidak dikenal dikarantina, bukan diberi koordinat tebakan.
-\item Clock yang cukup selaras diperlukan untuk JWT dan timestamp. Implementasi verifikator tidak menambahkan leeway 5 detik yang pernah disebut rancangan awal. Anomali pengukuran clock load generator dibahas pada P2.
+\item Jam Auth Service dan Client API cukup selaras untuk memeriksa waktu terbit dan kedaluwarsa JWT. Verifikator tidak menambahkan toleransi waktu, sehingga selisih jam dapat menyebabkan token sah ditolak. Validitas jam load generator juga diperlukan untuk pengukuran durasi, sebagaimana dibahas pada Bagian~\ref{sec:p2}.
 \end{enumerate}
+
+\subsection{Batas layanan dan ketahanan}
+Sistem merupakan PoC lokal dan belum menyediakan high availability. Satu host, satu PostgreSQL, dan satu broker Kafka masih menjadi titik kegagalan. Named volume mempertahankan state saat container dimulai ulang, tetapi tidak menjamin pemulihan ketika seluruh volume hilang. Hasil load test lokal karena itu tidak menjadi klaim kapasitas atau ketersediaan deployment lain.
+
+Jalur baca menyajikan data terakhir yang berhasil disimpan, bukan pembacaan sensor secara langsung. Status basi membantu client mengenali masalah sumber, tetapi tidak membuat data lama menjadi mutakhir. Evolusi skema dibatasi pada penambahan field JSON yang valid; perubahan field wajib atau arti data tetap memerlukan penyesuaian pemetaan.
+
+Pengiriman event dapat berulang, dan urutan hanya terjaga dalam partisi Kafka dengan pemetaan key yang tetap. Consumer yang tertinggal melewati retensi tujuh hari tidak dijamin memperoleh seluruh histori. Notifier masih berupa simulasi log dan dapat mengirim ulang bila proses mati sesudah pengiriman tetapi sebelum marker persisten. Rincian batas ini terdapat pada Bagian~\ref{sec:p5}.
+
+Rotasi refresh atomik terhadap state Redis, tetapi tidak menjamin respons token baru sampai ke client. Pencabutan keluarga refresh juga tidak langsung membatalkan JWT yang belum kedaluwarsa. Konsekuensi terhadap sesi dan alasan pemilihan mekanisme dijelaskan pada Bagian~\ref{sec:p3}.
 
 \subsection{Batas ukuran dan pemulihan backlog}
 Envelope event lengkap dibatasi hingga 4 MiB setelah serialisasi JSON UTF-8. Batas batch Kafka sebesar 5 MiB dan fetch sebesar 6 MiB menyediakan ruang bagi overhead protokol. Respons sumber dan halaman API dibatasi 8 MiB, sedangkan view consumer membatasi payload halaman hingga 7 MiB. Pagination mengikuti batas jumlah record maupun byte sehingga atribut event yang diterima tidak dipotong.
@@ -34,6 +44,3 @@ Envelope event lengkap dibatasi hingga 4 MiB setelah serialisasi JSON UTF-8. Bat
 Event yang melebihi batas saat ingest dikarantina bersama payload sumber. Outbox lama yang ditolak permanen tetap disimpan dengan alasan penolakan dan tidak ditandai published. Relay dapat melanjutkan setelah penolakan tersimpan; akibatnya consumer dapat melihat lompatan versi snapshot. Pemulihan penolakan ini memerlukan operator. Respons sumber yang melampaui 8 MiB tetap menjadi keterbatasan karena kontrak sumber belum mempunyai pagination.
 
 Timeout transaksi 2 detik berlaku per record. Checkpoint baru maju setelah semua record dalam respons selesai ditangani. Kegagalan di tengah tidak membatalkan prefix yang sudah commit; pengulangan dengan hash mencegah outbox ganda. Kegagalan penyimpanan consumer mempertahankan offset untuk retry setelah restart worker, sedangkan DLQ digunakan bagi event yang tidak memenuhi kontrak.
-
-\subsection{Keputusan yang berubah dari rancangan awal}
-Versi implementasi memakai log \texttt{schema\_drift}, bukan tabel pengamatan skema. Notifier dan pemda mempunyai endpoint inspeksi loopback 8092 dan 8093. Idempotensi notifikasi dibatasi oleh celah pengiriman sebelum marker persisten. Rotasi Redis tidak menjamin respons HTTP token baru sampai ke client. Urutan Kafka hanya berlaku dalam partisi dengan pemetaan key yang tetap. Perubahan ini dipertahankan sebagai batas rancangan, bukan ditutupi sebagai jaminan yang sudah terpenuhi.

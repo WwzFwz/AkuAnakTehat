@@ -7,6 +7,8 @@ Go menjalankan worker BMKG dan PVMBG secara independen. Dua endpoint BMKG di-fet
 Jalur baca client mengambil data dari Canonical Store melalui query internal Aggregator, sehingga tidak ikut menunggu PVMBG. Pool PostgreSQL query dipisahkan dari pool ingest. Pemisahan pool membatasi kompetisi koneksi, tetapi keduanya masih memakai proses dan database yang sama. Pemakaian CPU, disk, dan lock database karena itu belum sepenuhnya terisolasi.
 \diagram{03-query-isolation}{Pemisahan request baca dan polling sumber. Pembacaan seismik tetap menggunakan store ketika panggilan PVMBG lambat atau gagal.}{fig:query}
 
+Cabang paralel pada Gambar~\ref{fig:query} menunjukkan dua pekerjaan yang tidak saling menunggu. Timeout dan circuit breaker berlaku pada worker polling, sedangkan permintaan client mempunyai batas waktu query sendiri. Pemeriksaan scope dan batas beban dilakukan sebelum query agar permintaan yang tidak berhak atau melampaui kapasitas tidak memakai koneksi database. Proyeksi diterapkan setelah query untuk membentuk respons sesuai hak client. Ketika PVMBG gagal, jalur baca tetap dapat mengembalikan data tersimpan beserta status basi; independensi ini tidak berlaku jika Canonical Store sendiri tidak tersedia.
+
 \begin{tabularx}{\linewidth}{P{0.25\linewidth}Y}
 \toprule Kegagalan & Mekanisme dan batasnya\\\midrule
 Head-of-line blocking & Worker sumber terpisah dan materialisasi data mengeluarkan HTTP sumber dari jalur request client. Read tidak menjamin data terbaru sensor.\\

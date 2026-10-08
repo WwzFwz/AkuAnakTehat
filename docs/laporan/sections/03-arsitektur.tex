@@ -5,6 +5,15 @@
 Gambar~\ref{fig:architecture} memperlihatkan container, protokol, dan kepemilikan storage sistem.
 \architecturefigure
 
+\subsection{Alur kerja sistem}
+Alur sistem pada Gambar~\ref{fig:architecture} terdiri atas penerimaan data, pelayanan permintaan client, dan distribusi event. Ketiganya menggunakan data kanonik yang sama, tetapi berjalan secara terpisah agar keterlambatan sumber atau consumer tidak langsung menahan permintaan baca.
+
+Pada penerimaan data, worker Aggregator melakukan polling ke BMKG dan PVMBG dengan kredensial masing-masing. Record divalidasi, dipetakan menjadi HazardEvent, dan dikorelasikan dengan warning tsunami bila relevan. Data baru atau perubahan konten disimpan bersama snapshot outbox dalam transaksi PostgreSQL. Record yang isinya tetap tidak menghasilkan event baru. Checkpoint maju setelah seluruh respons selesai ditangani, sehingga kegagalan di tengah proses masih dapat dipulihkan melalui pembacaan ulang. Rincian pemetaan dan transaksi dibahas pada Bagian~\ref{sec:p1}.
+
+Pada pelayanan client, identitas ditukar menjadi token melalui Auth Service. Client kemudian mengirim permintaan ber-JWT ke Client API, yang memeriksa hak akses dan membatasi beban sebelum meneruskan query ke API internal Aggregator. Aggregator membaca Canonical Store tanpa memanggil sumber kembali. Client API memproyeksikan hasil sesuai scope dan menyertakan status kebaruan sumber. Pemisahan ini mempertahankan akses ke data tersimpan saat sumber bermasalah, dengan konsekuensi data dapat bersifat basi. Mekanismenya dijelaskan pada Bagian~\ref{sec:p2} dan~\ref{sec:p3}.
+
+Pada distribusi event, relay membaca outbox yang sudah committed dan memublikasikan snapshot ke Kafka. Setelah ACK broker diterima, baris outbox ditandai published. Dashboard Updater, Notifier, dan Pemda Portal memakai consumer group berbeda serta penyimpanan SQLite masing-masing. Dengan demikian, setiap consumer dapat memproses stream dan mengejar ketertinggalan secara independen tanpa meminta ulang data ke Aggregator. Batas pengiriman ulang dan idempotensi dibahas pada Bagian~\ref{sec:p5}.
+
 \subsection{Komponen dan kepemilikan data}
 Sistem memiliki delapan service aplikasi apabila pemda-portal diaktifkan. PostgreSQL, Redis, dan Kafka merupakan container infrastruktur. Konfigurasi dasar menjalankan sepuluh container jangka panjang, ditambah satu \texttt{kafka-init} yang selesai setelah membuat topic; profile demo menambah pemda-portal. CLI dan load generator adalah client pengujian, bukan service penyimpan data.
 
@@ -30,6 +39,3 @@ Relay mengirim envelope melalui protokol Kafka. Consumer mengambil stream dengan
 
 Network \texttt{store\_net} menghubungkan Aggregator dan PostgreSQL; \texttt{edge\_net} menghubungkan client-api dan Aggregator; \texttt{source\_net} menghubungkan sumber dan poller; \texttt{auth\_net} menghubungkan auth-service dan Redis; \texttt{bus\_net} menghubungkan producer, broker, dan consumer. Profile test mempunyai akses yang diperlukan sebagai perangkat uji administratif, bukan jalur akses aplikasi produksi.
 \coderef{docker-compose.yml}
-
-\subsection{Alur lintas komponen}
-Pada ingest, setiap record menghasilkan perubahan HazardEvent dan outbox dalam satu transaksi PostgreSQL. Checkpoint baru dimajukan setelah seluruh respons polling ditangani; kegagalan di tengah respons mengulang bagian yang sudah committed secara idempoten. Pada baca, client-api menerapkan autentikasi dan batas beban sebelum mengakses query internal; hasil kemudian diproyeksikan menurut scope. Pada distribusi, relay memublikasikan snapshot yang sudah committed, lalu menandai outbox setelah ACK. Ketiga alur diuraikan lebih lanjut pada P1, P2, P3, dan P5.
