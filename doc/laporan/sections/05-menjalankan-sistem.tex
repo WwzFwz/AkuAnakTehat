@@ -12,7 +12,7 @@ Generator menyiapkan kredensial berbeda, pasangan key JWT, dan berkas environmen
 docker compose --profile demo up -d --build pemda-portal
 \end{lstlisting}
 
-Pengujian unit/vet dijalankan melalui \nolinkurl{scripts/check/check.ps1} atau \texttt{make check}. Pengujian runtime harus berurutan karena memicu perubahan skema, outage, dan restart dependensi. Contoh regresi lengkap:
+Pengujian unit dan analisis statis dengan go vet dijalankan melalui \nolinkurl{scripts/check/check.ps1} atau \texttt{make check}. Pengujian runtime harus berurutan karena memicu perubahan skema, outage, dan restart dependensi. Contoh regresi lengkap:
 \begin{lstlisting}[numbers=none]
 $env:GOWORK='off'
 go test ./scripts/check/foundation_test.go `
@@ -29,4 +29,4 @@ Gunakan identitas Tim Lapangan untuk raw. Endpoint \texttt{/health} menyatakan p
 \begin{lstlisting}[numbers=none]
 py scripts/trace/trace.py <correlation-id>
 \end{lstlisting}
-Rincian endpoint, konfigurasi, cara memuat kredensial, dan skenario ada pada \codepath{README.md}, \codepath{infra/README.md}, \codepath{scripts/check/README.md}, serta \codepath{scripts/loadtest/README.md}. Stop/start normal mempertahankan volume; menghapus volume tidak dipakai sebagai bukti recovery.
+Rincian endpoint, konfigurasi, cara memuat kredensial, dan skenario ada pada \codepath{README.md}, \codepath{infra/README.md}, \codepath{scripts/check/README.md}, serta \codepath{scripts/loadtest/README.md}. Penghentian dan pengaktifan kembali secara normal mempertahankan volume; menghapus volume tidak dipakai sebagai bukti recovery.

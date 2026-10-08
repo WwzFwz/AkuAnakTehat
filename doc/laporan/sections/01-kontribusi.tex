@@ -1,14 +1,14 @@
 % !TeX root = ../main.tex
 \section*{Kontribusi Anggota}
 \addcontentsline{toc}{section}{Kontribusi Anggota}
-Pembagian berikut mengikuti tanggung jawab yang dinyatakan anggota kelompok. Jalur 3B berarti query dan API internal Aggregator, penyelesaian client-api, CLI Tim Lapangan, serta script k6; penamaan jalur ini hanya penanda pembagian implementasi.
+Pembagian berikut menjelaskan kontribusi setiap anggota berdasarkan komponen sistem dan tanggung jawab yang dikerjakan.
 
 \begin{tabularx}{\linewidth}{P{0.22\linewidth}YY}
 \toprule
 Aspek & Dzaky Aurelia Fawwaz (13523065) & Muhammad Alfansya (13523005)\\
 \midrule
-Perancangan & Perancangan arsitektur sistem dan mekanisme penyelesaian P1--P5. & Membantu verifikasi dan validasi kesesuaian rancangan terhadap spesifikasi.\\
-Implementasi & Seluruh bagian di luar 3B: fondasi, mock, auth-service, ingest Aggregator, relay/Kafka, consumer, serta integrasi dan pengujian lintas bagian. & Jalur 3B: query/API internal Aggregator, client-api, CLI Tim Lapangan, dan script load test.\\
+Perancangan & Perancangan arsitektur sistem dan mekanisme penyelesaian P1 hingga P5. & Membantu verifikasi dan validasi kesesuaian rancangan terhadap spesifikasi.\\
+Implementasi & BMKG Mock dan PVMBG Mock; Auth Service; polling, pemetaan, korelasi tsunami, transaksi dan watermark pada Aggregator; outbox relay dan producer Kafka; Dashboard Updater, Notifier, dan Pemda Portal; infrastruktur Docker Compose, bootstrap secret, dan CI; integrasi serta pengujian lintas komponen. & Query dan API internal Aggregator; Client API beserta rate limit, batas konkurensi, pagination, dan penanganan galat; CLI Tim Lapangan; serta script load test k6.\\
 Penulisan laporan & \DzakyWriting & \AlfanWriting\\
 \bottomrule
 \end{tabularx}

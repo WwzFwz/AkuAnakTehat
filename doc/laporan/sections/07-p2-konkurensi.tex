@@ -1,10 +1,10 @@
 % !TeX root = ../main.tex
-\section{P2 -- Konkurensi, Availability, dan Degradasi}
+\section{P2: Konkurensi, Availability, dan Degradasi}
 \label{sec:p2}
 \subsection{Model konkurensi dan isolasi}
 Go menjalankan worker BMKG dan PVMBG secara independen. Dua endpoint BMKG di-fetch paralel, lalu hasilnya diterapkan secara berurutan dalam worker BMKG. Worker tidak memulai siklus berikutnya sebelum siklus aktif selesai; konkurensi fetch tidak tumbuh tanpa batas. Tiap endpoint mempunyai state circuit breaker sendiri.
 
-Jalur baca client mengambil data dari Canonical Store melalui query internal Aggregator, sehingga tidak ikut menunggu PVMBG. Pool PostgreSQL query dipisahkan dari pool ingest. Pemisahan pool membatasi kompetisi koneksi, tetapi keduanya masih memakai proses/database yang sama: CPU, disk, dan lock database bukan resource yang sepenuhnya terisolasi.
+Jalur baca client mengambil data dari Canonical Store melalui query internal Aggregator, sehingga tidak ikut menunggu PVMBG. Pool PostgreSQL query dipisahkan dari pool ingest. Pemisahan pool membatasi kompetisi koneksi, tetapi keduanya masih memakai proses dan database yang sama: CPU, disk, dan lock database bukan resource yang sepenuhnya terisolasi.
 \diagram{03-query-isolation}{Pemisahan request baca dan polling sumber. Pembacaan seismik tetap menggunakan store ketika panggilan PVMBG lambat atau gagal.}{fig:query}
 
 \begin{tabularx}{\linewidth}{P{0.25\linewidth}Y}
@@ -18,15 +18,15 @@ Tidak ada degradasi & Status per endpoint diagregasi menjadi status sumber. Data
 \subsection{Konfigurasi dasar}
 \begin{tabularx}{\linewidth}{P{0.50\linewidth}Y}
 \toprule Parameter & Nilai default yang dilaporkan\\\midrule
-Interval polling BMKG / PVMBG & 2 s / 5 s; jitter kurang dari 10\% interval.\\
+Interval polling BMKG dan PVMBG & BMKG 2 s dan PVMBG 5 s; jitter kurang dari 10\% interval.\\
 Overlap watermark & 10 s per endpoint.\\
-Timeout HTTP sumber BMKG / PVMBG & 1 s / 4 s.\\
-Timeout operasi/transaksi PostgreSQL & 2 s; deadline parent yang lebih pendek tetap berlaku.\\
+Timeout HTTP sumber BMKG dan PVMBG & BMKG 1 s dan PVMBG 4 s.\\
+Timeout operasi dan transaksi PostgreSQL & 2 s; deadline parent yang lebih pendek tetap berlaku.\\
 Timeout client-api ke Aggregator & Maksimum 1,5 s total.\\
 Breaker & Buka setelah 3 kegagalan fetch; cooldown 10 s.\\
-Pool PostgreSQL ingest / query & 5 / 3 koneksi.\\
+Pool PostgreSQL ingest dan query & Ingest 5 koneksi dan query 3 koneksi.\\
 Request aktif client-api & Maksimum 100.\\
-Token bucket per identitas & 100 request/s; kapasitas burst 200.\\
+Token bucket per identitas & 100 request per detik; kapasitas burst 200.\\
 Ukuran halaman & Default 100, maksimum 500.\\
 \bottomrule
 \end{tabularx}
@@ -42,7 +42,7 @@ L_{\mathrm{ingest}} \approx W_{\mathrm{poll}}+J+T_{\mathrm{HTTP}}+T_{\mathrm{tx}
 \]
 Ini bukan SLA batas keras: siklus yang panjang, kegagalan DB, clock skew, atau breaker dapat menambah waktu. Outage berkepanjangan membuat umur data terus bertambah. Untuk jalur consumer, tambahkan waktu tunggu relay, ACK broker, dan pemrosesan consumer. Klaim ``maksimal satu interval polling'' tidak digunakan.
 
-Filter tidak valid menghasilkan 400, identitas/token invalid 401, akses field terlarang 403, detail yang tidak ditemukan 404, beban ditolak 429, dan dependensi tidak tersedia 503. Hasil filter kosong yang sah tetap 200 dengan array kosong. Error tidak membocorkan detail SQL atau secret.
+Filter tidak valid menghasilkan 400, identitas atau token invalid 401, akses field terlarang 403, detail yang tidak ditemukan 404, beban ditolak 429, dan dependensi tidak tersedia 503. Hasil filter kosong yang sah tetap 200 dengan array kosong. Error tidak membocorkan detail SQL atau secret.
 
 \subsection{Konfigurasi dan hasil pengukuran}
 Pengukuran akhir dilakukan pada \EvidenceDate menggunakan k6 0.57.0 native Windows. Host memakai AMD Ryzen 9 6900HS, 16 logical processor, dan RAM 16.388.050.944 byte; Docker Desktop 28.0.4 menyediakan 16 CPU dan 7.936.237.568 byte RAM untuk lingkungan container. Tool load dibangun dengan Go 1.23.6; service memakai Go 1.24.2. Seluruh angka diambil dari artefak JSON, bukan angka target yang diasumsikan tercapai.
@@ -53,7 +53,7 @@ PVMBG diatur dengan delay minimum dan maksimum 3 s. Skenario paralel menjalankan
 
 Percentile dalam tabel adalah respons HTTP 200 gabungan masing-masing skenario. Untuk kriteria khusus BMKG-only, p95 \textbf{seismic saja 8,62 ms}, lebih kecil dari 300 ms ketika pembacaan volcanic berlangsung bersamaan. Definisi durasi mengikuti k6: waktu kirim, tunggu, dan terima, tanpa waktu pembentukan koneksi~\cite{k6-metrics}. Penolakan 429 tidak dimasukkan ke distribusi latency sukses.
 
-Pada sustained, 42.619 respons bisnis terdiri atas 9.689 HTTP 200 dan 32.930 HTTP 429. Ada 10 penolakan autentikasi 429 yang dicatat terpisah; auth error setelah mekanisme retry 0\%. Throughput semua respons bisnis 473,04/s tidak boleh disebut throughput layanan sukses: throughput HTTP 200 adalah 107,54/s. Penolakan yang tinggi menunjukkan proteksi bekerja pada pola ini, tetapi bukan bukti bahwa seluruh permintaan diterima.
+Pada sustained, 42.619 respons bisnis terdiri atas 9.689 HTTP 200 dan 32.930 HTTP 429. Ada 10 penolakan autentikasi 429 yang dicatat terpisah; auth error setelah mekanisme retry 0\%. Throughput semua respons bisnis 473,04 per detik tidak boleh disebut throughput layanan sukses: throughput HTTP 200 adalah 107,54 per detik. Penolakan yang tinggi menunjukkan proteksi bekerja pada pola ini, tetapi bukan bukti bahwa seluruh permintaan diterima.
 
 Error bisnis dihitung sebagai jumlah respons gagal di luar penolakan terkontrol dibagi jumlah respons bisnis selain 429. Pada sustained hasilnya $0/9689=0\%$. Sampel 429 dikeluarkan dari pembilang \emph{dan} penyebut agar tidak mengencerkan error rate. Total HTTP bawaan k6 mencampurkan auth, control, dan retry, sehingga bukan metrik throughput bisnis utama.
 
@@ -61,7 +61,7 @@ Error bisnis dihitung sebagai jumlah respons gagal di luar penolakan terkontrol 
 
 Runner membaca \nolinkurl{/proc/net/tcp} dan \nolinkurl{/proc/net/tcp6} sekitar setiap satu detik untuk menghitung koneksi TCP ESTABLISHED pada port client-api. Sedikitnya 50 koneksi teramati terus-menerus selama \textbf{90,46 s}. Koneksi aktif secara TCP tidak berarti semua request sedang diproses serentak; jumlah VU saja juga tidak dipakai sebagai bukti koneksi.
 
-Selama outage, 459 dari 474 respons (96,83\%) sudah menyatakan sumber bermasalah. Pada fase recovery, 457 dari 727 (62,86\%) sudah kembali HEALTHY. Sisanya berada dalam masa deteksi/pemulihan yang tidak instan. Data tersimpan tetap dilayani dengan HTTP 200. Regresi terpisah memeriksa seismic tetap sehat dan volcanic kembali normal tanpa restart.
+Selama outage, 459 dari 474 respons (96,83\%) sudah menyatakan sumber bermasalah. Pada fase recovery, 457 dari 727 (62,86\%) sudah kembali HEALTHY. Sisanya berada dalam masa deteksi dan pemulihan yang tidak instan. Data tersimpan tetap dilayani dengan HTTP 200. Regresi terpisah memeriksa seismic tetap sehat dan volcanic kembali normal tanpa restart.
 \proof{load/seismic-only.json}
 \proof{load/sustained.json}
 \proof{load/connections.json}
@@ -70,4 +70,4 @@ Selama outage, 459 dari 474 respons (96,83\%) sudah menyatakan sumber bermasalah
 \subsection{Validitas hasil dan alternatif}
 Percobaan awal k6 di container menghasilkan durasi negatif, misalnya minimum -541,10 ms. Walaupun threshold k6 saat itu tidak gagal, hasil tersebut tidak digunakan untuk klaim performa. Artefaknya tetap disimpan pada \evidence{load-docker-invalid/seismic-only.json}. Penyebab lingkungan belum diisolasi secara pasti. Runner kini menolak nilai durasi negatif, dan seluruh pengukuran final diulang dengan k6 native Windows terhadap stack yang sama.
 
-Alternatif request-time fan-out menjaga kemungkinan kebaruan lebih tinggi, tetapi menempatkan latensi dan kegagalan sumber di jalur client. Materialisasi dipilih karena data historis masih berguna dan P2 menuntut degradasi terkendali. Cache/micro-cache dapat mengurangi beban query, tetapi menambah invalidasi dan state; belum digunakan. Banyak instance dengan load balancer dapat meningkatkan kapasitas, tetapi memerlukan limit terdistribusi dan koordinasi penulis yang berada di luar M1. Hasil satu mesin ini tidak digeneralisasi sebagai kapasitas produksi.
+Alternatif request-time fan-out menjaga kemungkinan kebaruan lebih tinggi, tetapi menempatkan latensi dan kegagalan sumber di jalur client. Materialisasi dipilih karena data historis masih berguna dan P2 menuntut degradasi terkendali. Cache dan micro-cache dapat mengurangi beban query, tetapi menambah invalidasi dan state; belum digunakan. Banyak instance dengan load balancer dapat meningkatkan kapasitas, tetapi memerlukan limit terdistribusi dan koordinasi penulis yang berada di luar M1. Hasil satu mesin ini tidak digeneralisasi sebagai kapasitas produksi.

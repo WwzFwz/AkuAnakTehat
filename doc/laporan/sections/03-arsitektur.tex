@@ -8,14 +8,14 @@ Gambar~\ref{fig:architecture} memperlihatkan container, protokol, dan kepemilika
 Sistem memiliki delapan service aplikasi apabila pemda-portal diaktifkan. PostgreSQL, Redis, dan Kafka merupakan container infrastruktur. Konfigurasi dasar menjalankan sepuluh container jangka panjang, ditambah satu \texttt{kafka-init} yang selesai setelah membuat topic; profile demo menambah pemda-portal. CLI dan load generator adalah client pengujian, bukan service penyimpan data.
 
 \begin{longtable}{P{0.22\linewidth}P{0.43\linewidth}P{0.25\linewidth}}
-\toprule Komponen & Tanggung jawab & Storage / port\\\midrule\endhead
+\toprule Komponen & Tanggung jawab & Storage dan port\\\midrule\endhead
 \texttt{bmkg-mock} & Menyajikan gempa dan warning terpisah; seed dan generator; memvalidasi API key BMKG. & Memori sendiri; 8081.\\
 \texttt{pvmbg-mock} & Laporan vulkanik, delay, perubahan skema, dan outage yang dapat dipicu operator. & Memori sendiri; 8082.\\
 \texttt{aggregator} & Polling, tolerant reader, pemetaan, korelasi, transaksi, query internal, dan relay outbox. & Pemilik PostgreSQL; 9000 internal.\\
 \texttt{client-api} & Verifikasi JWT, scope, proyeksi, filter, pagination, dan proteksi beban. & Tanpa store persisten; 8080.\\
-\texttt{auth-service} & Penerbit access/refresh token dan pengelola rotasi sesi. & Pemilik Redis; 8090.\\
+\texttt{auth-service} & Penerbit access token dan refresh token dan pengelola rotasi sesi. & Pemilik Redis; 8090.\\
 \texttt{dashboard-updater} & View event terbaru per hazard, hanya menerima versi yang lebih baru. & SQLite sendiri; 8091.\\
-\texttt{notifier} & Simulasi pengiriman alert SIAGA/AWAS; dedup persisten. & SQLite sendiri; 8092.\\
+\texttt{notifier} & Simulasi pengiriman alert SIAGA atau AWAS; dedup persisten. & SQLite sendiri; 8092.\\
 \texttt{pemda-portal} & Subscriber tambahan untuk menunjukkan perluasan stream tanpa mengubah producer. & SQLite sendiri; 8093.\\
 \bottomrule
 \end{longtable}
@@ -25,7 +25,7 @@ Port host aplikasi dipublikasikan pada loopback \texttt{127.0.0.1}. Port databas
 \subsection{Protokol dan batas kepercayaan}
 Aggregator mengambil JSON melalui HTTP: BMKG memerlukan \texttt{X-BMKG-Key}, sedangkan PVMBG memerlukan Bearer token miliknya sendiri. Client menukar kredensial ke \texttt{/oauth/token}, kemudian mengirim JWT ke client-api. Client-api membaca lewat HTTP internal Aggregator dengan \texttt{X-Internal-Key}; ia tidak mempunyai kredensial PostgreSQL. Auth-service mengakses Redis melalui RESP dan password yang berbeda.
 
-Relay mengirim envelope melalui protokol Kafka. Consumer mengambil stream dengan group masing-masing dan melakukan efek lokal di SQLite. Tidak ada pemanggilan fungsi maupun shared business package lintas service. Kontrak yang sama direpresentasikan secara lokal di setiap module. Komponen dalam Aggregator tetap boleh berkomunikasi lewat port/interface Go karena berada pada service pemilik yang sama.
+Relay mengirim envelope melalui protokol Kafka. Consumer mengambil stream dengan group masing-masing dan melakukan efek lokal di SQLite. Tidak ada pemanggilan fungsi maupun shared business package lintas service. Kontrak yang sama direpresentasikan secara lokal di setiap module. Komponen dalam Aggregator tetap boleh berkomunikasi lewat port berupa interface Go karena berada pada service pemilik yang sama.
 
 Network \texttt{store\_net} menghubungkan Aggregator dan PostgreSQL; \texttt{edge\_net} menghubungkan client-api dan Aggregator; \texttt{source\_net} menghubungkan sumber dan poller; \texttt{auth\_net} menghubungkan auth-service dan Redis; \texttt{bus\_net} menghubungkan producer, broker, dan consumer. Profile test mempunyai akses yang diperlukan sebagai perangkat uji administratif, bukan jalur akses aplikasi produksi.
 \coderef{docker-compose.yml}

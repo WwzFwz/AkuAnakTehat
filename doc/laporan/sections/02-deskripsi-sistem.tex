@@ -12,12 +12,12 @@ Tiga alur utama dipisahkan. Jalur ingest menangani ketidakpastian sumber; jalur 
 P1 & Tolerant reader JSON, pemetaan kanonik, korelasi warning, dan preservasi field tambahan.\\
 P2 & Worker per sumber, baca dari store, timeout, circuit breaker, batas konkurensi, rate limit, dan status stale.\\
 P3 & Kredensial per domain, JWT Ed25519, scope, proyeksi allowlist, dan rotasi refresh token.\\
-P4 & Container/module terpisah, kepemilikan storage, serta PostgreSQL dengan atribut JSONB.\\
+P4 & Container dan module terpisah, kepemilikan storage, serta PostgreSQL dengan atribut JSONB.\\
 P5 & Transactional outbox, Kafka, group consumer terpisah, SQLite persisten, dedup, dan DLQ.\\
 \bottomrule
 \end{tabularx}
 
 \subsection{Versi yang dilaporkan}
-Laporan ini mendeskripsikan implementasi acuan \texttt{f6e99cc}, bukan seluruh fitur pada rancangan awal. Bukti lokal bertanggal \EvidenceDate. Singleflight/micro-cache, \texttt{LISTEN/NOTIFY}, tabel \texttt{schema\_observations}, dan propagasi deadline melalui header belum diimplementasikan. Timeout lokal, relay polling, dan log \texttt{schema\_drift} sudah menjadi bagian inti.
+Laporan ini mendeskripsikan implementasi acuan \texttt{f6e99cc}, bukan seluruh fitur pada rancangan awal. Bukti lokal bertanggal \EvidenceDate. Singleflight dan micro-cache, \texttt{LISTEN/NOTIFY}, tabel \texttt{schema\_observations}, dan propagasi deadline melalui header belum diimplementasikan. Timeout lokal, relay polling, dan log \texttt{schema\_drift} sudah menjadi bagian inti.
 
 Tautan kode dan bukti pada laporan menunjuk revisi acuan tersebut agar klaim dapat ditelusuri meskipun branch utama berubah. Perubahan laporan setelah revisi itu tidak dengan sendirinya berarti pengujian runtime dijalankan ulang.

@@ -1,11 +1,11 @@
 % !TeX root = ../main.tex
 \section{Indeks Bukti dan Jejak Eksekusi}
 \label{app:evidence}
-Seluruh berkas E1--E8 berada di \nolinkurl{docs/evidence/integration/} pada revisi acuan. Artefak disimpan sebagai teks/JSON agar dapat ditinjau tanpa bergantung pada screenshot. Potongan yang dicetak merupakan petikan atau rekap berlabel; output lengkap tetap menjadi acuan.
+Seluruh berkas E1 hingga E8 berada di \nolinkurl{docs/evidence/integration/} pada revisi acuan. Artefak disimpan sebagai teks dan JSON agar dapat ditinjau tanpa bergantung pada screenshot. Potongan yang dicetak merupakan petikan atau rekap berlabel; output lengkap tetap menjadi acuan.
 
 \begin{tabularx}{\linewidth}{lP{0.38\linewidth}Y}
 \toprule ID & Berkas & Isi\\\midrule
-E1 & \evidence{modules.txt} & Unit/vet sembilan module dan bootstrap.\\
+E1 & \evidence{modules.txt} & Uji unit dan go vet sembilan module dan bootstrap.\\
 E2 & \evidence{regression.txt} & Regresi lengkap termasuk auth, ingest, query, drift, dan rebuild.\\
 E3 & \evidence{events-fresh-group.txt} & Replay subscriber baru, DLQ, dedup, dan outage broker.\\
 E4 & \evidence{load/seismic-only.json}, \evidence{load/sustained.json}, \evidence{load/outage.json} & Summary k6 final, terpisah dari hasil timer invalid.\\
@@ -18,10 +18,10 @@ E8 & \evidence{services.txt} & Snapshot status container akhir sesi pengujian.\\
 
 \subsection{Contoh trace event nyata}
 \input{assets/evidence/trace-table.tex}
-Correlation ID dibentuk pada polling lalu diteruskan ke mock, transaksi/envelope, publish, dan consumer. Query client memiliki correlation ID tersendiri; query tidak dianggap sebagai penyebab ingest. Pada log consumer, latency menunjukkan waktu pemrosesan record sampai commit, bukan latency ujung-ke-ujung sejak kejadian bencana.
+Correlation ID dibentuk pada polling lalu diteruskan ke mock, transaksi dan envelope, publish, dan consumer. Query client memiliki correlation ID tersendiri; query tidak dianggap sebagai penyebab ingest. Pada log consumer, latency menunjukkan waktu pemrosesan record sampai commit, bukan latency ujung-ke-ujung sejak kejadian bencana.
 
 \subsection{Asal potongan kode dan gambar}
 Potongan kode di \nolinkurl{assets/code/} diekstrak dari revisi acuan, dengan lokasi dan hash pada \nolinkurl{assets/provenance.json}. Sumber enam diagram berada di \nolinkurl{diagrams/}; grafik performa dibangkitkan dari JSON bukti final. Semua dapat dibuat ulang dengan \nolinkurl{scripts/refresh-assets.py}. Gambar bukan hasil tangkapan layar implementasi atau bukti tambahan yang dibuat-buat.
 
 \subsection{Dokumentasi demonstrasi}
-\pending{Tanggal dan tautan rekaman/foto demonstrasi sinkron, bila diminta: \rule{0.52\linewidth}{0.3pt}. Hasil test lokal dalam laporan tidak dinyatakan sebagai demonstrasi sinkron yang sudah berlangsung.}
+\pending{Tanggal dan tautan rekaman atau foto demonstrasi sinkron, bila diminta: \rule{0.52\linewidth}{0.3pt}. Hasil test lokal dalam laporan tidak dinyatakan sebagai demonstrasi sinkron yang sudah berlangsung.}

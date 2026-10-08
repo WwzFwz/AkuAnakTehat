@@ -3,14 +3,13 @@
 ## Data anggota yang sudah dikonfirmasi
 
 - Kelompok: AkuAnakTehat.
-- Dzaky Aurelia Fawwaz — 13523065: perancangan; implementasi semua bagian selain jalur 3B.
-- Muhammad Alfansya — 13523005: membantu verifikasi/validasi kesesuaian spesifikasi; implementasi jalur 3B.
-- Jalur 3B: query/API internal Aggregator, client-api, CLI Tim Lapangan, script k6.
+- Dzaky Aurelia Fawwaz — 13523065: perancangan; mock BMKG/PVMBG, Auth Service, ingest Aggregator, relay dan producer Kafka, ketiga consumer, infrastruktur, integrasi, dan pengujian lintas komponen.
+- Muhammad Alfansya — 13523005: membantu verifikasi/validasi kesesuaian spesifikasi; query/API internal Aggregator, Client API, CLI Tim Lapangan, dan script k6.
 
 ## Placeholder yang memang belum diketahui
 
 1. Kontribusi penulisan tiap anggota (`metadata.tex`). Spesifikasi hlm. 26 meminta desain, implementasi, **dan** penulisan; jangan menghapus kolom ini.
-2. Rincian bantuan LLM tambahan per anggota, khususnya 3B (`sections/12-deklarasi-ai.tex`). Jangan mengklaim semua anggota sudah memahami kode sebelum mereka meninjau sendiri.
+2. Rincian bantuan LLM tambahan per anggota, khususnya query/API internal Aggregator, Client API, CLI Tim Lapangan, dan script k6 (`sections/12-deklarasi-ai.tex`). Jangan mengklaim semua anggota sudah memahami kode sebelum mereka meninjau sendiri.
 3. Status/tautan run GitHub Actions dari akun yang punya akses (`sections/11-verifikasi-dan-batasan.tex`). API tanpa autentikasi mengembalikan 404 saat diperiksa; bukan bukti workflow lulus maupun gagal.
 4. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
 5. Tanggal/tautan dokumentasi demonstrasi sinkron jika diminta (`appendices/b-indeks-bukti.tex`). Bukti otomatis bukan demo sinkron.

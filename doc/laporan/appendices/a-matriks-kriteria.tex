@@ -1,44 +1,44 @@
 % !TeX root = ../main.tex
 \section{Matriks Kriteria Spesifikasi}
 \label{app:matrix}
-ID di bawah mengikuti urutan kriteria pada spesifikasi M1. ``Lokal'' berarti telah diperiksa oleh suite yang dirujuk, bukan pengganti pelaksanaan demo sinkron. Rujukan U1--U7 mengikuti ketentuan implementasi umum. Indeks bukti E1--E8 dijelaskan pada Lampiran~\ref{app:evidence}.
+ID di bawah mengikuti urutan kriteria pada spesifikasi M1. ``Lokal'' berarti telah diperiksa oleh suite yang dirujuk, bukan pengganti pelaksanaan demo sinkron. Rujukan U1 hingga U7 mengikuti ketentuan implementasi umum. Indeks bukti E1 hingga E8 dijelaskan pada Lampiran~\ref{app:evidence}.
 
 \small
 \begin{longtable}{P{0.11\linewidth}P{0.45\linewidth}P{0.34\linewidth}}
-\toprule ID & Kriteria dan mekanisme & Verifikasi / bagian laporan\\\midrule\endhead
+\toprule ID & Kriteria dan mekanisme & Verifikasi dan bagian laporan\\\midrule\endhead
 U1 & Panggilan jaringan; tidak berbagi business logic lintas service. & Module terpisah, Compose, dan kode adapter; Bagian~\ref{sec:architecture}.\\
-U2 & Satu pemilik storage; client-api melalui API Aggregator. & Network/config Compose dan adapter HTTP; Bagian~\ref{sec:p4}.\\
+U2 & Satu pemilik storage; client-api melalui API Aggregator. & Network dan konfigurasi Compose dan adapter HTTP; Bagian~\ref{sec:p4}.\\
 U3 & Dockerfile per service dan satu orkestrasi. & Dockerfile delapan service, Compose; E8 dan petunjuk start.\\
-U4 & Kegagalan/delay benar-benar dipicu. & Outage PVMBG/Kafka, restart dependensi, rebuild notifier; E2/E3/E4.\\
+U4 & Kegagalan dan delay benar-benar dipicu. & Outage PVMBG dan Kafka, restart dependensi, rebuild notifier; E2, E3, dan E4.\\
 U5 & Kredensial sumber tidak berlaku lintas instansi. & \texttt{TestMockContracts}; E2.\\
 U6 & Secret dari konfigurasi lokal dan contoh environment. & Generator secret, ignore, \texttt{.env.example}; Bagian~\ref{sec:p3}.\\
-U7 & Health, log terstruktur, correlation ID, dan latency. & Handler, log outbound/poller/relay/consumer, E6/E8. Latency trace yang ditampilkan bukan distribusi seluruh operasi internal DB.\\
+U7 & Health, log terstruktur, correlation ID, dan latency. & Handler, log outbound, poller, relay, dan consumer, E6 dan E8. Latency trace yang ditampilkan bukan distribusi seluruh operasi internal DB.\\
 \midrule
-P1.1 & Pemetaan kanonik kedua sumber. & Unit mapper dan \texttt{TestIngestPipeline}; E1/E2.\\
+P1.1 & Pemetaan kanonik kedua sumber. & Unit mapper dan \texttt{TestIngestPipeline}; E1 dan E2.\\
 P1.2 & Schema v2 dipicu saat runtime. & Endpoint admin dalam \texttt{TestDynamicSchemaAndStaleAPI}; E2.\\
-P1.3 & Ingest tetap valid tanpa perubahan kode/restart. & Record baru terbaca; ID container dan versi DDL tetap; E2.\\
-P1.4 & Kebijakan unknown field dinyatakan dan konsisten. & Extra ke attributes, validasi/karantina; Bagian~\ref{sec:p1}, E1/E2.\\
-P1.5 & Mekanisme serta perubahan didukung/tidak didukung. & Tolerant reader additive-only dan batas tipe; Bagian~\ref{sec:p1}.\\
+P1.3 & Ingest tetap valid tanpa perubahan kode atau restart. & Record baru terbaca; ID container dan versi DDL tetap; E2.\\
+P1.4 & Kebijakan unknown field dinyatakan dan konsisten. & Extra ke attributes, validasi dan karantina; Bagian~\ref{sec:p1}, E1 dan E2.\\
+P1.5 & Mekanisme serta perubahan yang didukung dan yang tidak didukung. & Tolerant reader additive-only dan batas tipe; Bagian~\ref{sec:p1}.\\
 \midrule
 P2.1 & Seismic p95 $<300$ ms saat volcanic paralel dan delay 3 s. & 8,62 ms; E4.\\
-P2.2 & Minimal 50 koneksi, minimal 60 s, error $<1\%$ di luar 429. & 50 TCP selama 90,46 s; error 0\%; 32.930 bisnis 429 dilaporkan; E4/E5.\\
-P2.3 & Seismic tetap dilayani, volcanic stale/unavailable, lalu recovery. & Status stale dan pemulihan tanpa restart; E2/E4.\\
+P2.2 & Minimal 50 koneksi, minimal 60 s, error $<1\%$ di luar 429. & 50 TCP selama 90,46 s; error 0\%; 32.930 bisnis 429 dilaporkan; E4 dan E5.\\
+P2.3 & Seismic tetap dilayani, volcanic stale atau unavailable, lalu recovery. & Status stale dan pemulihan tanpa restart; E2 dan E4.\\
 P2.4 & Model konkurensi, pencegahan tiga kegagalan, konfigurasi load. & Bagian~\ref{sec:p2}; script k6 dan runner.\\
 \midrule
-P3.1 & BMKG/PVMBG menolak kredensial silang. & HTTP 401/403 pada suite fondasi; E2.\\
+P3.1 & BMKG dan PVMBG menolak kredensial silang. & HTTP 401 atau 403 pada suite fondasi; E2.\\
 P3.2 & Media hanya ringkasan dan raw eksplisit ditolak. & \texttt{TestQueryIntegration}; E2.\\
-P3.3 & Expiry alami, refresh otomatis, token lama ditolak. & TTL 60 s, sesi CLI 65 s, pemeriksaan 401/200; E2.\\
-P3.4 & Tidak ada secret hardcode/ter-commit. & Bootstrap, contoh env, ignore, test log; scan fondasi terbatas, scan final belum terkonfirmasi; Bagian~\ref{sec:p3}.\\
+P3.3 & Expiry alami, refresh otomatis, token lama ditolak. & TTL 60 s, sesi CLI 65 s, pemeriksaan 401 dan 200; E2.\\
+P3.4 & Tidak ada secret yang ditulis langsung dalam kode atau tersimpan dalam commit. & Bootstrap, contoh env, ignore, test log; scan fondasi terbatas, scan final belum terkonfirmasi; Bagian~\ref{sec:p3}.\\
 P3.5 & Alasan keamanan mekanisme dan batasnya. & Domain trust, claim, allowlist, replay, transport, dan revocation; Bagian~\ref{sec:p3}.\\
 \midrule
-P4.1 & Stop/rebuild/start satu komponen tanpa deploy yang lain. & Notifier rebuild, baca API tetap berhasil, timestamp start lain tetap; E2.\\
-P4.2 & Storage fleksibel tanpa DDL untuk field baru; old/new coexist. & Query record sebelum/sesudah confidence; E2.\\
-P4.3 & Canonical Store hanya diakses aplikasi pemilik. & Network/secret ownership dan HTTP query; Bagian~\ref{sec:p4}.\\
-P4.4 & Alasan batas service dan minimal dua alternatif storage. & Perbandingan PostgreSQL+JSONB, document store, dan kolom tetap; Bagian~\ref{sec:p4}.\\
+P4.1 & Penghentian, build ulang, dan pengaktifan kembali satu komponen tanpa deploy yang lain. & Notifier rebuild, baca API tetap berhasil, timestamp start lain tetap; E2.\\
+P4.2 & Storage fleksibel tanpa DDL untuk field baru; record lama dan baru tersedia bersama. & Query record sebelum dan sesudah confidence; E2.\\
+P4.3 & Canonical Store hanya diakses aplikasi pemilik. & Network dan kepemilikan secret dan HTTP query; Bagian~\ref{sec:p4}.\\
+P4.4 & Alasan batas service dan minimal dua alternatif storage. & Perbandingan PostgreSQL dengan JSONB, document store, dan kolom tetap; Bagian~\ref{sec:p4}.\\
 \midrule
 P5.1 & Hazard baru dikirim ke broker. & Commit outbox, publish ACK, dan konsumsi snapshot; E3.\\
-P5.2 & Minimal dua consumer independen. & Dashboard/notifier dengan group terpisah; E3.\\
-P5.3 & Satu consumer mati tidak menahan yang lain; jelaskan catch-up. & Dashboard stop/start, versi susulan, retensi; E3.\\
+P5.2 & Minimal dua consumer independen. & Dashboard dan notifier dengan group terpisah; E3.\\
+P5.3 & Satu consumer mati tidak menahan yang lain; jelaskan catch-up. & Dashboard dihentikan dan diaktifkan kembali, versi susulan, retensi; E3.\\
 P5.4 & Subscriber baru tanpa perubahan producer. & Group pemda unik dan store kosong; Aggregator tidak diganti; E3.\\
 P5.5 & Broker, pola, semantik pengiriman, dan idempotensi. & At-least-once, version guard, marker, batas notifier; Bagian~\ref{sec:p5}.\\
 \bottomrule
@@ -48,4 +48,4 @@ P5.5 & Broker, pola, semantik pengiriman, dan idempotensi. & At-least-once, vers
 \subsection*{Kelengkapan laporan dan pengumpulan}
 Sampul, kontribusi, deskripsi, diagram beserta narasi, teknologi, asumsi, petunjuk menjalankan, dan pembahasan per problem tersedia. Kontribusi penulisan serta rincian tambahan penggunaan LLM masih berupa placeholder. Kode laporan menghasilkan nama PDF yang diminta: \nolinkurl{IF4031_M1_AkuAnakTehat.pdf}.
 
-\pending{Sebelum pengumpulan: isi placeholder kontribusi/deklarasi, periksa hasil CI dari akun yang memiliki akses, gladi demo, tentukan commit final dan tag \texttt{milestone-1}, serta isi formulir kelompok. Tautan PDF final: \rule{0.42\linewidth}{0.3pt}.}
+\pending{Sebelum pengumpulan: isi placeholder kontribusi dan deklarasi, periksa hasil CI dari akun yang memiliki akses, gladi demo, tentukan commit final dan tag \texttt{milestone-1}, serta isi formulir kelompok. Tautan PDF final: \rule{0.42\linewidth}{0.3pt}.}
