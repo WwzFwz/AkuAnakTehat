@@ -16,8 +16,8 @@ Klien HTTP untuk API internal Aggregator.
 
 ## Aturan penting
 
-- Timeout lokal maksimal1,5 s sejak baseline.
-- X-Internal-Key dan X-Correlation-ID dikirim; secret tidak dicatat. Log `upstream_request` memuat correlation ID dan latency panggilan.
+- Timeout lokal maksimal 1,5 s untuk keseluruhan operasi, termasuk retry.
+- X-Internal-Key dan X-Correlation-ID dikirim; secret tidak dicatat. Setiap percobaan HTTP menghasilkan satu log `upstream_request` dengan correlation ID yang sama, nomor `attempt`, `latency_ms`, status HTTP, dan `result`.
 - Decode memakai `UseNumber` agar angka raw besar tidak dibulatkan; respons dengan trailing JSON ditolak.
 - Retry koneksi maksimal sekali jika budget waktu masih cukup.
 - Header propagasi deadline adalah tambahan; jangan menghilangkan timeout lokal jika fitur itu mati.
@@ -26,12 +26,15 @@ Klien HTTP untuk API internal Aggregator.
 
 | Berkas | Tanggung jawab |
 | --- | --- |
-| [client.go](client.go) | HTTP list/get/readiness, retry terbatas, batas respons 8 MiB, klasifikasi error, dan log total operasi fetch. |
+| [client.go](client.go) | HTTP list/get/readiness, retry terbatas, batas respons 8 MiB, klasifikasi error, dan log per percobaan HTTP. |
 | [client_test.go](client_test.go) | Pengujian `TestClassifyUpstreamErrors`, `TestClientListValidatesResponse`, `TestRawNumbersSurviveAndTrailingJSONFails`. |
+| [attempt_test.go](attempt_test.go) | Retry gagal lalu berhasil, correlation ID dan deadline bersama, sanitasi log, batas retry, timeout, dan penutupan body. |
 
 ## Perilaku dan batas saat ini
 
-Log upstream_request saat ini mengukur total fetch, termasuk satu retry transport dan decode bila terjadi. Latency tiap percobaan HTTP belum dipisahkan; ini dicatat sebagai celah U7 pada audit persyaratan, bukan dianggap sudah terpenuhi.
+Latency diukur ulang pada setiap pemanggilan `HTTP.Do`, termasuk pembacaan, decode, dan penutupan body respons pada percobaan tersebut. Status bernilai 0 jika respons HTTP tidak diperoleh. Hasil dicatat sebagai kategori tetap seperti `success`, `transport_error`, `timeout`, `canceled`, `http_error`, `body_read_error`, `response_too_large`, atau `invalid_json`; URL, kredensial, isi respons, dan teks galat upstream tidak dicetak.
+
+Retry hanya dilakukan untuk kegagalan transport, maksimal satu kali, dengan deadline yang sama. Percobaan di sini adalah pemanggilan `HTTP.Do` pada adapter, bukan setiap paket jaringan atau retry koneksi internal library HTTP. Bukti pengujian tersedia pada [verifikasi U7](../../../../../../docs/evidence/http-attempts-2026-10-08/README.md).
 
 ## Verifikasi
 

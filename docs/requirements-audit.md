@@ -1,8 +1,8 @@
 # Audit persyaratan dan dokumentasi M1
 
-Pemeriksaan dilakukan pada 8 Oktober 2026 terhadap implementasi revisi `2353479`. Acuan adalah dokumen M1 dan dokumen terpusat yang diberikan kelompok; identitas dokumennya tercatat pada [manifest sumber laporan](laporan/assets/input-documents.json). README rencana diperlakukan sebagai catatan desain awal, bukan tambahan persyaratan tugas.
+Pemeriksaan dilakukan pada 8 Oktober 2026. Bukti regresi stack mengacu pada revisi `2353479`; perbaikan instrumentasi HTTP diverifikasi terpisah melalui tes module Client API. Acuan adalah dokumen M1 dan dokumen terpusat yang diberikan kelompok; identitas dokumennya tercatat pada [manifest sumber laporan](laporan/assets/input-documents.json). README rencana diperlakukan sebagai catatan desain awal, bukan tambahan persyaratan tugas.
 
-**Kesimpulan audit ini** adalah jalur fungsional utama P1 hingga P5 tersedia dan memiliki bukti pengujian lokal. Tidak ditemukan komponen wajib yang hilang hanya karena nama file berbeda dari rancangan. Namun, instrumentasi retry HTTP client-api masih menyisakan celah U7, dan kelengkapan penulisan serta pengumpulan belum selesai. Karena itu belum tepat menyatakan seluruh persyaratan sudah terpenuhi tanpa catatan.
+**Kesimpulan audit ini** adalah jalur fungsional utama P1 hingga P5 tersedia dan memiliki bukti pengujian lokal. Tidak ditemukan komponen wajib yang hilang hanya karena nama file berbeda dari rancangan. Temuan instrumentasi retry HTTP client-api sudah ditutup melalui log per percobaan dan tes terarah. Kelengkapan penulisan serta pengumpulan belum selesai. Karena itu belum tepat menyatakan seluruh persyaratan sudah terpenuhi tanpa catatan.
 
 ## Ketentuan umum
 
@@ -14,7 +14,7 @@ Pemeriksaan dilakukan pada 8 Oktober 2026 terhadap implementasi revisi `2353479`
 | U4 | Service independen dan kegagalan dipicu nyata | TestPersistenceAndDependencyRecovery, TestIngestPipeline, TestEventPipeline, dan TestIndependentRebuild pada regresi. | Diuji lokal; demo sinkron tetap dilakukan kelompok |
 | U5 | Kredensial instansi terpisah dan kredensial silang ditolak | Mock memakai hash kredensial berbeda dan format header berbeda; TestMockContracts memeriksa penolakan silang. | Diuji lokal |
 | U6 | Secret dari konfigurasi yang tidak di-commit dan .env.example tersedia | [Generator](../scripts/secrets/generate.go), [.gitignore](../.gitignore), [.env.example](../.env.example), test log, dan scan histori. | Implementasi tersedia; scan revisi pengumpulan tetap mengikuti commit yang diperiksa |
-| U7 | Health, log terstruktur, correlation ID, latency tiap panggilan keluar | Health tersedia pada tiap service; source HTTP, PostgreSQL, Redis, dan Kafka sudah memiliki instrumentasi. Client-api mempertahankan correlation ID tetapi log fetch masih menggabungkan retry. | Sebagian; temuan wajib G1 di bawah |
+| U7 | Health, log terstruktur, correlation ID, latency tiap panggilan keluar | Health tersedia pada tiap service; source HTTP, PostgreSQL, Redis, dan Kafka sudah memiliki instrumentasi. Client-api mencatat setiap percobaan HTTP dengan correlation ID, nomor percobaan, durasi, status, dan kategori hasil. | Tersedia; G1 ditutup dengan tes module, lihat bukti di bawah |
 
 ## Kontrak mock dan data
 
@@ -47,13 +47,13 @@ Nilai referensi gunung api sintetis, interpretasi `since` warning sebagai waktu 
 
 [Regresi terbaru](evidence/reliability-2026-10-08/regression.txt) lulus dalam 306,951 s. [Pengujian PostgreSQL](evidence/reliability-2026-10-08/postgres.txt) memeriksa batas envelope dan backlog. [Pengujian module](evidence/reliability-2026-10-08/modules.txt) meliputi unit test serta vet. Transkrip tersebut berasal dari pengujian perubahan sebelum commit dan dipertahankan sebagai bukti, bukan dijalankan ulang ketika README diperbarui.
 
-## Temuan yang masih harus ditangani
+## Status temuan audit
 
-### G1. Latency tiap percobaan HTTP client-api belum terpisah
+### G1. Latency tiap percobaan HTTP client-api
 
-Pada [Client.fetch](../services/client-api/internal/adapter/outbound/aggregator/client.go), timer dimulai sekali dan log `upstream_request` ditulis melalui defer di akhir fungsi. Fungsi dapat memanggil `HTTP.Do` dua kali bila percobaan awal mengalami error transport sementara context masih aktif. Karena itu satu log memuat gabungan kedua percobaan dan pemrosesan respons. Syarat U7 yang meminta latency tiap panggilan keluar belum sepenuhnya dapat dibuktikan untuk cabang ini.
+**Ditutup.** [Client.fetchAttempt](../services/client-api/internal/adapter/outbound/aggregator/client.go) menghasilkan satu log `upstream_request` untuk setiap pemanggilan `HTTP.Do` oleh adapter, termasuk pembacaan dan decode body pada percobaan itu. Log memuat correlation ID, nomor percobaan, durasi, status HTTP atau 0 bila tidak ada respons, serta kategori hasil tetap. URL, kredensial, isi respons, dan pesan error mentah tidak dicatat.
 
-Perbaikannya adalah mencatat setiap percobaan dengan correlation ID yang sama, nomor percobaan, durasi, dan hasil yang disanitasi. Log total operasi dapat tetap dipertahankan dengan nama yang berbeda. Verifikasi yang diperlukan adalah tes yang sengaja menggagalkan percobaan pertama, mengizinkan percobaan kedua berhasil, dan memeriksa dua catatan latency tanpa secret. Audit dokumentasi ini tidak mengubah kode runtime atau menyatakan celah tersebut telah diperbaiki.
+[Pengujian retry](../services/client-api/internal/adapter/outbound/aggregator/attempt_test.go) menggagalkan percobaan pertama lalu mengizinkan percobaan kedua berhasil. Dua log, deadline bersama, sanitasi, batas retry, pembatalan, timeout, dan penutupan body diperiksa. Seluruh tes module Client API dan go vet lulus. [Bukti U7](evidence/http-attempts-2026-10-08/README.md) mencatat perintah dan cakupannya; regresi stack serta k6 tidak dijalankan ulang untuk perubahan instrumentasi ini.
 
 ### G2. Informasi laporan dan penyelesaian kelompok
 

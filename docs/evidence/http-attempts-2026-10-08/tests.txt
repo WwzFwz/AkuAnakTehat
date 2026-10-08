@@ -1,0 +1,96 @@
+?   	example.com/akuanaktehat/client-api/cmd/client-api	[no test files]
+=== RUN   TestListValidationErrorCodes
+=== RUN   TestListValidationErrorCodes/route_type_conflict
+=== RUN   TestListValidationErrorCodes/severity
+=== RUN   TestListValidationErrorCodes/since
+=== RUN   TestListValidationErrorCodes/cursor
+--- PASS: TestListValidationErrorCodes (0.00s)
+    --- PASS: TestListValidationErrorCodes/route_type_conflict (0.00s)
+    --- PASS: TestListValidationErrorCodes/severity (0.00s)
+    --- PASS: TestListValidationErrorCodes/since (0.00s)
+    --- PASS: TestListValidationErrorCodes/cursor (0.00s)
+=== RUN   TestRouterDistinguishesConcurrencyRejection
+--- PASS: TestRouterDistinguishesConcurrencyRejection (0.00s)
+=== RUN   TestHTTPProjectionAndForbiddenRequests
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_detail
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_list
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_selection
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_raw_route
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_raw_include
+=== RUN   TestHTTPProjectionAndForbiddenRequests/media_raw_fields
+=== RUN   TestHTTPProjectionAndForbiddenRequests/unknown_field
+=== RUN   TestHTTPProjectionAndForbiddenRequests/privileged_raw
+--- PASS: TestHTTPProjectionAndForbiddenRequests (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_detail (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_list (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_selection (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_raw_route (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_raw_include (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/media_raw_fields (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/unknown_field (0.00s)
+    --- PASS: TestHTTPProjectionAndForbiddenRequests/privileged_raw (0.00s)
+PASS
+ok  	example.com/akuanaktehat/client-api/internal/adapter/inbound/http	0.735s
+=== RUN   TestRetryLogsEachAttempt
+--- PASS: TestRetryLogsEachAttempt (0.00s)
+=== RUN   TestAttemptFailuresPreserveRetryPolicy
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/transport_exhausted
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/canceled
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/http_unavailable
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/http_not_found
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/invalid_json
+=== RUN   TestAttemptFailuresPreserveRetryPolicy/trailing_json
+--- PASS: TestAttemptFailuresPreserveRetryPolicy (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/transport_exhausted (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/canceled (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/http_unavailable (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/http_not_found (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/invalid_json (0.00s)
+    --- PASS: TestAttemptFailuresPreserveRetryPolicy/trailing_json (0.00s)
+=== RUN   TestAttemptLogsTimeoutAndClosesBody
+=== RUN   TestAttemptLogsTimeoutAndClosesBody/timeout_stops_retry
+=== RUN   TestAttemptLogsTimeoutAndClosesBody/body_consumed_and_closed
+--- PASS: TestAttemptLogsTimeoutAndClosesBody (0.02s)
+    --- PASS: TestAttemptLogsTimeoutAndClosesBody/timeout_stops_retry (0.02s)
+    --- PASS: TestAttemptLogsTimeoutAndClosesBody/body_consumed_and_closed (0.00s)
+=== RUN   TestClassifyUpstreamErrors
+=== RUN   TestClassifyUpstreamErrors/type
+=== RUN   TestClassifyUpstreamErrors/severity
+=== RUN   TestClassifyUpstreamErrors/since
+=== RUN   TestClassifyUpstreamErrors/limit
+=== RUN   TestClassifyUpstreamErrors/cursor
+=== RUN   TestClassifyUpstreamErrors/not_found
+=== RUN   TestClassifyUpstreamErrors/overloaded
+=== RUN   TestClassifyUpstreamErrors/unavailable
+--- PASS: TestClassifyUpstreamErrors (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/type (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/severity (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/since (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/limit (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/cursor (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/not_found (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/overloaded (0.00s)
+    --- PASS: TestClassifyUpstreamErrors/unavailable (0.00s)
+=== RUN   TestClientListValidatesResponse
+{"time":"2026-10-08T17:01:23.7571927+07:00","level":"INFO","msg":"upstream_request","service":"client-api","operation":"aggregator_get","correlation_id":"","attempt":1,"latency_ms":1.6164,"status":200,"result":"success"}
+--- PASS: TestClientListValidatesResponse (0.00s)
+=== RUN   TestRawNumbersSurviveAndTrailingJSONFails
+=== RUN   TestRawNumbersSurviveAndTrailingJSONFails/#00
+{"time":"2026-10-08T17:01:23.758254+07:00","level":"INFO","msg":"upstream_request","service":"client-api","operation":"aggregator_get","correlation_id":"","attempt":1,"latency_ms":0.5306,"status":200,"result":"success"}
+=== RUN   TestRawNumbersSurviveAndTrailingJSONFails/_{}
+{"time":"2026-10-08T17:01:23.7593321+07:00","level":"INFO","msg":"upstream_request","service":"client-api","operation":"aggregator_get","correlation_id":"","attempt":1,"latency_ms":0.5406,"status":200,"result":"invalid_json"}
+--- PASS: TestRawNumbersSurviveAndTrailingJSONFails (0.00s)
+    --- PASS: TestRawNumbersSurviveAndTrailingJSONFails/#00 (0.00s)
+    --- PASS: TestRawNumbersSurviveAndTrailingJSONFails/_{} (0.00s)
+PASS
+ok  	example.com/akuanaktehat/client-api/internal/adapter/outbound/aggregator	0.925s
+?   	example.com/akuanaktehat/client-api/internal/application	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authn	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authz	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/config	[no test files]
+=== RUN   TestLimitsDistinguishConcurrencyAndRateRejection
+--- PASS: TestLimitsDistinguishConcurrencyAndRateRejection (0.00s)
+PASS
+ok  	example.com/akuanaktehat/client-api/internal/middleware	0.427s
+?   	example.com/akuanaktehat/client-api/internal/observability	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/projection	[no test files]
