@@ -47,8 +47,8 @@ func (c *Client) fetch(ctx context.Context, path string, out any) error {
 		return application.ErrUnavailable
 	}
 	defer resp.Body.Close()
-	b, err := io.ReadAll(io.LimitReader(resp.Body, (4<<20)+1))
-	if err != nil || len(b) > 4<<20 {
+	b, err := io.ReadAll(io.LimitReader(resp.Body, (8<<20)+1))
+	if err != nil || len(b) > 8<<20 {
 		return application.ErrUnavailable
 	}
 	if resp.StatusCode != http.StatusOK {

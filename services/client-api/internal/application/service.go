@@ -2,6 +2,7 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"example.com/akuanaktehat/client-api/internal/authz"
 	"example.com/akuanaktehat/client-api/internal/projection"
@@ -57,5 +58,16 @@ func (s Service) Get(ctx context.Context, scope, id string, fields []string, raw
 	if err != nil {
 		return nil, err
 	}
-	return projection.Project(h, scope, fields), nil
+	result := projection.Project(h, scope, fields)
+	// Freshness metadata is public, independent of the requested hazard fields.
+	var sources []Source
+	encoded, err := json.Marshal(h["sources"])
+	if err != nil || json.Unmarshal(encoded, &sources) != nil {
+		return nil, ErrUnavailable
+	}
+	if sources == nil {
+		sources = []Source{}
+	}
+	result["sources"] = sources
+	return result, nil
 }

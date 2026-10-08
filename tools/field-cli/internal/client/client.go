@@ -20,7 +20,7 @@ import (
 const (
 	defaultTimeout = 5 * time.Second
 	refreshSkew    = 5 * time.Second
-	maxBodyBytes   = 4 << 20
+	maxBodyBytes   = 8 << 20
 )
 
 var (

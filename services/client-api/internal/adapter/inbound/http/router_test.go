@@ -21,7 +21,7 @@ type upstream struct{ calls int }
 
 func (u *upstream) Get(context.Context, string) (map[string]any, error) {
 	u.calls++
-	return map[string]any{"hazard_id": "demo", "source": "BMKG", "hazard_type": "SEISMIC", "severity": "SIAGA", "area_name": "Demo", "occurred_at": "2026-09-01T00:00:00Z", "ingested_at": "2026-09-01T00:00:01Z", "source_ref_id": "raw-id", "latitude": -7.5, "longitude": 110.4, "attributes": map[string]any{"magnitude": 6.7}, "future_internal_field": "must-not-leak"}, nil
+	return map[string]any{"hazard_id": "demo", "source": "BMKG", "hazard_type": "SEISMIC", "severity": "SIAGA", "area_name": "Demo", "occurred_at": "2026-09-01T00:00:00Z", "ingested_at": "2026-09-01T00:00:01Z", "source_ref_id": "raw-id", "latitude": -7.5, "longitude": 110.4, "attributes": map[string]any{"magnitude": 6.7}, "future_internal_field": "must-not-leak", "sources": []map[string]any{{"source": "BMKG", "status": "DEGRADED", "stale_since": "2026-09-01T00:01:00Z", "private_metadata": "must-not-leak"}}}, nil
 }
 func (u *upstream) List(ctx context.Context, _ url.Values) (application.Page, error) {
 	h, _ := u.Get(ctx, "demo")
@@ -77,7 +77,17 @@ func TestHTTPProjectionAndForbiddenRequests(t *testing.T) {
 					t.Fatal("expected one row")
 				}
 				body = rows[0].(map[string]any)
+			} else {
+				sources, ok := body["sources"].([]any)
+				if !ok || len(sources) != 1 {
+					t.Fatal("detail lost freshness metadata")
+				}
+				source := sources[0].(map[string]any)
+				if source["status"] != "DEGRADED" || source["stale_since"] == nil || len(source) != 3 {
+					t.Fatal("freshness metadata missing or leaking upstream fields")
+				}
 			}
+			delete(body, "sources") // envelope metadata is not a HazardEvent field
 			if len(body) != tc.fields {
 				t.Fatalf("returned %d fields;want %d", len(body), tc.fields)
 			}
