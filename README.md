@@ -4,8 +4,6 @@ Platform koordinasi kebencanaan BNPB untuk **IF4031 Arsitektur Aplikasi Terdistr
 
 Kedua instansi berupa mock dengan data sintetis. Implementasi mencakup polling, pemetaan data kanonik, autentikasi, API baca, distribusi event, dan pengujian gangguan serta pemulihan. Ini merupakan PoC lokal pada satu host dengan delapan service aplikasi ketika Pemda Portal diaktifkan.
 
-**Mulai di sini** | [Demo P1 hingga P5](scripts/demo/README.md) | [Memahami project](docs/demo/pemahaman-sistem.md) | [Laporan PDF](doc/laporan/IF4031_M1_AkuAnakTehat.pdf) | [Sumber LaTeX](doc/laporan/README.md)
-
 ## Arsitektur
 
 ![Arsitektur sistem BNPB](doc/laporan/assets/figures/01-arsitektur.svg)
@@ -150,7 +148,3 @@ Uji unit tidak membutuhkan stack. Regresi, load test, dan demo yang mengubah sta
 [Bukti 6 Oktober](docs/evidence/integration/README.md) memuat p95 seismic 8,62 ms, 50 koneksi TCP selama 90,46 detik, dan error bisnis di luar 429 sebesar 0%. Respons 429 tetap dilaporkan dan tidak dihitung sebagai throughput sukses. Hasil hanya berlaku pada lingkungan yang dicatat. [Gladi 8 Oktober](docs/evidence/demo-2026-10-08/README.md) disimpan terpisah agar bukti laporan tidak tertimpa.
 
 Status CI hosted perlu diperiksa pada tab Actions; pengujian lokal tidak membuktikan workflow hosted berhasil. Singleflight, micro-cache, `LISTEN/NOTIFY`, `schema_observations`, dan propagasi deadline melalui header belum termasuk implementasi.
-
-## Laporan dan pengumpulan
-
-[PDF laporan](doc/laporan/IF4031_M1_AkuAnakTehat.pdf) memakai A4 potret dengan LaTeX per bagian. [Panduan build](doc/laporan/README.md) menjelaskan pengeditan di VS Code dan [daftar review](doc/laporan/REVIEW.md) mencatat data yang masih perlu dilengkapi. Tag `milestone-1`, formulir pengumpulan, placeholder anggota, serta demo sinkron tetap perlu diselesaikan kelompok.
