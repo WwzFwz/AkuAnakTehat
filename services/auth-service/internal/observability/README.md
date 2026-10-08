@@ -4,35 +4,35 @@
 
 Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `http.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `logger.go` | Konfigurasi slog JSON dan redaksi field sensitif. |
-| `correlation.go` | Validasi/bangkitkan ID dan simpan pada context. |
-| `health.go` | Handler /health dan /ready serta ringkasan dependensi. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - /health menunjukkan proses hidup; /ready menunjukkan kesiapan melayani fungsi service.
-- Field log minimum: service, correlation_id, operation, latency_ms, dan hasil.
+- Log request dan outbound memuat identitas service, correlation_id, serta latency_ms; nama operasi dan hasil mengikuti jenis log.
 
 ## Dependensi
 
-- Standard library; dipakai adapter, application, dan worker melalui dependensi yang sesuai.
+- Dipakai komponen dalam module service ini; tidak dibagikan sebagai library bisnis lintas service.
 
 ## Aturan penting
 
 - Jangan log Authorization, X-*-Key, token, password, atau payload raw sebelum proyeksi.
-- ID diteruskan lewat HTTP/Kafka dalam alur yang sama; ukur latensi outbound.
-- Aggregator tetap ready ketika sumber/Kafka mati jika fungsi yang bergantung DB masih dapat dilayani.
+- Correlation ID diteruskan ke dependensi melalui adapter yang relevan.
+- Handler health/readiness berada di adapter inbound HTTP; package ini menyediakan instrumentasi request.
 - Untuk service tanpa package ini, utilitas lokal ditempatkan pada http/consumer; tidak membuat shared module bisnis.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati format log lintas service.
-- Pastikan trace script dapat mengikuti satu alur ingest sampai consumer.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [http.go](http.go) | Logger JSON, context correlation ID, dan middleware pencatatan request HTTP. |
+| [redis.go](redis.go) | Hook Redis untuk latency perintah dan koneksi tanpa mencatat argumen maupun secret. |
+
+## Perilaku dan batas saat ini
+
+http.go menyediakan Logger, Middleware, dan ID; redis.go memasang hook koneksi, perintah, dan pipeline Redis. Argumen, token, dan error mentah tidak dicatat. /health serta /ready dirangkai oleh adapter inbound HTTP.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

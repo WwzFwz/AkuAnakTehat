@@ -4,9 +4,7 @@
 
 Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan komponen masing-masing.
 
-**Pemilik rencana:** A/B/C. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** empat kontrak baseline tersedia untuk review bersama. Kontrak Aggregator, event, port, dan storage mendefinisikan batas tahap jalur inti; keberadaan dokumen tersebut bukan bukti persetujuan anggota atau server/producer/consumer sudah berjalan. Kontrak mock, token, dan client menyertai implementasi awal fondasinya.
+**Status:** kontrak berikut mendokumentasikan implementasi yang terhubung. Hubungan dengan spesifikasi, bukti pengujian, dan celah yang masih terbuka dijelaskan dalam [audit persyaratan](../requirements-audit.md).
 
 ## Dokumen kontrak
 

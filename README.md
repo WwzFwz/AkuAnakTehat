@@ -147,4 +147,6 @@ Uji unit tidak membutuhkan stack. Regresi, load test, dan demo yang mengubah sta
 
 [Bukti 6 Oktober](docs/evidence/integration/README.md) memuat p95 seismic 8,62 ms, 50 koneksi TCP selama 90,46 detik, dan error bisnis di luar 429 sebesar 0%. Respons 429 tetap dilaporkan dan tidak dihitung sebagai throughput sukses. Hasil hanya berlaku pada lingkungan yang dicatat. [Gladi 8 Oktober](docs/evidence/demo-2026-10-08/README.md) disimpan terpisah agar bukti laporan tidak tertimpa.
 
+[Pengujian setelah perbaikan ketahanan](docs/evidence/reliability-2026-10-08/README.md) mencatat p95 seismic 10,92 ms, 50 koneksi selama 88,53 detik, dan error non-429 0%. Regresi juga memeriksa pengiriman event 4 MiB, penolakan event terlalu besar, serta pemulihan backlog dan storage. [Audit persyaratan](docs/requirements-audit.md) memetakan kode ke spesifikasi dan mencatat celah U7 berupa latency retry HTTP client-api yang masih digabung dalam satu log operasi.
+
 Status CI hosted perlu diperiksa pada tab Actions; pengujian lokal tidak membuktikan workflow hosted berhasil. Singleflight, micro-cache, `LISTEN/NOTIFY`, `schema_observations`, dan propagasi deadline melalui header belum termasuk implementasi.

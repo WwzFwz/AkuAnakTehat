@@ -2,22 +2,13 @@
 
 [Panduan service](../../README.md) · [Peta repository](../../../../README.md)
 
-Konfigurasi lokal auth-service; nama variabel berikut adalah usulan yang perlu disepakati.
+Konfigurasi lokal auth-service; nama variabel mengikuti config.go dan .env.example.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `config.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `config.go` | Struct konfigurasi dan pembacaan env/berkas lokal. |
-| `validate.go` | Validasi invarian milik service sebelum worker dimulai. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port rencana 8090.
+- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port default 8090.
 - JWT_PRIVATE_KEY_FILE, JWT_ISSUER, JWT_AUDIENCE: Kunci penandatangan dan claims.
 - CLIENTS_FILE: Tiga client dengan hash secret dan scope berbeda.
 - ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL: Default60 s/8 jam.
@@ -34,7 +25,12 @@ Konfigurasi lokal auth-service; nama variabel berikut adalah usulan yang perlu d
 - Tidak memakai secret default dan tidak mencetak konfigurasi sensitif.
 - Validasi durasi positif, limit, TTL, dan path yang relevan; konfigurasi antarservice dicatat sebagai kontrak deployment.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Finalisasi nama env di .env.example saat file itu dibuat.
-- Pisahkan error konfigurasi dari dependensi yang sementara unavailable.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [config.go](config.go) | Membaca environment dan memvalidasi konfigurasi sebelum service dijalankan. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

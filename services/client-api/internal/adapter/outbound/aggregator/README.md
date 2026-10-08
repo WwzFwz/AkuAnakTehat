@@ -4,17 +4,7 @@
 
 Klien HTTP untuk API internal Aggregator.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** HTTP client Aggregator sudah diimplementasikan, termasuk timeout total, retry koneksi terbatas, validasi response, correlation ID, dan klasifikasi error. Bukti P1-P5 lengkap masih terpisah.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `client.go` | HTTP client, base URL, kredensial internal, dan pool koneksi. |
-| `request.go` | Penyusunan query serta forwarding correlation ID. |
-| `response.go` | Decode respons ke DTO client-api dan klasifikasi error. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -32,7 +22,17 @@ Klien HTTP untuk API internal Aggregator.
 - Retry koneksi maksimal sekali jika budget waktu masih cukup.
 - Header propagasi deadline adalah tambahan; jangan menghilangkan timeout lokal jika fitur itu mati.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Validasi respons, batas ukuran, penutupan body, timeout total, dan klasifikasi error sudah diimplementasikan.
-- Verifikasi Aggregator unavailable tidak membuat request menggantung.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [client.go](client.go) | HTTP list/get/readiness, retry terbatas, batas respons 8 MiB, klasifikasi error, dan log total operasi fetch. |
+| [client_test.go](client_test.go) | Pengujian `TestClassifyUpstreamErrors`, `TestClientListValidatesResponse`, `TestRawNumbersSurviveAndTrailingJSONFails`. |
+
+## Perilaku dan batas saat ini
+
+Log upstream_request saat ini mengukur total fetch, termasuk satu retry transport dan decode bila terjadi. Latency tiap percobaan HTTP belum dipisahkan; ini dicatat sebagai celah U7 pada audit persyaratan, bukan dianggap sudah terpenuhi.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

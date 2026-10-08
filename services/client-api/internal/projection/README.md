@@ -4,20 +4,11 @@
 
 Menyusun respons menggunakan allowlist field sesuai hak akses.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `projector.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `allowlist.go` | Daftar field ringkasan dan raw. |
-| `projector.go` | Membentuk objek respons baru dari data internal. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Project(hazard, scopes) menghasilkan objek yang aman untuk diserialisasi.
+- Project(hazard, scope, fields) menghasilkan map baru berisi field yang diizinkan.
 
 ## Dependensi
 
@@ -27,10 +18,15 @@ Menyusun respons menggunakan allowlist field sesuai hak akses.
 
 - Ringkasan: hazard_id, source, hazard_type, severity, area_name, occurred_at, ingested_at.
 - Mentah: source_ref_id, latitude, longitude, attributes.
-- Proyeksi berlaku pada list/detail dan setiap request, termasuk cache hit.
+- Proyeksi berlaku pada list dan detail setiap request; cache belum digunakan.
 - Jangan memodifikasi map/slice bersama yang mungkin berasal dari cache.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Implementasikan allowlist sebelum endpoint bisnis dipublikasikan.
-- Verifikasi field baru tidak otomatis terlihat oleh Media.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [projector.go](projector.go) | Membentuk objek respons baru berdasarkan allowlist scope dan pilihan field. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

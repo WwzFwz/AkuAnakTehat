@@ -4,21 +4,11 @@
 
 Penandatangan JWT Ed25519 dan pembangkit token acak.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `token.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `jwt.go` | Sign JWT dengan claims yang disepakati. |
-| `opaque.go` | Random refresh token dan identifier session/token. |
-| `keys.go` | Load/validate private key dari berkas konfigurasi. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- SignAccessToken(claims, ttl) dan NewRefreshToken() menjadi kebutuhan application.
+- Signer.Sign menerbitkan JWT; Random membangkitkan refresh token dan identifier; Hash menghitung hash token.
 
 ## Dependensi
 
@@ -31,7 +21,12 @@ Penandatangan JWT Ed25519 dan pembangkit token acak.
 - Gunakan sumber acak kriptografis, bukan math/rand.
 - Tidak menulis secret/token ke log.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati format PEM dan claims dengan verifier client-api.
-- Verifikasi access token hasil signer bisa diverifikasi public key tanpa koneksi auth-service.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [token.go](token.go) | Memuat private key Ed25519, menandatangani JWT, dan membangkitkan token acak serta hash. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

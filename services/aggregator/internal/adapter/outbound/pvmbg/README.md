@@ -4,21 +4,11 @@
 
 HTTP client dan tolerant decoder untuk PVMBG; tidak berisi aturan pemetaan severity.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `client.go`. Cakupan pengujian ada di [bukti ingest](../../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `client.go` | GET /volcanic-reports dengan since. |
-| `decoder.go` | Validasi field dikenal; unknown fields dipertahankan sebagai JSON. |
-| `errors.go` | Klasifikasi HTTP error, timeout, dan record invalid. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- FetchReports(ctx, since).
+- FetchReports(ctx, since, corr).
 - Hasil berupa tipe input application/canonicalize atau domain/tsunami, disertai record yang perlu dikarantina.
 
 ## Dependensi
@@ -33,7 +23,12 @@ HTTP client dan tolerant decoder untuk PVMBG; tidak berisi aturan pemetaan sever
 - Teruskan correlation ID, ukur latensi, tutup body respons, dan batasi ukuran respons.
 - Record invalid tidak membatalkan record valid lain; format respons rusak menjadi error endpoint.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Implementasikan fetch dan decoder terpisah.
-- Pertahankan nilai JSON unknown fields; jangan mengonversi semuanya ke string.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [client.go](client.go) | Fetch laporan PVMBG melalui sourcehttp, lalu decode melalui canonicalize. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

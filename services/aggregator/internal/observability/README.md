@@ -4,35 +4,36 @@
 
 Logging terstruktur, correlation ID, serta liveness/readiness milik service.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** health/readiness Aggregator sudah mencakup jalur ingest dan query. Logging request menyertakan correlation ID dan latency.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `logger.go` | Konfigurasi slog JSON dan redaksi field sensitif. |
-| `correlation.go` | Validasi/bangkitkan ID dan simpan pada context. |
-| `health.go` | Handler /health dan /ready serta ringkasan dependensi. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - /health menunjukkan proses hidup; /ready/ingest memeriksa database ingest; /ready memeriksa pool query.
-- Field log minimum: service, correlation_id, operation, latency_ms, dan hasil.
+- Log request dan outbound memuat identitas service, correlation_id, serta latency_ms; nama operasi dan hasil mengikuti jenis log.
 
 ## Dependensi
 
-- Standard library; dipakai adapter, application, dan worker melalui dependensi yang sesuai.
+- Dipakai komponen dalam module service ini; tidak dibagikan sebagai library bisnis lintas service.
 
 ## Aturan penting
 
 - Jangan log Authorization, X-*-Key, token, password, atau payload raw sebelum proyeksi.
-- ID diteruskan lewat HTTP/Kafka dalam alur yang sama; ukur latensi outbound.
-- Readiness ingest tetap 200 ketika sumber mati selama database tersedia; status sumber tersimpan terpisah. Kafka belum dipakai jalur A.
+- Correlation ID diteruskan ke dependensi melalui adapter yang relevan.
+- Readiness ingest tetap 200 ketika sumber mati selama database tersedia; status sumber tersimpan terpisah. Relay Kafka berjalan terpisah dari readiness ingest.
 - Untuk service tanpa package ini, utilitas lokal ditempatkan pada http/consumer; tidak membuat shared module bisnis.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati format log lintas service.
-- Pastikan trace script dapat mengikuti satu alur ingest sampai consumer.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [health.go](health.go) | Handler health/readiness dan log request HTTP dengan correlation ID. |
+| [outbound.go](outbound.go) | Context correlation ID serta tracing PostgreSQL, Kafka, dan panggilan outbound. |
+| [outbound_test.go](outbound_test.go) | Memeriksa correlation ID dan latency tanpa kebocoran SQL, parameter, atau error driver. |
+
+## Perilaku dan batas saat ini
+
+Logger JSON dibuat di cmd/aggregator/main.go. outbound.go memakai pgx dan franz-go untuk hook driver. ID operasi protokol Kafka dapat berbeda dari ID event; publish per record tetap membawa correlation ID ingest. SQL, parameter, dan pesan error driver tidak dicetak.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

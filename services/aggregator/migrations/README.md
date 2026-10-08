@@ -4,17 +4,7 @@
 
 Skema berversi Canonical Store; dimiliki dan dijalankan oleh Aggregator.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A dan migration pendukung query B sudah diimplementasikan. Migration awal dan `002_source_status_stale_since` tersedia; cakupan pengujian ada di [bukti ingest](../../../docs/evidence/ingest/README.md).
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `001_initial.up.sql` | Skema awal hazard_events, outbox, source_status, checkpoint/watermark, tsunami_warnings, dan quarantine. |
-| `001_initial.down.sql` | Rollback pasangan migrasi awal untuk lingkungan pengembangan. |
-| `embed.go` | Embed *.sql dari folder ini untuk migration runner. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -34,8 +24,18 @@ Skema berversi Canonical Store; dimiliki dan dijalankan oleh Aggregator.
 - Skema checkpoint harus benar-benar dibuat; watermark bukan hanya state memori.
 - Migrasi yang sudah diterapkan tidak diedit sembarangan; perubahan berikutnya memakai versi baru.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati skema dengan A/B/C.
-- Siapkan indeks query per tipe dan query gabungan sesuai pengukuran.
-- Verifikasi startup baru dan startup ulang tanpa menjalankan DDL dua kali.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [001_initial.down.sql](001_initial.down.sql) | Membatalkan skema awal Canonical Store. |
+| [001_initial.up.sql](001_initial.up.sql) | Menerapkan skema awal Canonical Store. |
+| [002_source_status_stale_since.down.sql](002_source_status_stale_since.down.sql) | Membatalkan stale_since pada status sumber. |
+| [002_source_status_stale_since.up.sql](002_source_status_stale_since.up.sql) | Menerapkan stale_since pada status sumber. |
+| [003_outbox_rejections.down.sql](003_outbox_rejections.down.sql) | Membatalkan status penolakan permanen outbox. |
+| [003_outbox_rejections.up.sql](003_outbox_rejections.up.sql) | Menerapkan status penolakan permanen outbox. |
+| [embed.go](embed.go) | Embed file SQL untuk runner migrasi Aggregator. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

@@ -1,0 +1,11 @@
+/bnpb-m1-aggregator-1 c6bc34141dee1b7b3df03493e4dc73faa459398067da16c298a188c8bf9c755e started=2026-10-08T04:57:52.745190065Z restarts=0 oom=false
+/bnpb-m1-auth-service-1 059d3a16c41203e7176e74d21b84287daff35b7befb012bc2dfaa6144bf4aead started=2026-10-08T04:56:52.505276974Z restarts=0 oom=false
+/bnpb-m1-auth-store-1 70e00b2df488ea6d812f900e97dbae1d7841c99254679caf307c3c6d0228bd79 started=2026-10-08T04:56:49.188112458Z restarts=0 oom=false
+/bnpb-m1-bmkg-mock-1 3ea20e0f5bfcf8e1a4f36f6fa6d56c2f2730b19a75dc5e6358cd6ba54fc78b1d started=2026-10-08T04:47:28.23507794Z restarts=0 oom=false
+/bnpb-m1-canonical-db-1 8db8f6916d1adb06cfc8789d84e24d517bdb6bb4c2dd23f25daa9efd46eca59e started=2026-10-08T04:56:49.978829909Z restarts=0 oom=false
+/bnpb-m1-client-api-1 a37a453f73a6f5eb5ed0e6cb2befb1a7764a39ce604ebf422ee84d027b31c3e0 started=2026-10-08T04:47:28.241160936Z restarts=0 oom=false
+/bnpb-m1-dashboard-updater-1 a1e1eb894372081491bd7ad62e44681075c39aea6bc16cfb35015c9ce43a9835 started=2026-10-08T04:58:52.049161066Z restarts=1 oom=false
+/bnpb-m1-kafka-1 67a03273dd7d4c63d1efeeab4acdeb4ca4ef15249a5fd09cbef12a2e364d4c4e started=2026-10-08T04:58:48.072699947Z restarts=0 oom=false
+/bnpb-m1-notifier-1 e892de784ae23bd3da4e0d2e6fad3b8e7be26867b05950faa19ab9e96f9c94d5 started=2026-10-08T05:01:19.18348779Z restarts=0 oom=false
+/bnpb-m1-pemda-portal-1 6a0fcc690bb3df3f8405f6a7c95619ad81fce2c9d1e2f335db00be34c450f137 started=2026-10-08T04:58:52.220018807Z restarts=1 oom=false
+/bnpb-m1-pvmbg-mock-1 c310a73c59b9daae695df43217a44f1499e626afedc82ffc40ba76c89ff8ca65 started=2026-10-08T08:47:15.523246288Z restarts=0 oom=false

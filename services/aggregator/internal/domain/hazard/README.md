@@ -4,23 +4,12 @@
 
 Model HazardEvent dan aturan murni yang dipakai ingest serta query.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `event.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `event.go` | Entitas kanonik, Source, HazardType, dan Severity. |
-| `record.go` | Metadata internal: version, content_hash, updated_at, dan last_seen_at. |
-| `hash.go` | Hash deterministik dari isi bisnis. |
-| `validation.go` | Validasi field kanonik tanpa I/O. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - HazardEvent memuat field Ringkasan dan Mentah sesuai spesifikasi.
-- Operasi yang direncanakan: Validate(event), ContentHash(event), dan perbandingan severity.
+- Event dan Record menyimpan model; ContentHash menghitung hash isi bisnis. Validasi input berada di canonicalize.Decode dan aturan severity berada di canonicalize serta domain/tsunami.
 
 ## Dependensi
 
@@ -32,7 +21,13 @@ Model HazardEvent dan aturan murni yang dipakai ingest serta query.
 - Hash tidak memuat ingested_at, updated_at, last_seen_at, atau correlation ID.
 - hazard_id stabil melalui identitas (source, source_ref_id); metadata internal tidak masuk respons publik.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati representasi tipe dan validasi.
-- Verifikasi hash tidak berubah karena urutan key JSON, tetapi berubah saat isi bisnis berubah.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [event.go](event.go) | HazardEvent, metadata Record, UUID, dan hash deterministik isi bisnis. |
+| [limits.go](limits.go) | Batas envelope 4 MiB, halaman 8 MiB, dan error event terlalu besar. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

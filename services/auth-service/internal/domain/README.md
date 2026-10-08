@@ -4,17 +4,7 @@
 
 Identitas client, scope server, dan lifecycle keluarga refresh token.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `types.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `client.go` | Client ID, hash secret, dan scope yang diizinkan. |
-| `refresh_token.go` | Hash token, family_id, client_id, status used, scope, dan expiry. |
-| `token_pair.go` | Respons access token dan refresh token. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -31,6 +21,12 @@ Identitas client, scope server, dan lifecycle keluarga refresh token.
 - Scope pengganti tidak boleh melebihi scope grant awal.
 - Jangan mengimpor Redis, JWT library, atau HTTP ke model domain.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati masa hidup family dan token bekas agar deteksi reuse tetap dapat bekerja.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [types.go](types.go) | Tipe identitas client, pasangan token, dan record internal refresh token. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

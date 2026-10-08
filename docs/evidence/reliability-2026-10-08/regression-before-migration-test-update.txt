@@ -1,0 +1,53 @@
+=== RUN   TestHealth
+--- PASS: TestHealth (0.01s)
+=== RUN   TestMockContracts
+--- PASS: TestMockContracts (4.03s)
+=== RUN   TestPVMBGSchemaAndOutage
+--- PASS: TestPVMBGSchemaAndOutage (8.77s)
+=== RUN   TestTokenRotationAndAuthorization
+--- PASS: TestTokenRotationAndAuthorization (0.06s)
+=== RUN   TestJWTClaimValidation
+=== RUN   TestJWTClaimValidation/exp
+=== RUN   TestJWTClaimValidation/aud
+=== RUN   TestJWTClaimValidation/iss
+=== RUN   TestJWTClaimValidation/iat
+--- PASS: TestJWTClaimValidation (0.01s)
+    --- PASS: TestJWTClaimValidation/exp (0.00s)
+    --- PASS: TestJWTClaimValidation/aud (0.00s)
+    --- PASS: TestJWTClaimValidation/iss (0.00s)
+    --- PASS: TestJWTClaimValidation/iat (0.00s)
+=== RUN   TestPersistenceAndDependencyRecovery
+--- PASS: TestPersistenceAndDependencyRecovery (15.93s)
+=== RUN   TestStructuredLogsDoNotExposeCredentials
+--- PASS: TestStructuredLogsDoNotExposeCredentials (0.35s)
+=== RUN   TestIngestPipeline
+    ingest_test.go:80: migration version changed on restart
+--- FAIL: TestIngestPipeline (45.77s)
+=== RUN   TestEventPipeline
+    events_test.go:60: mock -> ingest -> PostgreSQL outbox -> Kafka -> dashboard verified
+    events_test.go:86: fresh pemda group and empty store replayed history without replacing Aggregator
+    events_test.go:131: replay/stale versions, precise additive fields, SIAGA/AWAS filtering and SQLite restart persistence verified
+    events_test.go:152: invalid record reached DLQ for all three groups; subsequent valid record processed
+    events_test.go:163: paused dashboard caught up; notifier and pemda continued independently
+    events_test.go:190: Kafka outage did not block ingest; retained outbox drained after recovery
+--- PASS: TestEventPipeline (68.81s)
+=== RUN   TestQueryIntegration
+    query_test.go:112: client-api {"time":"2026-10-08T04:52:49.895600885Z","level":"INFO","msg":"upstream_request","service":"client-api","operation":"aggregator_get","correlation_id":"query-integration-1791435169887337500","latency_ms":1}
+    query_test.go:112: client-api {"time":"2026-10-08T04:52:49.895643732Z","level":"INFO","msg":"request","service":"client-api","correlation_id":"query-integration-1791435169887337500","operation":"GET","latency_ms":1,"status":200}
+    query_test.go:112: aggregator {"time":"2026-10-08T04:52:49.895162315Z","level":"INFO","msg":"outbound_call","service":"aggregator","dependency":"postgres","operation":"query","correlation_id":"query-integration-1791435169887337500","latency_ms":0.746,"ok":true}
+    query_test.go:112: aggregator {"time":"2026-10-08T04:52:49.895400547Z","level":"INFO","msg":"outbound_call","service":"aggregator","dependency":"postgres","operation":"query","correlation_id":"query-integration-1791435169887337500","latency_ms":0.198,"ok":true}
+    query_test.go:112: aggregator {"time":"2026-10-08T04:52:49.895443977Z","level":"INFO","msg":"http_request","service":"aggregator","method":"GET","path":"/internal/hazards","correlation_id":"query-integration-1791435169887337500","latency_ms":1}
+    query_test.go:116: P3: Media allowlist, raw rejection, distinct privileged identities; query filters, pagination, errors and cross-service trace passed
+--- PASS: TestQueryIntegration (0.53s)
+=== RUN   TestDynamicSchemaAndStaleAPI
+    query_test.go:207: P1/P4: old/new JSONB attributes coexist and remain readable without migration; P2: stale volcanic data and healthy seismic reads recover without restart
+--- PASS: TestDynamicSchemaAndStaleAPI (25.19s)
+=== RUN   TestNaturalExpiryAndFieldCLI
+    query_test.go:259: P3: real 60s access TTL elapsed; CLI retained its session across 65s and refreshed automatically; expired token rejected before/after refresh
+--- PASS: TestNaturalExpiryAndFieldCLI (67.90s)
+=== RUN   TestIndependentRebuild
+    query_test.go:287: P4: notifier stopped, rebuilt and started independently; public reads continued and other container start timestamps remained unchanged
+--- PASS: TestIndependentRebuild (53.05s)
+FAIL
+FAIL	command-line-arguments	291.170s
+FAIL

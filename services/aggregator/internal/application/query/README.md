@@ -4,22 +4,11 @@
 
 Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan status sumber.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** application query, port, repository, dan HTTP inbound sudah diimplementasikan. Wiring runtime tersedia pada composition root Aggregator.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `service.go` | List/get hazard melalui port baca. |
-| `ports.go` | HazardQuery sebagai kebutuhan pembacaan application. |
-| `filter.go` | Filter tipe/severity/since, limit, dan cursor opaque. |
-| `result.go` | Page result dan metadata freshness per sumber. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Operasi usulan: List(ctx, filter) dan Get(ctx, hazardID).
+- Operasi tersedia berupa List(ctx, filter) dan Get(ctx, hazardID).
 - Respons memuat HazardEvent tanpa metadata storage internal, next_cursor, dan metadata sumber sesuai kontrak HTTP.
 
 ## Dependensi
@@ -33,7 +22,20 @@ Use case baca Canonical Store melalui API internal, beserta filter, halaman, dan
 - Hasil filter kosong tidak otomatis berarti sumber unavailable.
 - Timeout query lokal wajib; data lama dapat disajikan dengan penanda stale.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- DTO respons sudah mengikuti kontrak Aggregator HTTP dan client-api.
-- Tentukan perilaku endpoint gabungan saat satu sumber belum punya data.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [filter.go](filter.go) | Normalisasi filter dan encoding serta validasi cursor keyset. |
+| [filter_test.go](filter_test.go) | Pengujian `TestNormalizeFilter`, `TestNormalizeFilterRejectsInvalidValues`, `TestCursorRoundTrip`, `TestServiceNormalizesEmptyResults`. |
+| [ports.go](ports.go) | HazardQuery sebagai kontrak pembacaan halaman dan detail. |
+| [result.go](result.go) | Tipe halaman, detail hazard, dan metadata freshness sumber. |
+| [service.go](service.go) | Use case List dan Get, validasi filter dan pemetaan kegagalan penyimpanan. |
+
+## Perilaku dan batas saat ini
+
+Get mengembalikan HazardDetail dengan sources pada level yang sama dengan field hazard. List menyertakan sources dan cursor; repository membatasi halaman berdasarkan jumlah maupun byte.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

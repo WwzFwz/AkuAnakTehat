@@ -4,25 +4,12 @@
 
 Implementasi penyimpanan Aggregator, dengan pemisahan kepemilikan file untuk transaksi ingest, query, dan outbox.
 
-**Pemilik rencana:** A/B/C. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A dan repository query B sudah diimplementasikan. Berkas query tersedia pada `query_repository.go`; `outbox_repository.go` (C) menyediakan pending urut id, mark ACK idempoten, dan cleanup published saja. Cakupan pengujian ada di [bukti ingest](../../../../../../docs/evidence/ingest/README.md).
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `pool.go` | Membuka pool ingest/baca, timeout, dan lifecycle koneksi. |
-| `unit_of_work.go` | A: WithTx, commit, rollback, dan repository terikat transaksi. |
-| `ingest_repository.go` | A: hazard, warning, watermark, quarantine, dan status sumber. |
-| `query_repository.go` | B: list/get dan metadata sumber. |
-| `outbox_repository.go` | C: pending, mark published, dan housekeeping. |
-| `migrate.go` | Menjalankan migrasi embedded milik Aggregator. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - Memenuhi UnitOfWork/Tx milik ingest, HazardQuery milik query, serta OutboxStore milik worker/outbox.
-- Driver direncanakan pgx; interface tidak mengekspos driver ke domain.
+- Driver menggunakan pgx; interface tidak mengekspos driver ke domain.
 
 ## Dependensi
 
@@ -36,7 +23,20 @@ Implementasi penyimpanan Aggregator, dengan pemisahan kepemilikan file untuk tra
 - Pool terpisah membatasi perebutan koneksi, bukan menjamin CPU/IO database terisolasi.
 - LISTEN/NOTIFY tambahan; relay inti tidak bergantung padanya.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- A/B/C sepakati port dan skema sebelum coding.
-- Verifikasi rollback, upsert unik, urutan versi, keyset pagination, dan outbox ACK state.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [ingest_integration_test.go](ingest_integration_test.go) | Uji transaksi ingest, korelasi, hash, checkpoint, dan persistensi memakai PostgreSQL. |
+| [ingest_repository.go](ingest_repository.go) | Penyimpanan hazard, warning, checkpoint, karantina, outbox, dan status polling. |
+| [migrate.go](migrate.go) | Menjalankan migrasi embedded menggunakan golang-migrate. |
+| [outbox_repository.go](outbox_repository.go) | Membaca pending outbox, menyimpan ACK atau penolakan, dan membersihkan row published. |
+| [pool.go](pool.go) | Membuka pool PostgreSQL dengan batas koneksi, timeout, dan tracer. |
+| [query_repository.go](query_repository.go) | Query hazard dengan filter, pagination jumlah dan byte, serta freshness sumber. |
+| [query_repository_integration_test.go](query_repository_integration_test.go) | Uji filter, pagination, detail, dan freshness memakai PostgreSQL. |
+| [robustness_integration_test.go](robustness_integration_test.go) | Uji PostgreSQL untuk batas 4 MiB, pagination byte, dan replay backlog 600 record. |
+| [unit_of_work.go](unit_of_work.go) | Menjalankan callback transaksi ingest dengan timeout, rollback, dan retry terbatas. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

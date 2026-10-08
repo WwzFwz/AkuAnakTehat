@@ -1,6 +1,6 @@
 # pvmbg-mock
 
-Mock sumber independen untuk fondasi M1. **Status: implementasi fondasi tersedia; belum menjadi bukti lulus skenario tugas.**
+Mock sumber independen untuk fondasi M1. **Status: diimplementasikan dan terhubung ke pengujian integrasi lokal.**
 
 Default port `8082` dapat diubah melalui `HTTP_ADDR`. Kontrak endpoint, autentikasi, environment, seed, dan simulasi dijelaskan dalam [kontrak mock HTTP](../../docs/api/mock-http.md).
 
@@ -34,6 +34,6 @@ Go 1.24.2, standard library saja; tidak memerlukan database atau broker. Dockerf
 
 ## Verifikasi dan batas
 
-Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Race/load test masih di luar validasi ini. Tidak ada implementasi ingest BNPB di service ini.
+Kontrak mock diperiksa pada [pengujian fondasi](../../docs/evidence/foundation/README.md). Alur ingest, perubahan skema, dan outage memiliki bukti terpisah pada [audit persyaratan](../../docs/requirements-audit.md). Tidak ada klaim race test atau pengukuran kapasitas maksimum mock. Tidak ada implementasi ingest BNPB di service ini.
 
 Seed sintetis tetap dimuat setiap startup. Data runtime disimpan di memori, hilang saat restart, dan belum memiliki retensi; sesuai penggunaan demo terbatas.

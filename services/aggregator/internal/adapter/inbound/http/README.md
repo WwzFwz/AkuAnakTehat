@@ -4,19 +4,7 @@
 
 Transport API internal Aggregator: routing, autentikasi internal, validasi input, dan serialisasi hasil query.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** HTTP internal Aggregator sudah diimplementasikan pada Tahap 3.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `router.go` | Route /internal/hazards dan detail berdasarkan ID. |
-| `handler.go` | Menerjemahkan HTTP ke application/query. |
-| `auth.go` | Validasi X-Internal-Key. |
-| `cursor.go` | Encode/decode cursor keyset. |
-| `errors.go` | Pemetaan error application ke status HTTP. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -36,7 +24,16 @@ Transport API internal Aggregator: routing, autentikasi internal, validasi input
 - Port internal tidak dipublikasikan ke host.
 - Tidak mengembalikan detail error SQL atau secret.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Kontrak HTTP sudah difinalisasi pada `docs/api/aggregator-http.md`.
-- Use case, auth internal, timeout, correlation ID, dan handler health/readiness sudah terhubung.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [auth.go](auth.go) | Memeriksa kredensial internal tanpa membocorkan nilai secret. |
+| [cursor.go](cursor.go) | Menerjemahkan query HTTP ke filter dan memvalidasi cursor. |
+| [errors.go](errors.go) | Memetakan error application ke status dan payload galat HTTP. |
+| [router.go](router.go) | Mendaftarkan endpoint, memvalidasi request, dan membentuk respons HTTP. |
+| [router_test.go](router_test.go) | Pengujian `TestListSuccessAndCorrelation`, `TestListRejectsCredentialsAndQuery`, `TestDetailNotFound`, `TestQueryTimeoutIsUnavailable`. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

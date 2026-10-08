@@ -2,11 +2,16 @@
 
 Composition root: validasi konfigurasi, seed, generator, HTTP server, signal dan graceful shutdown.
 
-**Status:** implementasi fondasi tersedia; Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap.
-
-## File saat ini
-
-- `main.go`
-
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 Lihat README service dan `docs/api/mock-http.md` pada root repository untuk kontrak lengkap.
+
+## Berkas implementasi
+
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [main.go](main.go) | Memuat konfigurasi, merangkai dependensi, menjalankan worker dan HTTP, serta menangani shutdown. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

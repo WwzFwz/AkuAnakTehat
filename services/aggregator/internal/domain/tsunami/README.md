@@ -4,16 +4,7 @@
 
 Model warning dan aturan korelasi ke gempa, tanpa akses jaringan atau storage.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `warning.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `warning.go` | TsunamiWarning dan atribut tambahan yang dipertahankan. |
-| `severity.go` | Urutan Waspada, Siaga, dan Awas untuk memilih warning tertinggi. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -30,7 +21,12 @@ Model warning dan aturan korelasi ke gempa, tanpa akses jaringan atau storage.
 - Metadata internal mock tidak menjadi ketergantungan model ini.
 - Aturan warning hanya diterapkan pada gempa yang sesuai kontrak potential_tsunami.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Tentukan representasi field tambahan.
-- Verifikasi pilihan severity tertinggi saat beberapa warning terkait tersedia.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [warning.go](warning.go) | Model warning, field tambahan, dan fungsi peringkat tingkat ancaman. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

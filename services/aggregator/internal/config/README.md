@@ -4,20 +4,11 @@
 
 Konfigurasi ingest Aggregator; `config.go` adalah sumber nama dan nilai default yang diterapkan.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `config.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `config.go` | Struct konfigurasi dan pembacaan env/berkas lokal. |
-| `validate.go` | Validasi invarian milik service sebelum worker dimulai. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port rencana 9000.
+- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port default 9000.
 - BMKG_URL, PVMBG_URL: Alamat sumber; secret sumber terpisah.
 - DATABASE_URL: Akses Canonical Store khusus Aggregator.
 - BMKG_POLL_INTERVAL, PVMBG_POLL_INTERVAL: Default2 s/5 s; overlap10 s.
@@ -38,7 +29,12 @@ Konfigurasi ingest Aggregator; `config.go` adalah sumber nama dan nilai default 
 - Tidak memakai secret default dan tidak mencetak konfigurasi sensitif.
 - Validasi durasi positif, limit, TTL, dan path yang relevan; konfigurasi antarservice dicatat sebagai kontrak deployment.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Nama env query dan internal key tercatat pada `.env.example` serta generator secret.
-- Pisahkan error konfigurasi dari dependensi yang sementara unavailable.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [config.go](config.go) | Membaca environment dan memvalidasi konfigurasi sebelum service dijalankan. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

@@ -4,18 +4,7 @@
 
 Penjadwal polling independen per sumber, dengan satu jalur penulisan per sumber.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `breaker.go`, `poller.go`, `poller_test.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `poller.go` | Lifecycle, interval/jitter, cancellation, dan pencegahan siklus overlap. |
-| `bmkg.go` | Fetch dua endpoint paralel lalu proses hasil secara berurutan. |
-| `pvmbg.go` | Fetch laporan vulkanik dan kirim batch ke ingest. |
-| `breaker.go` | Circuit breaker dan pemulihan tanpa restart. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -34,7 +23,14 @@ Penjadwal polling independen per sumber, dengan satu jalur penulisan per sumber.
 - Hasil endpoint BMKG yang sukses tetap diproses jika endpoint lain gagal.
 - Poller tidak menumpuk goroutine saat sumber hang.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Implementasikan timeout, breaker, status stale, dan cancellation sejak baseline.
-- Verifikasi outage PVMBG tidak menghentikan ingest BMKG.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [breaker.go](breaker.go) | State circuit breaker untuk kegagalan beruntun, cooldown, dan probe pemulihan. |
+| [poller.go](poller.go) | Polling per sumber, fetch endpoint, penyerahan batch ke ingest, dan pencatatan hasil polling. |
+| [poller_test.go](poller_test.go) | Pengujian `TestPartialBMKGAndBreakerRecovery`. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

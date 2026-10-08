@@ -4,24 +4,12 @@
 
 Orkestrasi pemetaan, korelasi, deteksi perubahan, penulisan atomik, dan kemajuan polling.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A sudah diimplementasikan. Berkas tersedia: `ports.go`, `service.go`. Cakupan pengujian ada di [bukti ingest](../../../../../docs/evidence/ingest/README.md). Tabel rencana di bawah adalah panduan pemecahan tanggung jawab; sebagian operasi digabung dalam file yang tersedia.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `service.go` | Pipeline batch ingest per endpoint. |
-| `ports.go` | UnitOfWork, Tx, checkpoint, dan port status sumber. |
-| `batch.go` | Record valid, record ditolak, watermark kandidat, dan correlation ID. |
-| `source_status.go` | Status sumber dan waktu polling sukses/gagal. |
-| `event_envelope.go` | Payload hazard.upserted yang disimpan ke outbox. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - WithTx(ctx, callback) menyediakan repository hazard, warning, outbox, watermark, dan quarantine yang memakai transaksi sama.
-- Operasi usulan: ApplyBatch(ctx, batch).
+- Operasi tersedia berupa ApplyBatch(ctx, batch).
 - Port checkpoint membaca watermark persisten; StatusStore mencatat hasil polling per sumber/endpoint.
 
 ## Dependensi
@@ -31,13 +19,22 @@ Orkestrasi pemetaan, korelasi, deteksi perubahan, penulisan atomik, dan kemajuan
 
 ## Aturan penting
 
-- Upsert, outbox, dan watermark terkait harus satu transaksi; tidak ada repository Tx yang membuka transaksi sendiri.
+- Upsert dan outbox atomik per record. Checkpoint disimpan dalam transaksi terpisah setelah seluruh respons ditangani; prefix yang sudah commit aman dipoll ulang.
 - Hash sama tidak membuat event baru; hash berubah menaikkan version.
 - Warning yang datang lebih dahulu disimpan; warning terlambat harus memperbarui hazard yang sudah ada.
 - Jangan memajukan watermark sebelum seluruh batch ditangani, termasuk pencatatan record karantina.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati port UnitOfWork dengan A/B/C.
-- Implementasikan pipeline inti dan log drift; schema_observations merupakan tambahan.
-- Verifikasi replay, crash sebelum commit, dan korelasi ulang warning.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [ports.go](ports.go) | UnitOfWork, Tx, record outbox dan karantina, serta port checkpoint dan status polling. |
+| [service.go](service.go) | ApplyBatch, transaksi per record, korelasi, hash, envelope outbox, karantina, dan checkpoint akhir respons. |
+
+## Perilaku dan batas saat ini
+
+Batch dan item input berada di `../canonicalize/input.go`. Jika envelope melebihi 4 MiB, transaksi record dibatalkan dan payload sumber dikarantina. Checkpoint tetap tidak maju ketika ada kegagalan yang belum tersimpan; hash mencegah outbox ganda ketika prefix diulang.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

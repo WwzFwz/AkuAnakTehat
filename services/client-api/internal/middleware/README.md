@@ -4,26 +4,15 @@
 
 Proteksi trafik inti dan batas resource jalur baca.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** rate limit token bucket dan semaphore konkurensi sudah diimplementasikan. Penolakan rate dan konkurensi menghasilkan alasan `429` yang berbeda.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `rate_limit.go` | Token bucket per client_id terverifikasi. |
-| `concurrency.go` | Semaphore global dengan penolakan terkendali. |
-| `timeout.go` | Batas waktu lokal request. |
-| `input_limit.go` | Batas header/body dan validasi input umum. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Middleware membungkus http.Handler; limit dibaca dari config.
+- Handler memanggil Limits.Enter setelah autentikasi; hasilnya release callback atau alasan penolakan.
 
 ## Dependensi
 
-- net/http, authn claims, logger/correlation ID lokal.
+- sync dan time; identitas terverifikasi diberikan oleh handler HTTP.
 
 ## Aturan penting
 
@@ -32,7 +21,17 @@ Proteksi trafik inti dan batas resource jalur baca.
 - Batasi pertumbuhan state limiter; jangan menerima client_id arbitrer tanpa verifikasi.
 - Catat penolakan terkontrol terpisah dari kegagalan5xx.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Tentukan urutan middleware dengan authn dan limiter pra-autentikasi bila diperlukan.
-- Ukur baseline50 koneksi sustained sebelum menambah cache.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [limits.go](limits.go) | Token bucket per identitas terverifikasi, semaphore global, dan pembatasan state limiter. |
+| [limits_test.go](limits_test.go) | Pengujian `TestLimitsDistinguishConcurrencyAndRateRejection`. |
+
+## Perilaku dan batas saat ini
+
+Timeout HTTP server dan ukuran header diatur di cmd/client-api/main.go. Timeout outbound 1,5 detik berada di adapter Aggregator. Package ini tidak menyediakan middleware timeout atau pembatas body generik.
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

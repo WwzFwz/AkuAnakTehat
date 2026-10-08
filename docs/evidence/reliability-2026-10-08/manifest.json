@@ -1,0 +1,127 @@
+{
+  "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
+  "runner_exit_code": 0,
+  "scenario_exit_codes": {
+    "seismic-only": 0,
+    "sustained": 0,
+    "outage": 0
+  },
+  "files": [
+    {
+      "path": "load/client-limits.txt",
+      "sha256": "714ac30a1282aeb7f6c2a9e4370df0e3ff46d1afb3f7c839e0be74fc6d1cb539"
+    },
+    {
+      "path": "load/connections.json",
+      "sha256": "4c6828033bd48568bc8d6d056b4788aaa57a298940b394a5facd2ad0e08db33f"
+    },
+    {
+      "path": "load/containers-after.txt",
+      "sha256": "4c9912efed27d9e3fbf461b1077ca0a28493f77ae764a12033c99bccf5ba75ae"
+    },
+    {
+      "path": "load/containers-before.txt",
+      "sha256": "0e534176d58ee874fe9c2940b5b3b99b1d662c871711cfb5bff1b117dc278b24"
+    },
+    {
+      "path": "load/environment.txt",
+      "sha256": "c72b56efe3df4fcfd053d0fed2b26a08aec1daa5341e3db93ae8f668a88641a1"
+    },
+    {
+      "path": "load/final-source-status.json",
+      "sha256": "f905fa4dff7f0667d8c0287d38b74df64a6f6457978229fd85c4390578103b09"
+    },
+    {
+      "path": "load/outage.json",
+      "sha256": "7716f39511b3bec4fa1cd08d77750f323f12db367d30e56bdad8bda836943c44"
+    },
+    {
+      "path": "load/outage.txt",
+      "sha256": "d0cc3821cef21c85f4d8d3d2d4886fcf563597f2cf1b7c4898cc0162983786e2"
+    },
+    {
+      "path": "load/pvmbg-delay.txt",
+      "sha256": "0281f55cef2ce76da1f99dda9096f3369da479b4f0d881ca0bc231e4600ba243"
+    },
+    {
+      "path": "load/pvmbg-poll-log.json",
+      "sha256": "4b1071c7de26eff369ef44c80048f115dee31fc3265a3fa48822a6d3d0611e1e"
+    },
+    {
+      "path": "load/revision.txt",
+      "sha256": "747885d9d4a78a679ea993652ebec75e0ed216f6ba8399a62ba1cd876c4b5895"
+    },
+    {
+      "path": "load/runner.txt",
+      "sha256": "da265a428b3622dc9fb2285e4bc7b7b6eaf147c0b84f06a16d0f83c5a770ee25"
+    },
+    {
+      "path": "load/seismic-only.json",
+      "sha256": "8de23eca694aa1ace1be26ec6ccde88bffc5cdd8d41f2b6bb829778020126fee"
+    },
+    {
+      "path": "load/seismic-only.txt",
+      "sha256": "4eabbd97b8da0c7ae01d53324002a0a6930c0815841152a85daa895f826d782f"
+    },
+    {
+      "path": "load/sustained.json",
+      "sha256": "25834c0d6c5dec64412a7b5e4810c5f6f80d9c6f6caba30fd75c9f262d30cbb3"
+    },
+    {
+      "path": "load/sustained.txt",
+      "sha256": "4fc328cbd2d3a32ae2128ba8e6c8c43cc84aed56587d5772bd48efb34148b9da"
+    },
+    {
+      "path": "modules.txt",
+      "sha256": "00612344ab9f24468aa72e27b6bb7ae8ab1a95addc78f150ecd6df944f1dacaf"
+    },
+    {
+      "path": "postgres.txt",
+      "sha256": "25fa6877d1c24620bf814ad1a216c9794a010e7f2d9d7f50c516762112677af0"
+    },
+    {
+      "path": "README.md",
+      "sha256": "9691843558a4036f9d3ecf0427651be8da757c4c1d02c78dc208a40bac5beb27"
+    },
+    {
+      "path": "regression-before-migration-test-update.txt",
+      "sha256": "b87c3f7b976e98925daf8065dd8f7fe37d40941972b56ddf4ec124f878b45e23"
+    },
+    {
+      "path": "regression.txt",
+      "sha256": "50cf1f06b9e440ef3af339667d6bac74330388349a366be9b7bfadf60a9cfd6b"
+    },
+    {
+      "path": "secret-scan.txt",
+      "sha256": "ab7107164fac757a9c7c76ba6c4bf1253d36db061fd74a3c25b9d28dc297f447"
+    }
+  ],
+  "scripts": [
+    {
+      "path": "scripts/loadtest/auth.js",
+      "sha256": "f5b1b67dac194f985e4843bbadc5fa48982db529180ceb1fe7a488f95507460f"
+    },
+    {
+      "path": "scripts/loadtest/outage.js",
+      "sha256": "124cd3210a43fdf5c363a146239f81a7400502e2c2e12e6f897381f05d3d181d"
+    },
+    {
+      "path": "scripts/loadtest/README.md",
+      "sha256": "040c1bfe64e104a4cedeff9924e0a81c70c02f901bb0a202a7e01599b196911a"
+    },
+    {
+      "path": "scripts/loadtest/run.py",
+      "sha256": "7b66dd6801e5367f2947548d60acb0f94864f371353688cf9706e00bb008ea63"
+    },
+    {
+      "path": "scripts/loadtest/seismic-only.js",
+      "sha256": "20f846087b214a2dd1d105d8d87dbe4916ff0a3d253bafd4d1b3fc1e85ac5fa7"
+    },
+    {
+      "path": "scripts/loadtest/sustained.js",
+      "sha256": "f71dd0863336ea89524c85131f02ae021839287caa9f38d1fe6ed83fc0bdb254"
+    }
+  ],
+  "transcripts_note": "Module, PostgreSQL, and regression transcripts were collected before the implementation was committed as 2353479; they were not rerun for the documentation audit.",
+  "normalization": "Text transcripts normalized to UTF-8/LF with trailing whitespace removed; metric values unchanged."
+}

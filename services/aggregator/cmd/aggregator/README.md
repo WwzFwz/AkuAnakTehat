@@ -4,15 +4,7 @@
 
 Composition root aggregator; tempat merangkai seluruh dependensi runtime.
 
-**Pemilik rencana:** A. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** jalur A, wiring relay C, dan wiring query HTTP B sudah diimplementasikan. Main membuka pool ingest, relay, dan baca terpisah, lalu menjalankan seluruh worker serta readiness query. Berkas tersedia: `main.go`. Cakupan pengujian ada di [bukti ingest](../../../../docs/evidence/ingest/README.md).
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `main.go` | Load config, bangun dependensi, jalankan HTTP/worker, dan graceful shutdown. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -26,9 +18,14 @@ Composition root aggregator; tempat merangkai seluruh dependensi runtime.
 
 - Secret wajib tidak ada atau migrasi gagal membuat startup gagal. Compose menunggu database healthy dan memakai restart policy. Sesudah startup, polling yang gagal dicoba lagi sesuai interval/breaker; kegagalan DB membuat readiness ingest 503.
 - Jangan menjadikan semua dependency wajib hidup untuk liveness.
-- Selesaikan pekerjaan sesuai deadline shutdown; commit consumer hanya pekerjaan yang sudah selesai.
+- Shutdown HTTP dibatasi oleh context; liveness tidak menunggu semua dependensi sehat.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Aggregator: pemilik Canonical Store, ingest, query internal, dan outbox.
-- Rangkai jalur inti sebelum fitur tambahan. Pastikan health tersedia tanpa port publik bila service internal.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [main.go](main.go) | Memuat konfigurasi, merangkai dependensi, menjalankan worker dan HTTP, serta menangani shutdown. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

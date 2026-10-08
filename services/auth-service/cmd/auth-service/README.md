@@ -4,15 +4,7 @@
 
 Composition root auth-service; tempat merangkai seluruh dependensi runtime.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `main.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `main.go` | Load config, bangun dependensi, jalankan HTTP/worker, dan graceful shutdown. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -24,11 +16,16 @@ Composition root auth-service; tempat merangkai seluruh dependensi runtime.
 
 ## Aturan penting
 
-- Secret wajib tidak ada→gagal startup; dependensi belum siap→retry terbatas/backoff dan readiness503.
+- Konfigurasi atau key tidak valid menggagalkan startup. Readiness memeriksa dependensi runtime; mekanisme retry mengikuti adapter, bukan retry startup generik.
 - Jangan menjadikan semua dependency wajib hidup untuk liveness.
-- Selesaikan pekerjaan sesuai deadline shutdown; commit consumer hanya pekerjaan yang sudah selesai.
+- Shutdown HTTP dibatasi oleh context; liveness tidak menunggu semua dependensi sehat.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Penerbit token dan pemilik auth-store.
-- Rangkai jalur inti sebelum fitur tambahan. Pastikan health tersedia tanpa port publik bila service internal.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [main.go](main.go) | Memuat konfigurasi, merangkai dependensi, menjalankan worker dan HTTP, serta menangani shutdown. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

@@ -1,0 +1,27 @@
+
+     ✓ sustained request returns data or controlled rejection
+
+     auth_429.......................: 10      0.110985/s
+   ✓ auth_error_rate................: 0.00%   0 out of 100
+     business_latency...............: avg=8.91ms   min=540.1µs  med=8.99ms   max=46.22ms p(90)=11.89ms  p(95)=12.95ms  p(99)=15.33ms
+     business_requests..............: 42801   475.028241/s
+     checks.........................: 100.00% 42801 out of 42801
+   ✓ controlled_429.................: 33773   374.8307/s
+     data_received..................: 100 MB  1.1 MB/s
+     data_sent......................: 25 MB   277 kB/s
+     http_req_blocked...............: avg=11.15µs  min=0s       med=0s       max=7.98ms  p(90)=0s       p(95)=0s       p(99)=515.29µs
+     http_req_connecting............: avg=4.43µs   min=0s       med=0s       max=6.64ms  p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_duration..............: avg=4.17ms   min=0s       med=3.07ms   max=46.22ms p(90)=9.24ms   p(95)=10.71ms  p(99)=13.16ms
+       { expected_response:true }...: avg=8.89ms   min=540.1µs  med=8.97ms   max=46.22ms p(90)=11.89ms  p(95)=12.99ms  p(99)=15.45ms
+     http_req_failed................: 78.72%  33783 out of 42911
+     http_req_receiving.............: avg=92.74µs  min=0s       med=0s       max=18.23ms p(90)=521.59µs p(95)=560.9µs  p(99)=1.05ms
+     http_req_sending...............: avg=24.48µs  min=0s       med=0s       max=5.97ms  p(90)=0s       p(95)=0s       p(99)=604.79µs
+     http_req_tls_handshaking.......: avg=0s       min=0s       med=0s       max=0s      p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_waiting...............: avg=4.05ms   min=0s       med=2.92ms   max=45.68ms p(90)=9.08ms   p(95)=10.56ms  p(99)=12.96ms
+     http_reqs......................: 42911   476.249079/s
+     iteration_duration.............: avg=105.13ms min=100.53ms med=103.82ms max=1.15s   p(90)=109.91ms p(95)=111.37ms p(99)=113.79ms
+     iterations.....................: 42801   475.028241/s
+   ✓ successful_requests............: 9028    100.197541/s
+   ✓ system_error_rate..............: 0.00%   0 out of 9028
+     vus............................: 50      min=50             max=50
+     vus_max........................: 50      min=50             max=50

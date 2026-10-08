@@ -4,22 +4,11 @@
 
 Persistensi refresh token dan status keluarga dengan TTL.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `rotate.lua`, `store.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `store.go` | Koneksi go-redis, timeout, dan operasi store. |
-| `keys.go` | Namespace key token/family dan TTL. |
-| `rotate.lua` | Rotasi token lama/pengganti dan keputusan reuse. |
-| `scripts.go` | Embed serta pemanggilan script Lua. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Memenuhi port RefreshStore application untuk create, rotate, dan family revocation.
+- Memenuhi port Store application untuk create, rotate, dan family revocation.
 - Operasi rotasi mengembalikan hasil terklasifikasi, bukan error string mentah ke client.
 
 ## Dependensi
@@ -33,7 +22,13 @@ Persistensi refresh token dan status keluarga dengan TTL.
 - Validasi argumen/key type sebelum mutasi; atomisitas Lua tidak berarti rollback otomatis atas semua runtime error.
 - AOF/volume dan timeout perlu dikonfigurasi; tidak mengklaim zero data loss untuk semua crash.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati bentuk key dan expiry sebelum menulis script.
-- Verifikasi dua request refresh bersamaan, reuse, dan response-loss limitation.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [rotate.lua](rotate.lua) | Rotasi atomik state refresh token dan pencabutan keluarga ketika reuse terdeteksi. |
+| [store.go](store.go) | Namespace key, hash token, TTL, create/get, pemanggilan Lua, dan probe Redis. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

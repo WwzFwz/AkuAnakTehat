@@ -34,10 +34,12 @@ PowerShell, setelah semua image tersedia:
 ```powershell
 docker compose --profile demo up -d --build --wait --wait-timeout 180
 $env:GOWORK='off'
-go test ./scripts/check/foundation_test.go ./scripts/check/ingest_test.go ./scripts/check/events_test.go ./scripts/check/query_test.go -v -count=1 -timeout=15m
+go test ./scripts/check/foundation_test.go ./scripts/check/ingest_test.go ./scripts/check/events_test.go ./scripts/check/query_test.go ./scripts/check/large_events_test.go -v -count=1 -timeout=15m
 py scripts/loadtest/run.py
 ```
 
 Suite query menggunakan TTL bootstrap 60s dan menunggu 65s dalam satu sesi CLI. Jangan memperpendek TTL atau mengganti jam untuk bukti expiry alami. Suite juga stop/build/start notifier; sediakan akses Docker dan source lengkap.
+
+`large_events_test.go` membuat fixture outbox administratif untuk menguji envelope 4 MiB melalui relay, broker, tiga consumer, dan API. Fixture 4 MiB ditambah satu byte harus tetap tersimpan sebagai penolakan, sedangkan event berikutnya tetap terkirim. Pengujian batas saat ingest, pagination byte, dan backlog 600 record berada dalam suite PostgreSQL. `py scripts/demo/demo.py verify all` juga memasukkan pengujian event besar; `make events-check` hanya menjalankan suite event dasarnya.
 
 `make load-check` menjalankan runner Python/k6, mengukur 50 koneksi TCP selama minimal 60s, dan memulihkan konfigurasi PVMBG setelah pengujian. Detail metrik di [loadtest](../loadtest/README.md), hasil di [integrasi](../../docs/evidence/integration/README.md). Jalankan seluruh suite secara berurutan, tanpa demo lain yang mengubah state.

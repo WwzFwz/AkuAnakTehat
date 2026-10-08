@@ -4,24 +4,15 @@
 
 Menentukan apakah scope terverifikasi boleh memenuhi permintaan.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `policy.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `policy.go` | Kebijakan izin ringkasan/raw dan field eksplisit. |
-| `scope.go` | Nama scope dan pemeriksaan keanggotaan. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Authorize(claims, requestedFields, rawRequested) menghasilkan izin atau insufficient_scope.
+- Allowed(scope, fields, raw) memeriksa izin; Has memeriksa keanggotaan scope.
 
 ## Dependensi
 
-- authn untuk VerifiedClaims; dipakai application/handler.
+- Scope berasal dari Claims terverifikasi; policy dipanggil application dan handler.
 
 ## Aturan penting
 
@@ -29,7 +20,12 @@ Menentukan apakah scope terverifikasi boleh memenuhi permintaan.
 - Scope berasal dari token terverifikasi, bukan role atau flag dari client.
 - Default-deny untuk operasi/field baru.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati arti fields/include/raw endpoint dengan HTTP adapter.
-- Verifikasi Media ditolak untuk setiap bentuk permintaan raw.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [policy.go](policy.go) | Daftar field ringkasan dan mentah, pemeriksaan scope, serta izin field yang diminta. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

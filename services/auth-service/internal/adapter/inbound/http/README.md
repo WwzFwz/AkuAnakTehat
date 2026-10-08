@@ -4,17 +4,7 @@
 
 Transport penerbitan token dan proteksi endpoint sensitif.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** implementasi fondasi awal tersedia dan lolos kompilasi. Cakupan verifikasi runtime fondasi tercatat pada [hasil pengujian](../../../../../../docs/evidence/foundation/README.md); ini belum bukti P1?P5 lengkap. Berkas yang sudah ada: `router.go`. Tabel rencana di bawah tetap menjadi panduan pemecahan file lanjutan; tidak semua nama file rencana sudah dibuat.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `router.go` | POST /oauth/token serta health/readiness. |
-| `handler.go` | Parse grant, validasi body, dan panggil application. |
-| `errors.go` | Respons error token tanpa informasi sensitif. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
@@ -30,7 +20,12 @@ Transport penerbitan token dan proteksi endpoint sensitif.
 - Respons token no-store; jangan log body, client_secret, atau refresh token.
 - 401/4xx terklasifikasi untuk kredensial invalid; dependency error dibedakan.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Sepakati request/response dengan script Tim Lapangan dan load test.
-- Hubungkan flow normal expiry→refresh→request sukses.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [router.go](router.go) | Mendaftarkan endpoint, memvalidasi request, dan membentuk respons HTTP. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

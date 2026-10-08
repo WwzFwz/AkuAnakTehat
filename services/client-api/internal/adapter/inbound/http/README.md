@@ -4,23 +4,12 @@
 
 Endpoint publik untuk Media, Tim Lapangan, dan BNPB Ops.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** route client-api sudah diimplementasikan dengan autentikasi, otorisasi, projection, pagination, dan error mapping. Bukti P1-P5 lengkap masih terpisah.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `router.go` | Route list seismik/vulkanik/gabungan, detail, serta permintaan raw. |
-| `handler.go` | Parse request, panggil use case, serialisasikan respons. |
-| `cursor.go` | Validasi representasi cursor tanpa mengakses DB. |
-| `errors.go` | Kontrak error dan status HTTP. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
 - GET /v1/hazards, /v1/hazards/seismic, /v1/hazards/volcanic, /v1/hazards/{id}.
-- Bentuk permintaan field mentah disepakati di docs/api sebelum coding.
+- Permintaan mentah menggunakan include=raw, fields, atau endpoint /v1/hazards/{id}/raw sesuai docs/api/client-http.md.
 
 ## Dependensi
 
@@ -32,7 +21,14 @@ Endpoint publik untuk Media, Tim Lapangan, dan BNPB Ops.
 - Jangan mengembalikan data sebelum autentikasi, otorisasi, dan proyeksi.
 - Cursor/pagination diteruskan sesuai kontrak Aggregator; jangan membuat urutan halaman berbeda.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Envelope respons dan status mengikuti `docs/api/client-http.md`.
-- Verifikasi tiga identitas berbeda dilakukan melalui request HTTP nyata pada tahap integrasi.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [limits_router_test.go](limits_router_test.go) | Pengujian `TestListValidationErrorCodes`, `TestRouterDistinguishesConcurrencyRejection`. |
+| [router.go](router.go) | Mendaftarkan endpoint, memvalidasi request, dan membentuk respons HTTP. |
+| [router_test.go](router_test.go) | Pengujian `TestHTTPProjectionAndForbiddenRequests`. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

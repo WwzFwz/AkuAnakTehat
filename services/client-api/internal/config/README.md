@@ -2,28 +2,19 @@
 
 [Panduan service](../../README.md) · [Peta repository](../../../../README.md)
 
-Konfigurasi lokal client-api; nama variabel berikut adalah usulan yang perlu disepakati.
+Konfigurasi lokal client-api; nama variabel mengikuti config.go dan .env.example.
 
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
-
-**Status:** konfigurasi client-api sudah memvalidasi URL Aggregator, internal key, timeout, pagination, rate limit, dan konkurensi.
-
-## Rencana file
-
-| File yang akan dibuat | Tanggung jawab |
-| --- | --- |
-| `config.go` | Struct konfigurasi dan pembacaan env/berkas lokal. |
-| `validate.go` | Validasi invarian milik service sebelum worker dimulai. |
+**Status:** diimplementasikan. Cakupan verifikasi mengikuti pengujian yang dirujuk di bawah.
 
 ## Kontrak dan alur
 
-- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port rencana 8080.
+- Load() menghasilkan konfigurasi tervalidasi; HTTP_ADDR memiliki port default 8080.
 - AGGREGATOR_URL, INTERNAL_KEY: Akses API internal; tanpa DATABASE_URL.
 - JWT_PUBLIC_KEY_FILE, JWT_ISSUER, JWT_AUDIENCE: Verifikasi lokal.
 - AGGREGATOR_TIMEOUT: Default1,5 s.
 - MAX_CONCURRENT, RATE_LIMIT_RPS, RATE_LIMIT_BURST: Proteksi trafik baseline.
 - PAGE_DEFAULT, PAGE_MAX: Default100/maks 500.
-- READ_CACHE_ENABLED, DEADLINE_FORWARDING_ENABLED: Tambahan, default false.
+- Cache dan forwarding deadline belum mempunyai implementasi atau sakelar konfigurasi aktif.
 
 ## Dependensi
 
@@ -35,7 +26,12 @@ Konfigurasi lokal client-api; nama variabel berikut adalah usulan yang perlu dis
 - Tidak memakai secret default dan tidak mencetak konfigurasi sensitif.
 - Validasi durasi positif, limit, TTL, dan path yang relevan; konfigurasi antarservice dicatat sebagai kontrak deployment.
 
-## Langkah implementasi dan verifikasi
+## Berkas implementasi
 
-- Finalisasi nama env di .env.example saat file itu dibuat.
-- Pisahkan error konfigurasi dari dependensi yang sementara unavailable.
+| Berkas | Tanggung jawab |
+| --- | --- |
+| [config.go](config.go) | Membaca environment dan memvalidasi konfigurasi sebelum service dijalankan. |
+
+## Verifikasi
+
+Jalankan `go test ./...` dan `go vet ./...` dari root module service. Pengujian lintas service memerlukan stack aktif dan dijalankan terpisah dari unit test. Lihat [audit persyaratan](../../../../docs/requirements-audit.md) untuk pemetaan ke spesifikasi, lokasi bukti, dan batas yang belum terpenuhi.

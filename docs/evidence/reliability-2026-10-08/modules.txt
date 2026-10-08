@@ -1,0 +1,88 @@
+ok  	command-line-arguments	1.053s
+Checking aggregator
+?   	example.com/akuanaktehat/aggregator/cmd/aggregator	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/inbound/http	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/bmkg	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/kafka	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/outbound/postgres	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/pvmbg	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/outbound/sourcehttp	(cached)
+ok  	example.com/akuanaktehat/aggregator/internal/application/canonicalize	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/application/ingest	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/application/query	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/config	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/domain/hazard	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/domain/tsunami	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/observability	0.594s
+ok  	example.com/akuanaktehat/aggregator/internal/worker/outbox	(cached)
+ok  	example.com/akuanaktehat/aggregator/internal/worker/poller	(cached)
+?   	example.com/akuanaktehat/aggregator/migrations	[no test files]
+?   	example.com/akuanaktehat/aggregator/reference	[no test files]
+Checking auth-service
+?   	example.com/akuanaktehat/auth-service/cmd/auth-service	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/adapter/inbound/http	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/adapter/outbound/redis	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/application	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/config	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/domain	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/observability	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/token	[no test files]
+Checking bmkg-mock
+?   	example.com/akuanaktehat/bmkg-mock/cmd/bmkg-mock	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/auth	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/config	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/domain	[no test files]
+ok  	example.com/akuanaktehat/bmkg-mock/internal/generator	(cached)
+?   	example.com/akuanaktehat/bmkg-mock/internal/http	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/store	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/seed	[no test files]
+Checking client-api
+?   	example.com/akuanaktehat/client-api/cmd/client-api	[no test files]
+ok  	example.com/akuanaktehat/client-api/internal/adapter/inbound/http	(cached)
+ok  	example.com/akuanaktehat/client-api/internal/adapter/outbound/aggregator	(cached)
+?   	example.com/akuanaktehat/client-api/internal/application	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authn	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authz	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/config	[no test files]
+ok  	example.com/akuanaktehat/client-api/internal/middleware	(cached)
+?   	example.com/akuanaktehat/client-api/internal/observability	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/projection	[no test files]
+Checking dashboard-updater
+?   	example.com/akuanaktehat/dashboard-updater/cmd/dashboard-updater	[no test files]
+?   	example.com/akuanaktehat/dashboard-updater/internal/application	[no test files]
+?   	example.com/akuanaktehat/dashboard-updater/internal/config	[no test files]
+ok  	example.com/akuanaktehat/dashboard-updater/internal/consumer	2.449s
+ok  	example.com/akuanaktehat/dashboard-updater/internal/contract	(cached)
+?   	example.com/akuanaktehat/dashboard-updater/internal/http	[no test files]
+ok  	example.com/akuanaktehat/dashboard-updater/internal/store	(cached)
+Checking notifier
+?   	example.com/akuanaktehat/notifier/cmd/notifier	[no test files]
+ok  	example.com/akuanaktehat/notifier/internal/application	(cached)
+?   	example.com/akuanaktehat/notifier/internal/config	[no test files]
+ok  	example.com/akuanaktehat/notifier/internal/consumer	2.130s
+ok  	example.com/akuanaktehat/notifier/internal/contract	(cached)
+?   	example.com/akuanaktehat/notifier/internal/dedup	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/dlq	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/http	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/sender	[no test files]
+Checking pemda-portal
+?   	example.com/akuanaktehat/pemda-portal/cmd/pemda-portal	[no test files]
+?   	example.com/akuanaktehat/pemda-portal/internal/application	[no test files]
+?   	example.com/akuanaktehat/pemda-portal/internal/config	[no test files]
+ok  	example.com/akuanaktehat/pemda-portal/internal/consumer	2.116s
+ok  	example.com/akuanaktehat/pemda-portal/internal/contract	(cached)
+?   	example.com/akuanaktehat/pemda-portal/internal/http	[no test files]
+ok  	example.com/akuanaktehat/pemda-portal/internal/store	(cached)
+Checking pvmbg-mock
+?   	example.com/akuanaktehat/pvmbg-mock/cmd/pvmbg-mock	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/auth	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/config	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/domain	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/generator	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/http	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/simulation	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/store	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/seed	[no test files]
+Checking field-cli
+ok  	example.com/akuanaktehat/field-cli/cmd/field-cli	(cached)
+ok  	example.com/akuanaktehat/field-cli/internal/client	(cached)
