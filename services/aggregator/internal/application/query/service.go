@@ -32,16 +32,16 @@ func (s Service) List(ctx context.Context, filter HazardFilter) (HazardPage, err
 	return page, nil
 }
 
-func (s Service) Get(ctx context.Context, id string) (hazard.Event, error) {
+func (s Service) Get(ctx context.Context, id string) (HazardDetail, error) {
 	if !ValidHazardID(id) {
-		return hazard.Event{}, ErrNotFound
+		return HazardDetail{}, ErrNotFound
 	}
 	if s.Repository == nil {
-		return hazard.Event{}, ErrUnavailable
+		return HazardDetail{}, ErrUnavailable
 	}
 	event, err := s.Repository.Get(ctx, id)
 	if err != nil {
-		return hazard.Event{}, classify(err)
+		return HazardDetail{}, classify(err)
 	}
 	return event, nil
 }

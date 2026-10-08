@@ -3,6 +3,7 @@ package sourcehttp
 import (
 	"context"
 	"errors"
+	"example.com/akuanaktehat/aggregator/internal/observability"
 	"fmt"
 	"io"
 	"net"
@@ -21,7 +22,11 @@ type Client struct {
 func New(base, header, credential string, timeout time.Duration) *Client {
 	return &Client{BaseURL: strings.TrimRight(base, "/"), Header: header, Credential: credential, MaxBytes: 8 << 20, HTTP: &http.Client{Timeout: timeout, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }, Transport: &http.Transport{DialContext: (&net.Dialer{Timeout: timeout, KeepAlive: 30 * time.Second}).DialContext, MaxConnsPerHost: 2, MaxIdleConnsPerHost: 2, MaxIdleConns: 4, IdleConnTimeout: 60 * time.Second, ResponseHeaderTimeout: timeout}}}
 }
-func (c *Client) Get(ctx context.Context, path string, since time.Time, corr string) ([]byte, error) {
+func (c *Client) Get(ctx context.Context, path string, since time.Time, corr string) (result []byte, resultErr error) {
+	started := time.Now()
+	defer func() {
+		observability.Outbound(observability.WithID(ctx, corr), "source_http", path, started, resultErr)
+	}()
 	address := c.BaseURL + path
 	if !since.IsZero() {
 		address += "?since=" + url.QueryEscape(since.UTC().Format(time.RFC3339Nano))

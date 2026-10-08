@@ -28,9 +28,9 @@ func (f *fakeQuery) List(_ context.Context, filter query.HazardFilter) (query.Ha
 	return f.listPage, f.listErr
 }
 
-func (f *fakeQuery) Get(_ context.Context, _ string) (hazard.Event, error) {
+func (f *fakeQuery) Get(_ context.Context, _ string) (query.HazardDetail, error) {
 	f.getCalls++
-	return f.getEvent, f.getErr
+	return query.HazardDetail{Event: f.getEvent}, f.getErr
 }
 
 func TestListSuccessAndCorrelation(t *testing.T) {

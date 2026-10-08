@@ -139,8 +139,8 @@ func TestIngestPostgres(t *testing.T) {
 	}
 	items, _ := canonicalize.Decode(canonicalize.VolcanicEndpoint, []byte(`[ {"report_id":"rollback","volcano_id":"VOLCANO-DEMO-02","alert_level":"Normal","eruption_count_24h":0,"ash_column_height_m":0,"reported_at":"2026-09-01T00:00:00Z"}]`))
 	_, err = svc.ApplyBatch(ctx, canonicalize.Batch{Endpoint: canonicalize.VolcanicEndpoint, Watermark: stamp.Add(time.Minute), CorrelationID: "rollback", Items: items})
-	if err == nil || count("hazard_events") != beforeHazard || count("outbox") != beforeOutbox {
-		t.Fatal("failed checkpoint did not rollback hazard/outbox")
+	if err == nil || count("hazard_events") != beforeHazard+1 || count("outbox") != beforeOutbox+1 {
+		t.Fatal("failed checkpoint lost the committed record prefix")
 	}
 	current, _, err := db.ReadCheckpoint(ctx, canonicalize.VolcanicEndpoint)
 	if err != nil || !current.Equal(stamp) {
@@ -224,4 +224,6 @@ func TestIngestPostgres(t *testing.T) {
 			t.Fatal("missing row marked as published")
 		}
 	})
+	exerciseRobustness(t, db, svc)
+
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"example.com/akuanaktehat/aggregator/internal/observability"
 	"example.com/akuanaktehat/aggregator/migrations"
 	"github.com/golang-migrate/migrate/v4"
 	pgxmigrate "github.com/golang-migrate/migrate/v4/database/pgx/v5"
@@ -18,6 +19,7 @@ func Migrate(ctx context.Context, dsn string, timeout time.Duration) error {
 	if err != nil {
 		return errors.New("invalid migration configuration")
 	}
+	cfg.Tracer = observability.PostgresTracer{}
 	cfg.ConnectTimeout = timeout
 	cfg.RuntimeParams["statement_timeout"] = "30000"
 	cfg.RuntimeParams["lock_timeout"] = "10000"

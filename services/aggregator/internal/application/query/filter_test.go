@@ -3,7 +3,6 @@ package query
 import (
 	"context"
 	"errors"
-	"example.com/akuanaktehat/aggregator/internal/domain/hazard"
 	"testing"
 	"time"
 )
@@ -17,8 +16,8 @@ func (f *fakeRepository) List(_ context.Context, filter HazardFilter) (HazardPag
 	return HazardPage{}, nil
 }
 
-func (f *fakeRepository) Get(context.Context, string) (hazard.Event, error) {
-	return hazard.Event{}, nil
+func (f *fakeRepository) Get(context.Context, string) (HazardDetail, error) {
+	return HazardDetail{}, nil
 }
 
 func TestNormalizeFilter(t *testing.T) {

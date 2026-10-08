@@ -62,21 +62,35 @@ func (s *Store) List(ctx context.Context, filter query.HazardFilter) (query.Haza
 	defer rows.Close()
 
 	data := make([]hazard.Event, 0, filter.Limit)
+	pageBytes := 1024 // source metadata and cursor reserve
+	hasMore := false
 	for rows.Next() {
 		event, scanErr := scanEvent(rows)
 		if scanErr != nil {
 			return query.HazardPage{}, scanErr
 		}
+		encoded, marshalErr := json.Marshal(event)
+		if marshalErr != nil {
+			return query.HazardPage{}, marshalErr
+		}
+		if len(data) >= filter.Limit || pageBytes+len(encoded)+1 > hazard.MaxPageBytes {
+			hasMore = true
+			break
+		}
+		pageBytes += len(encoded) + 1
 		data = append(data, event)
 	}
 	if err = rows.Err(); err != nil {
 		return query.HazardPage{}, err
 	}
 
+	rows.Close()
+	if hasMore && len(data) == 0 {
+		return query.HazardPage{}, errors.New("stored_hazard_exceeds_response_limit")
+	}
 	page := query.HazardPage{Data: data}
-	if len(page.Data) > filter.Limit {
-		last := page.Data[filter.Limit-1]
-		page.Data = page.Data[:filter.Limit]
+	if hasMore && len(page.Data) > 0 {
+		last := page.Data[len(page.Data)-1]
 		page.NextCursor, err = query.EncodeCursor(query.Cursor{OccurredAt: last.OccurredAt, HazardID: last.ID})
 		if err != nil {
 			return query.HazardPage{}, err
@@ -89,18 +103,22 @@ func (s *Store) List(ctx context.Context, filter query.HazardFilter) (query.Haza
 	return page, nil
 }
 
-func (s *Store) Get(ctx context.Context, id string) (hazard.Event, error) {
+func (s *Store) Get(ctx context.Context, id string) (query.HazardDetail, error) {
 	if !query.ValidHazardID(id) {
-		return hazard.Event{}, query.ErrNotFound
+		return query.HazardDetail{}, query.ErrNotFound
 	}
 	ctx, cancel := context.WithTimeout(ctx, s.Timeout)
 	defer cancel()
 	row := s.Pool.QueryRow(ctx, `SELECT hazard_id::text,source,source_ref_id,hazard_type,severity,area_name,latitude,longitude,occurred_at,ingested_at,attributes FROM hazard_events WHERE hazard_id=$1::uuid`, id)
 	event, err := scanEvent(row)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return hazard.Event{}, query.ErrNotFound
+		return query.HazardDetail{}, query.ErrNotFound
 	}
-	return event, err
+	if err != nil {
+		return query.HazardDetail{}, err
+	}
+	sources, err := s.sourceStatuses(ctx, event.Type)
+	return query.HazardDetail{Event: event, Sources: sources}, err
 }
 
 func scanEvent(row interface{ Scan(...any) error }) (hazard.Event, error) {

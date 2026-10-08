@@ -27,7 +27,37 @@ type Envelope struct {
 	Hazard        hazard.Event `json:"hazard"`
 }
 
+// Each record commits atomically with its outbox. The checkpoint advances only
+// after the complete response is handled; a failed tail safely replays the prefix.
 func (s *Service) ApplyBatch(ctx context.Context, b canonicalize.Batch) (Stats, error) {
+	total := Stats{}
+	if canonicalize.Source(b.Endpoint) == "" || b.Watermark.IsZero() || b.CorrelationID == "" {
+		return total, errors.New("invalid batch metadata")
+	}
+	for _, item := range b.Items {
+		one := b
+		one.Items = []canonicalize.Item{item}
+		stats, err := s.applyRecord(ctx, one)
+		if errors.Is(err, hazard.ErrEventTooLarge) {
+			// Roll back the entire record, including any warning update, before quarantine.
+			err = s.UOW.WithTx(ctx, func(tx Tx) error {
+				return tx.Quarantine(ctx, RejectedRecord{Source: canonicalize.Source(b.Endpoint), Endpoint: b.Endpoint,
+					Payload: item.Raw, Reason: "event_envelope_too_large", CorrelationID: b.CorrelationID, ObservedAt: time.Now().UTC()})
+			})
+			stats = Stats{Rejected: 1}
+		}
+		if err != nil {
+			return total, err
+		}
+		total.Changed += stats.Changed
+		total.Unchanged += stats.Unchanged
+		total.Rejected += stats.Rejected
+	}
+	err := s.UOW.WithTx(ctx, func(tx Tx) error { return tx.SaveCheckpoint(ctx, b.Endpoint, b.Watermark) })
+	return total, err
+}
+
+func (s *Service) applyRecord(ctx context.Context, b canonicalize.Batch) (Stats, error) {
 	stats := Stats{}
 	source := canonicalize.Source(b.Endpoint)
 	if source == "" || b.Watermark.IsZero() || b.CorrelationID == "" {
@@ -116,7 +146,7 @@ func (s *Service) ApplyBatch(ctx context.Context, b canonicalize.Batch) (Stats, 
 				return err
 			}
 		}
-		return tx.SaveCheckpoint(ctx, b.Endpoint, b.Watermark)
+		return nil
 	})
 	if err != nil {
 		return Stats{}, err
@@ -146,15 +176,18 @@ func (s *Service) save(ctx context.Context, tx Tx, e hazard.Event, old hazard.Re
 		}
 		record.Event.IngestedAt = now
 	}
-	if err = tx.PutHazard(ctx, record); err != nil {
-		return err
-	}
 	eventID, err := hazard.UUID()
 	if err != nil {
 		return err
 	}
 	payload, err := json.Marshal(Envelope{1, eventID, "hazard.upserted", record.Event.ID, record.Version, corr, now, record.Event})
 	if err != nil {
+		return err
+	}
+	if len(payload) > hazard.MaxEventBytes {
+		return hazard.ErrEventTooLarge
+	}
+	if err = tx.PutHazard(ctx, record); err != nil {
 		return err
 	}
 	if err = tx.AppendOutbox(ctx, OutboxEvent{eventID, record.Event.ID, record.Version, payload, now}); err != nil {

@@ -3,8 +3,11 @@ package outbox
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 )
+
+var ErrPermanent = errors.New("permanent_publication_failure")
 
 type Message struct {
 	ID                int64
@@ -16,6 +19,7 @@ type Message struct {
 type Store interface {
 	Pending(context.Context, int) ([]Message, error)
 	MarkPublished(context.Context, int64, time.Time) error
+	Reject(context.Context, int64, string) error
 	DeletePublishedBefore(context.Context, time.Time) (int64, error)
 }
 type Publisher interface {

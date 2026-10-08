@@ -27,6 +27,7 @@ import (
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With("service", "aggregator")
+	slog.SetDefault(logger)
 	if err := run(logger); err != nil {
 		logger.Error("aggregator_stopped", "reason", err.Error())
 		os.Exit(1)

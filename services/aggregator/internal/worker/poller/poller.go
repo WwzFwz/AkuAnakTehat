@@ -5,6 +5,7 @@ import (
 	"example.com/akuanaktehat/aggregator/internal/application/canonicalize"
 	"example.com/akuanaktehat/aggregator/internal/application/ingest"
 	"example.com/akuanaktehat/aggregator/internal/domain/hazard"
+	"example.com/akuanaktehat/aggregator/internal/observability"
 	"log/slog"
 	"math/rand/v2"
 	"sort"
@@ -78,7 +79,7 @@ func (w *Worker) Cycle(ctx context.Context) {
 				return
 			}
 			r.batch.CorrelationID = corr
-			stamp, exists, err := w.Checkpoints.ReadCheckpoint(ctx, e.Name)
+			stamp, exists, err := w.Checkpoints.ReadCheckpoint(observability.WithID(ctx, corr), e.Name)
 			if err != nil {
 				r.err = err
 				r.code = "checkpoint_unavailable"
@@ -124,14 +125,14 @@ func (w *Worker) Cycle(ctx context.Context) {
 				sort.Strings(keys)
 				w.Logger.Info("schema_drift", "endpoint", r.batch.Endpoint, "fields", keys, "correlation_id", r.batch.CorrelationID)
 			}
-			stats, r.err = w.Ingest.ApplyBatch(ctx, r.batch)
+			stats, r.err = w.Ingest.ApplyBatch(observability.WithID(ctx, r.batch.CorrelationID), r.batch)
 			if r.err != nil {
 				r.code = "ingest_failed"
 			} else if stats.Rejected > 0 {
 				r.code = "records_quarantined"
 			}
 		}
-		if err := w.Status.RecordPoll(ctx, r.batch.Endpoint, r.err == nil, stats.Rejected > 0, r.code, time.Now().UTC()); err != nil {
+		if err := w.Status.RecordPoll(observability.WithID(ctx, r.batch.CorrelationID), r.batch.Endpoint, r.err == nil, stats.Rejected > 0, r.code, time.Now().UTC()); err != nil {
 			w.Logger.Error("source_status_failed", "endpoint", r.batch.Endpoint)
 		}
 		w.Logger.Info("poll_complete", "endpoint", r.batch.Endpoint, "ok", r.err == nil, "error_code", r.code, "changed", stats.Changed, "unchanged", stats.Unchanged, "rejected", stats.Rejected, "latency_ms", time.Since(r.start).Milliseconds(), "correlation_id", r.batch.CorrelationID)

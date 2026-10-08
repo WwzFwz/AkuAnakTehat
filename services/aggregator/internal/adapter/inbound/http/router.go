@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"example.com/akuanaktehat/aggregator/internal/application/query"
+	"example.com/akuanaktehat/aggregator/internal/observability"
 	"net/http"
 	"net/url"
 	"strings"
@@ -30,7 +31,7 @@ func New(service query.HazardQuery, internalKey string, timeout time.Duration) h
 	mux.HandleFunc("GET /internal/hazards/{id}", h.detail)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r, id := withCorrelation(w, r)
-		mux.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), correlationKey{}, id)))
+		mux.ServeHTTP(w, r.WithContext(observability.WithID(context.WithValue(r.Context(), correlationKey{}, id), id)))
 	})
 }
 

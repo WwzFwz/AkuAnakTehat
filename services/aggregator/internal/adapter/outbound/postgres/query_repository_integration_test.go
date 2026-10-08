@@ -114,6 +114,10 @@ func TestQueryPostgres(t *testing.T) {
 	if err != nil || event.Attributes["magnitude"] == nil {
 		t.Fatalf("get failed: event=%+v err=%v", event, err)
 	}
+	detail, err := db.Get(ctx, "00000000-0000-0000-0000-000000000002")
+	if err != nil || len(detail.Sources) != 1 || detail.Sources[0].StaleSince == nil || !detail.Sources[0].StaleSince.Equal(stale) {
+		t.Fatal("detail freshness missing")
+	}
 	_, err = db.Get(ctx, "00000000-0000-0000-0000-000000000099")
 	if !errors.Is(err, query.ErrNotFound) {
 		t.Fatalf("missing hazard error=%v; want not found", err)

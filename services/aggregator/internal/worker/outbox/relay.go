@@ -2,6 +2,7 @@ package outbox
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 )
@@ -14,7 +15,7 @@ type Relay struct {
 	Logger              *slog.Logger
 }
 
-// Drain stops at the first failed publish/mark. Never skip a pending version.
+// Transient failures stop draining. Permanent failures are durably rejected before advancing.
 // No database transaction is held while waiting for a broker ACK.
 func (r *Relay) Drain(ctx context.Context) error {
 	messages, err := r.Store.Pending(ctx, r.BatchSize)
@@ -24,7 +25,14 @@ func (r *Relay) Drain(ctx context.Context) error {
 	for _, m := range messages {
 		started := time.Now()
 		if err = r.Publisher.Publish(ctx, m); err != nil {
-			return err
+			if !errors.Is(err, ErrPermanent) {
+				return err
+			}
+			if err = r.Store.Reject(ctx, m.ID, "event_size_limit"); err != nil {
+				return err
+			}
+			r.Logger.Error("outbox_rejected", "event_id", m.EventID, "hazard_id", m.HazardID, "version", m.Version, "correlation_id", m.CorrelationID, "reason", "event_size_limit")
+			continue
 		}
 		publishLatency := time.Since(started).Milliseconds()
 		if err = r.Store.MarkPublished(ctx, m.ID, time.Now().UTC()); err != nil {

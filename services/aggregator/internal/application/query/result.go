@@ -16,3 +16,9 @@ type HazardPage struct {
 	NextCursor string         `json:"next_cursor,omitempty"`
 	Sources    []SourceStatus `json:"sources"`
 }
+
+// Detail preserves the existing hazard fields and adds the same source metadata as a list.
+type HazardDetail struct {
+	hazard.Event
+	Sources []SourceStatus `json:"sources"`
+}

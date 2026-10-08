@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"errors"
+	"example.com/akuanaktehat/aggregator/internal/observability"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
@@ -18,6 +19,7 @@ func Open(ctx context.Context, dsn string, max int32, timeout time.Duration) (*S
 	if err != nil {
 		return nil, errors.New("invalid database configuration")
 	}
+	cfg.ConnConfig.Tracer = observability.PostgresTracer{}
 	cfg.MaxConns = max
 	cfg.ConnConfig.ConnectTimeout = timeout
 	cfg.ConnConfig.RuntimeParams["statement_timeout"] = fmt.Sprint(timeout.Milliseconds())
