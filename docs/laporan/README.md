@@ -48,10 +48,10 @@ Dari root repository:
 
 ```powershell
 # Sekali saja bila belum mempunyai Tectonic:
-powershell -NoProfile -File doc/laporan/scripts/bootstrap-tools.ps1
+powershell -NoProfile -File docs/laporan/scripts/bootstrap-tools.ps1
 
 # Build memakai gambar yang sudah disertakan:
-powershell -NoProfile -File doc/laporan/scripts/build.ps1
+powershell -NoProfile -File docs/laporan/scripts/build.ps1
 ```
 
 Bootstrap mengambil Tectonic 0.17.0 dan PlantUML 1.2026.8 dari rilis resmi ke `.local/report-tools` (diabaikan Git); tidak menginstal ke sistem atau mengubah PATH. Tectonic mengunduh paket TeX yang diperlukan pada penggunaan pertama, sehingga build pertama lebih lama dan membutuhkan jaringan. Build selanjutnya memakai cache. Jika sudah memasang Tectonic, script mencari PATH; alternatifnya set `TECTONIC_BINARY` ke executable pilihan.
@@ -66,7 +66,7 @@ Untuk membuat ulang seluruh aset diperlukan Java, Python 3, `matplotlib`, dan `P
 
 ```powershell
 py -m pip install matplotlib PyMuPDF
-powershell -NoProfile -File doc/laporan/scripts/build.ps1 -RefreshAssets
+powershell -NoProfile -File docs/laporan/scripts/build.ps1 -RefreshAssets
 ```
 
 Bila jar berada di lokasi lain, set `PLANTUML_JAR`. Generator membaca revisi yang dipin pada `metadata.tex`, bukan diam-diam mengambil source terbaru. Ganti revisi hanya setelah bukti pengujian untuk revisi baru diverifikasi. Angka narasi P2 juga harus ditinjau ketika memperbarui bukti; script tidak menulis ulang analisis secara otomatis.

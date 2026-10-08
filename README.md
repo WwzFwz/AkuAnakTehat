@@ -6,9 +6,9 @@ Kedua instansi berupa mock dengan data sintetis. Implementasi mencakup polling, 
 
 ## Arsitektur
 
-![Arsitektur sistem BNPB](doc/laporan/assets/figures/01-arsitektur.svg)
+![Arsitektur sistem BNPB](docs/laporan/assets/figures/01-arsitektur.svg)
 
-Diagram berasal dari [PlantUML yang dapat diedit](doc/laporan/diagrams/01-arsitektur.puml). Setiap kotak dan simbol database menunjukkan satu container. SQLite dan memori mock berada dalam container pemilik. Panah dari Kafka menunjukkan aliran data menuju consumer yang menginisiasi pembacaan melalui protokol Kafka.
+Diagram berasal dari [PlantUML yang dapat diedit](docs/laporan/diagrams/01-arsitektur.puml). Setiap kotak dan simbol database menunjukkan satu container. SQLite dan memori mock berada dalam container pemilik. Panah dari Kafka menunjukkan aliran data menuju consumer yang menginisiasi pembacaan melalui protokol Kafka.
 
 Sistem memisahkan tiga alur agar kegagalan sumber tidak langsung menghambat pembacaan pengguna.
 
@@ -74,8 +74,8 @@ AkuAnakTehat/
 |-- docs/
 |   |-- api/                # Kontrak HTTP, storage, port, event
 |   |-- demo/               # Pemahaman sistem dan tanya jawab
-|   `-- evidence/           # Bukti eksekusi beserta batasnya
-|-- doc/laporan/            # LaTeX per bagian, diagram, aset, PDF
+|   |-- evidence/           # Bukti eksekusi beserta batasnya
+|   `-- laporan/            # LaTeX per bagian, diagram, aset, PDF
 |-- infra/                  # Konfigurasi dan panduan infrastruktur
 |-- env/                    # Konfigurasi lokal; secret diabaikan Git
 |-- .github/workflows/      # Uji CI dan secret scanning
@@ -93,7 +93,7 @@ Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/`
 | **Dzaky Aurelia Fawwaz (13523065)** | Merancang arsitektur dan mekanisme penyelesaian P1 hingga P5 | Mock BMKG dan PVMBG; Auth Service; ingest, pemetaan, korelasi tsunami, transaksi, dan watermark Aggregator; relay dan producer Kafka; ketiga consumer; infrastruktur, integrasi, serta pengujian lintas komponen. |
 | **Muhammad Alfansya (13523005)** | Membantu verifikasi dan validasi kesesuaian rancangan dengan spesifikasi | Query dan API internal Aggregator; Client API beserta proteksi beban, pagination, dan galat; CLI Tim Lapangan; script load test k6. |
 
-Kontribusi penulisan laporan masih perlu dikonfirmasi pada [metadata laporan](doc/laporan/metadata.tex). Claude membantu rancangan awal, sedangkan OpenAI Codex membantu review, implementasi, pengujian, dan dokumentasi. [Deklarasi LLM](doc/laporan/sections/12-deklarasi-ai.tex) menjelaskan cakupannya; anggota tetap bertanggung jawab memahami kode dan keputusan yang dikumpulkan.
+Kontribusi penulisan laporan masih perlu dikonfirmasi pada [metadata laporan](docs/laporan/metadata.tex). Claude membantu rancangan awal, sedangkan OpenAI Codex membantu review, implementasi, pengujian, dan dokumentasi. [Deklarasi LLM](docs/laporan/sections/12-deklarasi-ai.tex) menjelaskan cakupannya; anggota tetap bertanggung jawab memahami kode dan keputusan yang dikumpulkan.
 
 ## Menjalankan sistem
 
