@@ -5,8 +5,10 @@ The three-second mock override is temporary; only PVMBG is recreated/restored.
 """
 import argparse
 import json
+import math
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -14,40 +16,118 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS = ROOT / "docs/evidence/integration/load"
 NATIVE_K6 = os.environ.get("K6_BINARY")
+K6_OVERRIDE_VARS = (
+    "VUS",
+    "DURATION",
+    "SLEEP",
+    "OUTAGE_SECONDS",
+    "RECOVERY_SECONDS",
+    "OUTAGE_VUS",
+    "RECOVERY_VUS",
+    "K6_HTTP_TIMEOUT",
+)
+DEFAULT_DURATIONS = {"seismic-only": "60s", "sustained": "90s"}
+DEFAULT_RUNNER_TIMEOUT_SECONDS = 240.0
+RUNNER_TIMEOUT_MARGIN_SECONDS = 60.0
+DURATION_PART = re.compile(r"(?P<value>\d+(?:\.\d+)?)(?P<unit>ms|s|m|h)")
 
 
 def docker(*args, **kwargs):
     return subprocess.run(["docker", "compose", *args], cwd=ROOT, check=True, **kwargs)
 
 
-def run(name, duration=None, connections=False):
-    args = ["docker", "compose", "run", "--rm", "--no-deps", "--env-from-file", "./env/demo.env",
-            "--volume", f"{RESULTS.as_posix()}:/results"]
-    if duration:
-        args += ["-e", f"DURATION={duration}"]
-    args += ["loadtest", "run", "--quiet", "--summary-export",
+def scenario_overrides(duration=None):
+    overrides = {key: os.environ[key] for key in K6_OVERRIDE_VARS if key in os.environ}
+    if duration is not None:
+        overrides["DURATION"] = duration
+    return overrides
+
+
+def apply_overrides(environment, overrides):
+    result = environment.copy()
+    result.update(overrides)
+    return result
+
+
+def parse_duration(value):
+    text = str(value).strip()
+    if not text:
+        raise RuntimeError("duration must not be empty")
+    total = 0.0
+    position = 0
+    multipliers = {"ms": 0.001, "s": 1.0, "m": 60.0, "h": 3600.0}
+    for match in DURATION_PART.finditer(text):
+        if match.start() != position:
+            raise RuntimeError(f"invalid duration: {value}")
+        total += float(match.group("value")) * multipliers[match.group("unit")]
+        position = match.end()
+    if position != len(text) or total <= 0:
+        raise RuntimeError(f"invalid duration: {value}")
+    return total
+
+
+def seconds_environment(name, default):
+    raw = os.environ.get(name, str(default))
+    try:
+        value = float(raw)
+    except ValueError as error:
+        raise RuntimeError(f"{name} must be a non-negative number of seconds") from error
+    if not math.isfinite(value) or value < 0:
+        raise RuntimeError(f"{name} must be a non-negative number of seconds")
+    return value
+
+
+def expected_duration(name):
+    if name == "outage":
+        # The restore and recovery scenarios start shortly after the outage.
+        return seconds_environment("OUTAGE_SECONDS", 20) + seconds_environment("RECOVERY_SECONDS", 30) + 2
+    return parse_duration(os.environ.get("DURATION") or DEFAULT_DURATIONS[name])
+
+
+def runner_timeout(name):
+    configured = os.environ.get("K6_RUNNER_TIMEOUT")
+    if configured:
+        return parse_duration(configured)
+    return max(DEFAULT_RUNNER_TIMEOUT_SECONDS, expected_duration(name) + RUNNER_TIMEOUT_MARGIN_SECONDS)
+
+
+def docker_command(name, overrides):
+    args = ["docker", "compose", "run", "--rm", "--no-deps", "--env-from-file", "./env/demo.env"]
+    for key in sorted(overrides):
+        args += ["-e", f"{key}={overrides[key]}"]
+    args += ["--volume", f"{RESULTS.as_posix()}:/results", "loadtest", "run", "--quiet", "--summary-export",
              f"/results/{name}.json", f"/scripts/{name}.js"]
+    return args
+
+
+def native_environment(overrides):
+    process_env = os.environ.copy()
+    for line in (ROOT / "env/demo.env").read_text().splitlines():
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            process_env[key] = value
+    process_env.update(API_URL="http://127.0.0.1:8080", AUTH_URL="http://127.0.0.1:8090",
+                       PVMBG_URL="http://127.0.0.1:8082", CLIENTS_FILE=str(ROOT / "env/demo-clients.json"))
+    return apply_overrides(process_env, overrides)
+
+
+def run(name, duration=None, connections=False):
+    overrides = scenario_overrides(duration)
+    args = docker_command(name, overrides)
     process_env = None
     if NATIVE_K6:
-        process_env = os.environ.copy()
-        for line in (ROOT / "env/demo.env").read_text().splitlines():
-            if line and not line.startswith("#") and "=" in line:
-                key, value = line.split("=", 1)
-                process_env[key] = value
-        process_env.update(API_URL="http://127.0.0.1:8080", AUTH_URL="http://127.0.0.1:8090",
-                           PVMBG_URL="http://127.0.0.1:8082", CLIENTS_FILE=str(ROOT / "env/demo-clients.json"))
-        if duration:
-            process_env["DURATION"] = duration
+        process_env = native_environment(overrides)
         args = [NATIVE_K6, "run", "--quiet", "--summary-export", str(RESULTS / f"{name}.json"),
                 str(ROOT / "scripts/loadtest" / f"{name}.js")]
     samples = []
     started = time.monotonic()
+    deadline = runner_timeout(name)
     with (RESULTS / f"{name}.txt").open("w", encoding="utf-8") as output:
         process = subprocess.Popen(args, cwd=ROOT, env=process_env, stdout=output, stderr=subprocess.STDOUT)
         try:
             while process.poll() is None:
-                if time.monotonic() - started > 240:
-                    raise RuntimeError(f"{name} exceeded runner deadline")
+                if time.monotonic() - started > deadline:
+                    raise RuntimeError(f"{name} exceeded runner deadline of {deadline:.0f}s")
                 if connections:
                     raw = docker("exec", "-T", "client-api", "cat", "/proc/net/tcp", "/proc/net/tcp6",
                                  capture_output=True, text=True).stdout
@@ -93,6 +173,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="docs/evidence/integration/load",
                         help="Output directory relative to repo root; use a new directory to preserve previous evidence")
+    parser.add_argument("--skip-connection-check", action="store_true",
+                        help="Skip the 50-TCP sustained check; for short smoke tests only")
     args = parser.parse_args()
     RESULTS = (ROOT / args.output).resolve()
     RESULTS.mkdir(parents=True, exist_ok=True)
@@ -110,7 +192,7 @@ def main():
         docker("-f", "docker-compose.yml", "-f", str(override), "up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pvmbg-mock")
         time.sleep(10)
         run("seismic-only")
-        run("sustained", connections=True)
+        run("sustained", connections=not args.skip_connection_check)
         run("outage")
     finally:
         docker("up", "-d", "--no-deps", "--wait", "--wait-timeout", "90", "pvmbg-mock")
