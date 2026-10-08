@@ -92,8 +92,11 @@ The runner deadline is dynamic. It remains at least 240 seconds for the default
 scenarios and grows to the selected scenario duration plus a 60-second margin.
 The outage deadline includes both `OUTAGE_SECONDS` and `RECOVERY_SECONDS`. Set
 `K6_RUNNER_TIMEOUT` with a k6 duration such as `15m` to choose an explicit
-deadline for a special run. The explicit deadline must be long enough for the
-scenario.
+deadline for a special run. The explicit deadline must cover the scenario and
+the 60-second margin; shorter values are rejected before writing evidence or
+changing the mock. For outage, the calculation also includes the two-second
+offset before recovery starts. A `duration` argument passed directly to `run()`
+takes precedence over `DURATION` for both k6 and the runner deadline.
 
 Example short smoke configuration:
 

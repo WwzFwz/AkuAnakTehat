@@ -53,6 +53,38 @@ class RunnerConfigurationTests(unittest.TestCase):
 
 
 class RunnerTimeoutTests(unittest.TestCase):
+    def test_short_explicit_timeout_is_rejected(self):
+        for timeout in ("1s", "5m", "359s"):
+            with self.subTest(timeout=timeout), mock.patch.dict(
+                os.environ, {"DURATION": "5m", "K6_RUNNER_TIMEOUT": timeout}, clear=True
+            ):
+                with self.assertRaisesRegex(RuntimeError, "at least 360s"):
+                    run.runner_timeout("sustained")
+
+    def test_explicit_timeout_accepts_duration_plus_margin(self):
+        with mock.patch.dict(os.environ, {"DURATION": "5m", "K6_RUNNER_TIMEOUT": "6m"}, clear=True):
+            self.assertEqual(run.runner_timeout("sustained"), 360)
+
+    def test_duration_argument_controls_deadline(self):
+        with mock.patch.dict(os.environ, {"DURATION": "5s"}, clear=True):
+            self.assertEqual(run.runner_timeout("sustained", duration="10m"), 660)
+
+    def test_outage_deadline_includes_recovery_offset_and_margin(self):
+        with mock.patch.dict(os.environ, {"K6_RUNNER_TIMEOUT": "111s"}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "at least 112s"):
+                run.runner_timeout("outage")
+
+    def test_explicit_timeout_does_not_bypass_invalid_outage_duration(self):
+        with mock.patch.dict(
+            os.environ, {"K6_RUNNER_TIMEOUT": "15m", "OUTAGE_SECONDS": "bad"}, clear=True
+        ):
+            with self.assertRaisesRegex(RuntimeError, "OUTAGE_SECONDS"):
+                run.runner_timeout("outage")
+
+    def test_non_finite_duration_is_rejected(self):
+        with self.assertRaisesRegex(RuntimeError, "invalid duration"):
+            run.parse_duration("9" * 400 + "h")
+
     def test_parse_k6_duration(self):
         self.assertEqual(run.parse_duration("1m30s"), 90)
         self.assertEqual(run.parse_duration("500ms"), 0.5)
@@ -81,6 +113,46 @@ class RunnerTimeoutTests(unittest.TestCase):
         with mock.patch.dict(os.environ, {"OUTAGE_SECONDS": "not-a-number"}, clear=True):
             with self.assertRaisesRegex(RuntimeError, "OUTAGE_SECONDS"):
                 run.runner_timeout("outage")
+
+
+class RunnerExecutionTests(unittest.TestCase):
+    def test_long_duration_argument_does_not_stop_at_old_deadline(self):
+        # Simulate a process still running at 300s, then completing successfully.
+        with mock.patch.dict(os.environ, {"DURATION": "5s"}, clear=True), \
+                mock.patch.object(run, "NATIVE_K6", None), \
+                mock.patch.object(run.subprocess, "Popen") as popen, \
+                mock.patch.object(run.time, "monotonic", side_effect=[0, 300]), \
+                mock.patch.object(run.time, "sleep"), \
+                mock.patch.object(Path, "open", mock.mock_open()), \
+                mock.patch.object(Path, "read_text", return_value='{"metrics": {}}'), \
+                mock.patch("builtins.print"):
+            popen.return_value.poll.side_effect = [None, 0, 0]
+            popen.return_value.returncode = 0
+            run.run("sustained", duration="10m")
+            self.assertIn("DURATION=10m", popen.call_args.args[0])
+            popen.return_value.terminate.assert_not_called()
+
+    def test_invalid_deadline_fails_before_starting_process(self):
+        with mock.patch.dict(os.environ, {"K6_RUNNER_TIMEOUT": "1s"}, clear=True), \
+                mock.patch.object(run.subprocess, "Popen") as popen, \
+                mock.patch.object(Path, "open") as open_file:
+            with self.assertRaisesRegex(RuntimeError, "K6_RUNNER_TIMEOUT"):
+                run.run("sustained", duration="10m")
+            popen.assert_not_called()
+            open_file.assert_not_called()
+
+    def test_main_validates_all_scenarios_before_side_effects(self):
+        # 120s fits seismic but cannot cover sustained's 90s plus 60s margin.
+        with mock.patch.dict(os.environ, {"K6_RUNNER_TIMEOUT": "120s"}, clear=True), \
+                mock.patch.object(run.sys, "argv", ["run.py"]), \
+                mock.patch.object(run, "docker") as docker, \
+                mock.patch.object(run.subprocess, "run") as process, \
+                mock.patch.object(Path, "mkdir") as mkdir:
+            with self.assertRaisesRegex(RuntimeError, "sustained.*at least 150s"):
+                run.main()
+            docker.assert_not_called()
+            process.assert_not_called()
+            mkdir.assert_not_called()
 
 
 if __name__ == "__main__":

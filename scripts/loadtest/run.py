@@ -61,7 +61,7 @@ def parse_duration(value):
             raise RuntimeError(f"invalid duration: {value}")
         total += float(match.group("value")) * multipliers[match.group("unit")]
         position = match.end()
-    if position != len(text) or total <= 0:
+    if position != len(text) or not math.isfinite(total) or total <= 0:
         raise RuntimeError(f"invalid duration: {value}")
     return total
 
@@ -77,18 +77,26 @@ def seconds_environment(name, default):
     return value
 
 
-def expected_duration(name):
+def expected_duration(name, duration=None):
     if name == "outage":
         # The restore and recovery scenarios start shortly after the outage.
         return seconds_environment("OUTAGE_SECONDS", 20) + seconds_environment("RECOVERY_SECONDS", 30) + 2
-    return parse_duration(os.environ.get("DURATION") or DEFAULT_DURATIONS[name])
+    selected = duration if duration is not None else os.environ.get("DURATION")
+    return parse_duration(selected or DEFAULT_DURATIONS[name])
 
 
-def runner_timeout(name):
+def runner_timeout(name, duration=None):
+    minimum = expected_duration(name, duration) + RUNNER_TIMEOUT_MARGIN_SECONDS
     configured = os.environ.get("K6_RUNNER_TIMEOUT")
     if configured:
-        return parse_duration(configured)
-    return max(DEFAULT_RUNNER_TIMEOUT_SECONDS, expected_duration(name) + RUNNER_TIMEOUT_MARGIN_SECONDS)
+        timeout = parse_duration(configured)
+        if timeout < minimum:
+            raise RuntimeError(
+                f"K6_RUNNER_TIMEOUT for {name} must be at least {minimum:g}s "
+                "(scenario duration plus 60s margin)"
+            )
+        return timeout
+    return max(DEFAULT_RUNNER_TIMEOUT_SECONDS, minimum)
 
 
 def docker_command(name, overrides):
@@ -113,6 +121,7 @@ def native_environment(overrides):
 
 def run(name, duration=None, connections=False):
     overrides = scenario_overrides(duration)
+    deadline = runner_timeout(name, overrides.get("DURATION"))
     args = docker_command(name, overrides)
     process_env = None
     if NATIVE_K6:
@@ -121,7 +130,6 @@ def run(name, duration=None, connections=False):
                 str(ROOT / "scripts/loadtest" / f"{name}.js")]
     samples = []
     started = time.monotonic()
-    deadline = runner_timeout(name)
     with (RESULTS / f"{name}.txt").open("w", encoding="utf-8") as output:
         process = subprocess.Popen(args, cwd=ROOT, env=process_env, stdout=output, stderr=subprocess.STDOUT)
         try:
@@ -176,6 +184,9 @@ def main():
     parser.add_argument("--skip-connection-check", action="store_true",
                         help="Skip the 50-TCP sustained check; for short smoke tests only")
     args = parser.parse_args()
+    # Reject invalid deadlines before writing evidence or changing the mock.
+    for name in (*DEFAULT_DURATIONS, "outage"):
+        runner_timeout(name)
     RESULTS = (ROOT / args.output).resolve()
     RESULTS.mkdir(parents=True, exist_ok=True)
     local = ROOT / ".local"
