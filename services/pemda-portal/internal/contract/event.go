@@ -38,7 +38,7 @@ var ErrInvalid = errors.New("invalid_event")
 
 func Decode(key, raw []byte) (Event, error) {
 	var e Event
-	if len(raw) > 1<<20 || json.Unmarshal(raw, &e) != nil {
+	if len(raw) > 4<<20 || json.Unmarshal(raw, &e) != nil {
 		return e, ErrInvalid
 	}
 	h := e.Hazard
