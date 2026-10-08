@@ -49,7 +49,7 @@ def main():
         (ASSETS / "code" / target).write_text(text[start:], encoding="utf-8")
         manifest["files"][-1].update(excerpt=target, first_line=text[:start].count("\n")+1)
 
-    log = original("docs/evidence/integration/regression.txt")
+    log = original(f"{RELIABILITY_PATH}/regression.txt", RELIABILITY_REV)
     selected = [line for line in log.splitlines() if line.startswith("--- PASS:") or line == "PASS" or line.startswith("ok ")]
     (ASSETS / "evidence/regression-excerpt.txt").write_text("\n".join(selected)+"\n", encoding="utf-8")
 

@@ -1,43 +1,42 @@
 % !TeX root = ../main.tex
 \section{Ringkasan Verifikasi dan Batas Hasil}
 \label{sec:verification}
-Verifikasi dibagi menjadi unit dan analisis statis dengan go vet, integrasi PostgreSQL, regresi stack, dan load test. Bukti awal bertanggal \EvidenceDate\ dipertahankan sebagai riwayat; hasil setelah perbaikan 8 Oktober dijelaskan terpisah di bawah. Setiap jenis pengujian memberikan bukti dengan cakupan yang berbeda. Uji unit memeriksa logika tertentu, sehingga hasilnya tidak dapat langsung dipakai untuk menyimpulkan perilaku deployment, ketahanan mesin, atau kapasitas produksi.
+Verifikasi memeriksa kesesuaian perilaku sistem terhadap persyaratan melalui uji unit, analisis statis dengan go vet, integrasi PostgreSQL, regresi stack, dan load test. Tabel berikut merangkum skenario serta hasilnya. Rincian pemetaan tiap kriteria tersedia pada Lampiran~\ref{app:matrix}, sedangkan lokasi artefak terdapat pada Lampiran~\ref{app:evidence}.
 
-\subsection{Riwayat verifikasi awal}
-
-\begin{tabularx}{\linewidth}{P{0.30\linewidth}Y}
-\toprule Pemeriksaan & Hasil dan cakupan\\\midrule
-Sembilan module Go & Bootstrap, unit test, dan vet; delapan service serta CLI.\\
-PostgreSQL nyata & Transaksi ingest dan query lulus dalam schema test terisolasi.\\
-Regresi stack & Fondasi, ingest, event, query, expiry token alami, serta rebuild independen lulus; durasi run 234,280 s.\\
-Fresh subscriber & Group baru dan store kosong berhasil replay; suite event tambahan lulus dalam 71,575 s.\\
-Readiness consumer & Test broker tidak merespons memenuhi deadline 50 ms dan menolak penumpukan probe.\\
-Load 6 Oktober & Tiga skenario lulus; artefak awal tetap tersedia pada E4 dan E5. Pengukuran terbaru pada Bagian~\ref{sec:p2}.\\
-GitHub Actions & Workflow tersedia; hasil hosted belum dapat diverifikasi dari sesi penyusunan laporan.\\
+\Needspace{8\baselineskip}
+\subsection{Skenario dan hasil akhir}
+\begin{longtable}{P{0.13\linewidth}P{0.40\linewidth}P{0.37\linewidth}}
+\toprule Kriteria & Skenario yang diperiksa & Hasil\\\midrule\endhead
+P1 & Pemetaan sumber, korelasi tsunami, serta penambahan field saat runtime. & Field tambahan dipertahankan; record lama dan baru dapat dibaca tanpa restart service atau perubahan skema tabel.\\
+P2 & Pembacaan seismic dan volcanic bersamaan, beban sustained, serta outage dan recovery PVMBG. & P95 seismic 10,92 ms; sedikitnya 50 TCP selama 88,53 s; error bisnis di luar 429 sebesar 0\%. Rincian pada Bagian~\ref{sec:p2}.\\
+P3 & Kredensial lintas domain, scope, proyeksi field, expiry alami 60 s, dan refresh CLI. & Kredensial silang ditolak; Media tidak memperoleh data mentah; token lama kedaluwarsa ditolak dan token baru diterima.\\
+P4 & Rebuild service secara independen, akses melalui API pemilik storage, dan persistensi setelah restart. & Regresi lulus untuk skenario isolasi dan pemulihan yang diuji. Batas kepemilikan diperiksa melalui Compose serta adapter service.\\
+P5 & Distribusi ke consumer independen, replay, dedup, subscriber baru, serta pemulihan broker dan consumer. & Stream diterima sesuai group; view tidak ditimpa versi lama; event pending diproses setelah dependensi pulih.\\
+U7 & HTTP pertama gagal lalu retry berhasil, beserta pembatalan, timeout, dan sanitasi log. & Setiap percobaan memiliki log latency sendiri dengan correlation ID yang sama; seluruh tes Client API dan go vet lulus.\\
 \bottomrule
-\end{tabularx}
+\end{longtable}
 
-Kegagalan awal tidak dihapus dari bukti. Regresi pertama menemukan timeout readiness consumer saat Kafka mati. Pengujian terisolasi menunjukkan \texttt{Ping} library dapat menunggu handshake sekitar 10 s meskipun context sudah deadline. Perbaikan membatasi waktu tunggu caller dan satu probe yang belum selesai; regresi penuh kemudian lulus. Hasil gagal pertama tersedia pada \evidence{regression-before-readiness-fix.txt}, sedangkan hasil akhir pada \evidence{regression.txt}.
+Regresi stack lulus dalam 306,951 s. Uji module dan go vet serta integrasi PostgreSQL juga lulus, dengan transkrip pada \reliabilityevidence{modules.txt}, \reliabilityevidence{postgres.txt}, dan \reliabilityevidence{regression.txt}. Pengujian memakai Docker Desktop lokal; konfigurasi beban, lingkungan pengukuran, serta definisi metrik dijelaskan pada Bagian~\ref{sec:p2}. Penolakan HTTP 429 dilaporkan terpisah dari respons sukses dan tidak dihitung sebagai throughput sukses.
 
-\lstinputlisting[numbers=none,caption={Petikan keluaran pengujian aktual. Ini transkrip test, bukan screenshot yang disimulasikan.}]{assets/evidence/regression-excerpt.txt}
+\lstinputlisting[numbers=none,caption={Petikan hasil regresi stack. Transkrip lengkap tersedia pada artefak pengujian.}]{assets/evidence/regression-excerpt.txt}
 
-\pending{Status GitHub Actions dan tautan run final: \rule{0.53\linewidth}{0.3pt}. API tanpa autentikasi pada sesi penyusunan mengembalikan 404, sehingga keberhasilan CI hosted tidak diasumsikan.}
+\subsection{Ketahanan ukuran event dan pemulihan}
+Pengujian PostgreSQL menerima envelope 4 MiB dikurangi satu byte serta tepat 4 MiB, mengarantina envelope yang melebihi batas satu byte, dan tetap memproses record berikutnya. Backlog 600 record diuji dengan kegagalan di tengah respons. Checkpoint tidak maju saat gagal dan pengulangan tidak menghasilkan outbox ganda.
 
-\subsection{Pengujian setelah perbaikan ketahanan}
-Implementasi revisi \texttt{2353479} mempunyai transkrip unit test dan vet, integrasi PostgreSQL, serta regresi stack yang lulus dalam 306,951 s. Bukti tersedia pada \reliabilityevidence{modules.txt}, \reliabilityevidence{postgres.txt}, dan \reliabilityevidence{regression.txt}. Transkrip unit dan integrasi berasal dari pengujian perubahan sebelum commit; pembaruan dokumentasi tidak dinyatakan sebagai pengulangan pengujian aplikasi.
+Pengujian lintas service mengalirkan event 4 MiB utuh melalui relay, Kafka, ketiga consumer, dan API menggunakan fixture administratif. Pengujian penyimpanan SQLite memeriksa bahwa kegagalan storage tidak memindahkan event valid ke DLQ atau memajukan offset sebelum pemulihan. Hasil ini mendukung mekanisme retry dan pemulihan pada skenario yang diuji, dengan batas retensi serta semantik pengiriman pada Bagian~\ref{sec:p5}.
 
-Pengujian PostgreSQL menerima envelope 4 MiB dikurangi satu byte serta tepat 4 MiB, mengarantina envelope yang melebihi batas satu byte, dan tetap memproses record berikutnya. Backlog 600 record diuji dengan kegagalan di tengah, checkpoint yang tidak maju saat gagal, dan replay tanpa outbox ganda. Tes terpisah memakai fixture administratif untuk mengalirkan event 4 MiB utuh melalui relay, Kafka, ketiga consumer, dan API. Tes pool SQLite memeriksa bahwa kegagalan storage tidak memindahkan event valid ke DLQ atau memajukan offset sebelum pemulihan.
+\subsection{Verifikasi instrumentasi HTTP}
+Client API mencatat satu log \texttt{upstream\_request} untuk setiap pemanggilan \texttt{HTTP.Do} oleh adapter. Timer dimulai ulang pada setiap percobaan dan mencakup pembacaan, decode, serta penutupan body respons. Log memuat correlation ID, nomor percobaan, latency, status HTTP, dan kategori hasil. Status 0 menunjukkan respons HTTP belum diperoleh. URL, kredensial, isi respons, dan pesan galat upstream tidak dicatat.
 
-Tiga skenario k6 terbaru lulus dengan hasil pada Bagian~\ref{sec:p2}. Tidak ada container aplikasi yang crash selama beban. Mock PVMBG dibuat ulang oleh runner sebelum dan setelah pengujian untuk konfigurasi delay; pemulihan outage di tengah skenario berlangsung melalui endpoint admin dan telah terjadi sebelum pengembalian konfigurasi tersebut. Scan histori hingga \texttt{2353479} tidak menemukan secret, dengan hasil pada \reliabilityevidence{secret-scan.txt}.
+\texttt{TestRetryLogsEachAttempt} menggagalkan percobaan pertama lalu memberikan respons valid pada percobaan kedua. Tes memeriksa dua log dengan nomor 1 dan 2, correlation ID yang sama, hasil transport error diikuti sukses, serta deadline yang tidak diperpanjang. Tes lain memeriksa batas retry, pembatalan, timeout, respons invalid, dan penutupan body. Seluruh tes module Client API dan go vet lulus. Temuan U7 tentang latency retry yang tergabung telah ditutup melalui pengujian ini.
+\coderef{services/client-api/internal/adapter/outbound/aggregator/attempt_test.go}
+\coderef{docs/evidence/http-attempts-2026-10-08/README.md}
 
-\subsection{Temuan audit yang belum ditutup}
-Pemeriksaan kode terhadap ketentuan U7 menemukan bahwa log \texttt{upstream\_request} client-api mengukur total operasi fetch. Jika koneksi pertama gagal lalu retry berhasil, dua pemanggilan HTTP masih digabung dalam satu nilai latency. Dengan penafsiran ketat atas kewajiban mencatat latency tiap panggilan keluar, bagian ini belum sepenuhnya terpenuhi. Perbaikan yang diperlukan adalah pencatatan tiap percobaan beserta correlation ID, nomor percobaan, durasi, dan hasil yang disanitasi, kemudian diuji pada kegagalan percobaan pertama. Audit dokumentasi ini tidak mengubah kode runtime tersebut.
+\subsection{Cakupan bukti dan pemeriksaan akhir}
+Regresi stack dan load test di atas berasal dari pengujian implementasi \texttt{2353479}. Perubahan instrumentasi HTTP diverifikasi terpisah melalui tes module Client API; regresi Docker dan k6 tidak dijalankan ulang untuk perubahan tersebut. Pemisahan cakupan ini memastikan angka performa tetap merujuk pada pengukuran yang benar-benar dilakukan.
 
-Tidak ditemukan fungsi wajib yang hilang hanya karena nama file berbeda dari rancangan awal. Sebagai contoh, Batch berada di canonicalize/input.go, envelope di ingest/service.go, serta port dan DTO client-api di application/service.go. README komponen kini mengikuti lokasi tersebut. Pemetaan kewajiban, implementasi, dan bukti tersedia pada \href{\RepoURL/blob/\ReliabilityEvidenceRevision/docs/requirements-audit.md}{audit persyaratan repository}.
+Lingkungan uji memakai volume lokal yang sudah ada, sehingga belum membuktikan bootstrap pada mesin kosong. Outage pada load test berlangsung 20 detik dengan fase recovery 30 detik; hasilnya belum menjadi bukti outage 10 hingga 20 menit. Pengujian satu host juga belum membuktikan failover lintas mesin atau kapasitas deployment lain.
 
-\subsection{Kesimpulan dan batas cakupan}
-Gladi lebih awal pada 8 Oktober berhasil menjalankan regresi dalam 281,222 s, dengan p95 seismic 11,33 ms dan sedikitnya 50 koneksi TCP selama 87,90 s. Riwayatnya tersimpan dalam \href{\RepoURL/blob/\DemoEvidenceRevision/docs/evidence/demo-2026-10-08/README.md}{bukti gladi 8 Oktober}. Angka utama pada Bagian~\ref{sec:p2} sudah memakai pengujian sesudah perbaikan. Kedua pengujian menggunakan volume lokal yang sudah ada, sehingga tidak membuktikan bootstrap pada mesin kosong. Panduan demo menyediakan langkah pengamatan, hasil yang diharapkan, dan pemulihan konfigurasi untuk skenario P1 hingga P5.
+Pemeriksaan secret menggunakan Gitleaks tidak menemukan temuan pada histori hingga \texttt{2353479}, dengan bukti pada \reliabilityevidence{secret-scan.txt}. Scan revisi pengumpulan dan verifikasi CI hosted tetap diperlukan sebelum penyerahan. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
 
-Alur ingest, query, otorisasi, serta distribusi event telah terhubung dalam implementasi. Bukti pengujian lokal mendukung skenario P1 hingga P5 yang dipetakan pada lampiran, dengan celah instrumentasi U7 yang masih harus ditutup. Cakupan sistem masih terbatas pada PoC dalam satu host dan belum mencakup failover lintas node, koordinasi multi-instance Aggregator, limit terdistribusi, transport terenkripsi end-to-end, maupun pengiriman notifikasi nyata ke perangkat.
-
-Demo sinkron tetap perlu dijalankan kelompok dan tidak digantikan oleh laporan test. Verifikasi panjang outage 10 hingga 20 menit secara langsung belum direpresentasikan oleh load test 20 detik yang disimpan; endpoint operator mendukung outage hingga dimatikan, tetapi kemampuan konfigurasi tidak sama dengan bukti durasi demo tertentu. Tag final dan pengumpulan juga merupakan tindakan terpisah setelah kelompok meninjau laporan.
+\pending{Status GitHub Actions dan tautan run final: \rule{0.53\linewidth}{0.3pt}.}

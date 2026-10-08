@@ -8,7 +8,7 @@ Seluruh berkas E1 hingga E8 berada di \nolinkurl{docs/evidence/integration/} pad
 E1 & \evidence{modules.txt} & Uji unit dan go vet sembilan module dan bootstrap.\\
 E2 & \evidence{regression.txt} & Regresi lengkap termasuk auth, ingest, query, drift, dan rebuild.\\
 E3 & \evidence{events-fresh-group.txt} & Replay subscriber baru, DLQ, dedup, dan outage broker.\\
-E4 & \evidence{load/seismic-only.json}, \evidence{load/sustained.json}, \evidence{load/outage.json} & Summary k6 final, terpisah dari hasil timer invalid.\\
+E4 & \evidence{load/seismic-only.json}, \evidence{load/sustained.json}, \evidence{load/outage.json} & Summary k6 awal. Angka akhir laporan memakai E9.\\
 E5 & \evidence{load/connections.json} & Sampel waktu host dan koneksi TCP teramati.\\
 E6 & \evidence{event-trace.jsonl} & Trace nyata dari mock sampai consumer.\\
 E7 & \evidence{postgres.txt} & Integrasi transaksi dan query PostgreSQL.\\
@@ -16,10 +16,12 @@ E8 & \evidence{services.txt} & Snapshot status container akhir sesi pengujian.\\
 \bottomrule
 \end{tabularx}
 
-\subsection{Bukti setelah perbaikan 8 Oktober}
+\subsection{Bukti pengujian akhir}
 E9 merujuk \reliabilityevidence{README.md} beserta JSON k6, sampel koneksi, konfigurasi, log polling, serta keadaan container sebelum dan sesudah pengujian pada subfolder load. Angka P2 terbaru menggunakan kelompok bukti ini.
 
-E10 merujuk \reliabilityevidence{regression.txt}, \reliabilityevidence{postgres.txt}, \reliabilityevidence{modules.txt}, dan \reliabilityevidence{secret-scan.txt}. Transkrip regresi sebelum pembaruan tes migrasi turut dipertahankan; kegagalan tersebut berasal dari asumsi versi migrasi tetap pada angka 2. Tes diperbaiki untuk memastikan versi aktual dan status migrasi tetap sama setelah restart. Regresi sesudahnya lulus. Manifest mencatat hash artefak dan normalisasi teks tanpa mengubah nilai pengukuran.
+E10 merujuk \reliabilityevidence{regression.txt}, \reliabilityevidence{postgres.txt}, \reliabilityevidence{modules.txt}, dan \reliabilityevidence{secret-scan.txt}. Regresi stack lulus dalam 306,951 s. Manifest mencatat hash artefak dan normalisasi teks tanpa mengubah nilai pengukuran.
+
+E11 merujuk \codepath{docs/evidence/http-attempts-2026-10-08/README.md}, yang memuat hasil tes module Client API dan go vet untuk verifikasi latency per percobaan HTTP. Bukti ini tidak menggantikan pengukuran k6 pada E9.
 
 \subsection{Contoh trace event nyata}
 \input{assets/evidence/trace-table.tex}

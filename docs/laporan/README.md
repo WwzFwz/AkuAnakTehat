@@ -30,7 +30,7 @@ Konfigurasi `.vscode` berada di folder laporan, tidak mengubah pengaturan editor
 | `sections/08-p3-autentikasi.tex` | P3: trust, JWT, scope, refresh, risiko dan bukti. |
 | `sections/09-p4-service-dan-storage.tex` | P4: service boundary, akses DB, perbandingan storage. |
 | `sections/10-p5-pubsub.tex` | P5: outbox, Kafka, delivery, dedup, DLQ dan catch-up. |
-| `sections/11-verifikasi-dan-batasan.tex` | Hasil lokal, kegagalan yang diperbaiki, status CI, batas klaim. |
+| `sections/11-verifikasi-dan-batasan.tex` | Ringkasan skenario, hasil akhir, verifikasi U7, status CI, dan batas cakupan. |
 | `sections/12-deklarasi-ai.tex` | Placeholder deklarasi LLM untuk diisi sendiri oleh kelompok. |
 | `appendices/a-matriks-kriteria.tex` | Pemetaan tiap kriteria spesifikasi ke mekanisme/bukti. |
 | `appendices/b-indeks-bukti.tex` | Indeks file bukti dan contoh trace. |
@@ -77,6 +77,6 @@ Jika render lokal tidak tersedia, sumber PlantUML tetap dapat ditempel pada edit
 
 Spesifikasi menerima potongan log, pengukuran, atau keluaran load test sebagai bukti; screenshot bukan satu-satunya bentuk yang sah. Laporan memakai listing kode yang dapat disalin serta transkrip test nyata. Tidak ada screenshot palsu. Jika menambah screenshot demo, simpan pada `assets/screenshots/`, beri caption perintah/skenario/tanggal, sensor token, dan gunakan `\includegraphics`. Jangan mengganti angka bukti lama dengan angka yang belum diukur.
 
-Rujukan implementasi dipin ke `2353479`. Bukti awal **6 Oktober 2026** dipertahankan, sedangkan tabel dan grafik P2 memakai pengujian ulang **8 Oktober 2026** pada revisi bukti `6cbcf52`. `assets/provenance.json` mencatat revisi dan hash setiap input, sehingga sumber historis dan hasil terbaru dapat dibedakan. Narasi mencatat celah U7 pada latency per percobaan retry client-api; kelulusan load test tidak berarti seluruh kewajiban sudah terpenuhi. Status CI tetap belum terkonfirmasi.
+Rujukan implementasi dipin ke `5cb1367`. Bukti awal **6 Oktober 2026** dipertahankan, sedangkan tabel dan grafik P2 memakai pengujian ulang **8 Oktober 2026** pada revisi bukti `6cbcf52`. `assets/provenance.json` mencatat revisi dan hash setiap input, sehingga sumber historis dan hasil terbaru dapat dibedakan. Verifikasi U7 memakai tes module Client API setelah perbaikan log per percobaan; regresi stack dan k6 belum dijalankan ulang untuk perubahan ini. Status CI tetap belum terkonfirmasi.
 
 Seluruh halaman PDF memakai A4 potret, termasuk diagram arsitektur. Susunan diagram dibuat lebih ringkas agar label tetap terbaca pada lebar halaman.

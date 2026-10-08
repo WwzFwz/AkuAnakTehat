@@ -12,7 +12,7 @@ U3 & Dockerfile per service dan satu orkestrasi. & Dockerfile delapan service, C
 U4 & Kegagalan dan delay benar-benar dipicu. & Outage PVMBG dan Kafka, restart dependensi, rebuild notifier; E2, E3, dan E4.\\
 U5 & Kredensial sumber tidak berlaku lintas instansi. & \texttt{TestMockContracts}; E2.\\
 U6 & Secret dari konfigurasi lokal dan contoh environment. & Generator secret, ignore, \texttt{.env.example}; Bagian~\ref{sec:p3}.\\
-U7 & Health, log terstruktur, correlation ID, dan latency tiap panggilan keluar. & Sebagian terpenuhi. Client-api masih menggabungkan latency dua percobaan saat retry HTTP; temuan audit pada Bagian~\ref{sec:verification}.\\
+U7 & Health, log terstruktur, correlation ID, dan latency tiap panggilan keluar. & Tersedia. Tes Client API memeriksa log per percobaan HTTP, correlation ID, deadline bersama, dan sanitasi; hasil pada Bagian~\ref{sec:verification}.\\
 \midrule
 P1.1 & Pemetaan kanonik kedua sumber. & Unit mapper dan \texttt{TestIngestPipeline}; E1 dan E2.\\
 P1.2 & Schema v2 dipicu saat runtime. & Endpoint admin dalam \texttt{TestDynamicSchemaAndStaleAPI}; E2.\\

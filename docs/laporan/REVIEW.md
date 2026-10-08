@@ -16,15 +16,15 @@ Kontribusi penulisan laporan kedua anggota adalah **Keseluruhan**, sesuai konfir
 
 4. Scan secret untuk histori revisi pengumpulan. Pemeriksaan 8 Oktober menggunakan Gitleaks 8.24.2 melaporkan 46 commit diperiksa hingga `2353479` tanpa temuan. Bukti tersimpan pada `docs/evidence/reliability-2026-10-08/secret-scan.txt`; commit sesudah revisi itu tidak otomatis tercakup.
 
-## Temuan implementasi wajib yang masih terbuka
+## Status instrumentasi wajib
 
-U7 meminta latency tiap panggilan keluar. Log `upstream_request` client-api masih menggabungkan waktu dua percobaan ketika terjadi retry transport. Perlu log per percobaan dengan correlation ID yang sama dan tes kegagalan percobaan pertama. Hal ini dicatat pada [audit persyaratan](../requirements-audit.md) dan bagian verifikasi laporan; jangan mengubah statusnya menjadi selesai hanya karena tes alur normal atau load test lulus.
+Temuan U7 tentang latency retry HTTP sudah ditutup. Log per percobaan, correlation ID yang sama, deadline bersama, sanitasi, batas retry, pembatalan, dan timeout diverifikasi oleh tes module Client API serta go vet. [Bukti U7](../evidence/http-attempts-2026-10-08/README.md) tersedia terpisah dari regresi stack dan load test yang belum dijalankan ulang setelah perubahan instrumentasi.
 
 Cari `\pending` serta `[Isi` untuk meninjau bagian yang belum final. Placeholder ini disengaja agar data tidak dikarang.
 
 ## Pemeriksaan fakta dan cakupan
 
-- Narasi mengikuti implementasi `2353479`; audit README dan pembaruan laporan tidak mengubah kode runtime.
+- Rujukan kode mengikuti `5cb1367`, termasuk instrumentasi per percobaan HTTP. Bukti regresi stack dan load test tetap berasal dari implementasi `2353479`.
 - Bukti gladi awal tetap dipin pada `811e314`. Pengujian setelah perbaikan dipin pada `6cbcf52`, termasuk regresi 306,951 s dan k6 terbaru; angka P2 dalam laporan memakai run terbaru. Pengujian memakai volume yang sudah ada, bukan mesin kosong.
 - Metrik final berasal dari native Windows k6, bukan direktori `load-docker-invalid` yang memiliki durasi negatif.
 - P95 seismic 10,92 ms adalah metrik endpoint seismic; p95 gabungan skenario berbeda. Throughput semua respons bukan throughput sukses.
