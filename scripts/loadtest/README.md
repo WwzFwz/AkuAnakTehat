@@ -8,9 +8,9 @@ Konfigurasi k6 untuk pengukuran P2. Hasil terbaru: [integrasi](../../docs/eviden
 
 **Status:** script menggunakan metrik terpisah untuk autentikasi, request bisnis, dan penolakan terkontrol. Runner menyimpan hasil nyata ke `docs/evidence/integration/load/`.
 
-## Rencana file
+## Berkas dan tanggung jawab
 
-| File yang akan dibuat | Tanggung jawab |
+| File | Tanggung jawab |
 | --- | --- |
 | `seismic-only.js` | Dua skenario seismic/volcanic berjalan bersamaan; p95 request seismic sukses <300 ms. |
 | `sustained.js` | Default 50 VU selama 90 s dengan sesi token per VU. |
@@ -50,6 +50,15 @@ dan set `K6_BINARY` ke path executable (misalnya `$env:K6_BINARY = 'C:\tools\k6.
 lalu jalankan runner yang sama. Target HTTP memakai port loopback stack Docker;
 sampling koneksi dan override delay tetap identik. Versi aktual dicatat pada
 `environment.txt`; secret diteruskan melalui environment/file lokal, bukan argumen.
+
+Gunakan direktori keluaran baru untuk menjaga bukti yang telah dirujuk laporan:
+
+```powershell
+py scripts/loadtest/run.py --output docs/evidence/demo-local/load
+```
+
+Opsi ini berlaku untuk k6 native dan container. Tanpa `--output`, lokasi lama
+`docs/evidence/integration/load/` tetap dipakai dan berkas dengan nama sama diperbarui.
 
 Untuk sustained, runner menghitung koneksi TCP ESTABLISHED ke port 8080 melalui
 `/proc/net/tcp{,6}` tiap sekitar 1s. Minimal 50 koneksi harus teramati terus-menerus

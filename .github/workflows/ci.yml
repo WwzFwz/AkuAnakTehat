@@ -16,6 +16,8 @@ jobs:
           cache: false
       - name: Test independent service modules and bootstrap
         run: sh scripts/check/check.sh
+      - name: Test safe demo output and redirect handling
+        run: python3 -m unittest discover -s scripts/demo -p test_demo.py -v
       - name: Check Compose configuration
         run: |
           echo "LOCAL_UID=$(id -u)" >> "$GITHUB_ENV"

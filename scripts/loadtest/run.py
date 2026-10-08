@@ -3,6 +3,7 @@
 Requires Python 3 and Docker Compose. Credentials remain in ignored env files.
 The three-second mock override is temporary; only PVMBG is recreated/restored.
 """
+import argparse
 import json
 import os
 from pathlib import Path
@@ -20,7 +21,8 @@ def docker(*args, **kwargs):
 
 
 def run(name, duration=None, connections=False):
-    args = ["docker", "compose", "run", "--rm", "--no-deps", "--env-from-file", "./env/demo.env"]
+    args = ["docker", "compose", "run", "--rm", "--no-deps", "--env-from-file", "./env/demo.env",
+            "--volume", f"{RESULTS.as_posix()}:/results"]
     if duration:
         args += ["-e", f"DURATION={duration}"]
     args += ["loadtest", "run", "--quiet", "--summary-export",
@@ -87,6 +89,12 @@ def run(name, duration=None, connections=False):
 
 
 def main():
+    global RESULTS
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", default="docs/evidence/integration/load",
+                        help="Output directory relative to repo root; use a new directory to preserve previous evidence")
+    args = parser.parse_args()
+    RESULTS = (ROOT / args.output).resolve()
     RESULTS.mkdir(parents=True, exist_ok=True)
     local = ROOT / ".local"
     local.mkdir(exist_ok=True)
