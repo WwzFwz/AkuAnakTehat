@@ -50,7 +50,7 @@ Validasi algoritma dan claim menghindari penerimaan token untuk issuer atau audi
 \subsection{Bukti penyelesaian}
 Suite fondasi memeriksa kredensial lintas instansi ditolak serta claim JWT invalid tidak diterima. Suite query memverifikasi allowlist Media, penolakan raw, dan akses penuh dua identitas lainnya. \texttt{TestNaturalExpiryAndFieldCLI} menjalankan dua request CLI berjarak 65 detik dalam satu sesi dengan default TTL 60 detik, lalu memeriksa token lama 401 sebelum dan sesudah refresh dan token baru 200. Tidak ada manipulasi jam atau TTL singkat buatan untuk bukti ini.
 
-Uji unit CLI memeriksa rotasi serial, respons 401 yang terlambat tidak membatalkan token yang lebih baru, serta penolakan redirect. Catatan fondasi melaporkan Gitleaks 8.24.2 tanpa temuan pada lima commit hingga \texttt{f73c035}; cakupannya tidak boleh diperluas menjadi scan revisi akhir. Hasil scan histori final masih perlu dikonfirmasi pada pemeriksaan pengumpulan. Semua nilai contoh pada laporan bebas kredensial nyata.
+Uji unit CLI memeriksa rotasi serial, respons 401 yang terlambat tidak membatalkan token yang lebih baru, serta penolakan redirect. Pada pemeriksaan ulang 8 Oktober 2026, Gitleaks 8.24.2 melaporkan 33 commit diperiksa tanpa temuan pada histori hingga \texttt{0ffb301}. \href{\RepoURL/blob/\DemoEvidenceRevision/docs/evidence/demo-2026-10-08/secret-scan.txt}{Transkrip scan} mencatat cakupan tersebut; hasilnya tidak otomatis mencakup commit setelah revisi itu. Pemeriksaan histori revisi pengumpulan tetap perlu dilakukan sebelum penyerahan. Semua nilai contoh pada laporan bebas kredensial nyata.
 \proof{regression.txt}
 \proof{modules.txt}
 \coderef{docs/evidence/foundation/README.md}

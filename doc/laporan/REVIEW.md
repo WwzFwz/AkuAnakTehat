@@ -14,13 +14,14 @@
 4. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
 5. Tanggal/tautan dokumentasi demonstrasi sinkron jika diminta (`appendices/b-indeks-bukti.tex`). Bukti otomatis bukan demo sinkron.
 
-6. Scan secret untuk histori revisi pengumpulan. Bukti yang ditemukan hanya mencakup lima commit sampai `f73c035` pada fondasi; jangan menganggapnya mencakup revisi akhir.
+6. Scan secret untuk histori revisi pengumpulan. Pemeriksaan ulang 8 Oktober menggunakan Gitleaks 8.24.2 melaporkan 33 commit diperiksa hingga `0ffb301` tanpa temuan. Bukti tersimpan pada `docs/evidence/demo-2026-10-08/secret-scan.txt`; commit sesudah revisi itu tidak otomatis tercakup.
 
 Cari `\pending` serta `[Isi` untuk meninjau bagian yang belum final. Placeholder ini disengaja agar data tidak dikarang.
 
 ## Pemeriksaan fakta dan cakupan
 
 - Narasi mengikuti implementasi `f6e99cc`; kode aplikasi tidak diubah saat menyusun laporan.
+- Gladi 8 Oktober lulus unit, vet, integrasi PostgreSQL, regresi, dan tiga skenario load. Bukti tambahan dipin terpisah pada `811e314`; angka P2 dari 6 Oktober tidak diganti. Pengujian memakai volume yang sudah ada, bukan mesin kosong.
 - Metrik final berasal dari native Windows k6, bukan direktori `load-docker-invalid` yang memiliki durasi negatif.
 - P95 seismic 8,62 ms adalah metrik endpoint seismic; p95 gabungan skenario berbeda. Throughput semua respons bukan throughput sukses.
 - Sustained: 42.619 bisnis, 9.689 sukses, 32.930 bisnis 429, 10 auth 429; 50 TCP teramati selama 90,46 s. Error 0% memakai denominator tanpa 429.
