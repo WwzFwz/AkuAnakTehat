@@ -1,0 +1,14 @@
+{
+  "http": 200,
+  "data_count": 1,
+  "sources": [
+    {
+      "source": "BMKG",
+      "status": "HEALTHY"
+    },
+    {
+      "source": "PVMBG",
+      "status": "HEALTHY"
+    }
+  ]
+}

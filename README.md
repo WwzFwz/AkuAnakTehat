@@ -133,9 +133,9 @@ py scripts/demo/demo.py restore
 
 Uji unit tidak membutuhkan stack. Regresi, load test, dan demo yang mengubah state harus berjalan **berurutan** karena dapat menghentikan dependensi sementara. `restore` menjalankan service dengan Compose normal, menonaktifkan outage, dan mengembalikan generator PVMBG ke skema 1. Data sintetis serta volume tetap dipertahankan. Status sumber memerlukan beberapa siklus polling untuk kembali sehat.
 
-Hasil pengujian akhir pada lingkungan lokal menunjukkan p95 seismic **10,92 ms**, sedikitnya **50 koneksi TCP selama 88,53 detik**, serta **error bisnis di luar 429 sebesar 0%**. Pada beban sustained, 9.028 respons berhasil dan 33.773 respons ditolak dengan 429 sesuai pembatasan beban. Throughput sukses sebesar 100,20 respons per detik; respons 429 tidak dihitung sebagai throughput sukses.
+Hasil pengujian akhir pada lingkungan lokal menunjukkan p95 seismic **12,51 ms**, sedikitnya **50 koneksi TCP selama 87,78 detik**, serta **error bisnis di luar 429 sebesar 0%**. Pada beban sustained, 8.793 respons berhasil dan 33.718 respons ditolak dengan 429 sesuai pembatasan beban. Throughput sukses sebesar 97,59 respons per detik; respons 429 tidak dihitung sebagai throughput sukses.
 
-Pengujian regresi mencakup pengiriman event 4 MiB, penolakan event yang melebihi batas, pemulihan backlog, serta pemrosesan ulang setelah gangguan penyimpanan consumer. Konfigurasi, hasil lengkap, dan batas interpretasi tersedia pada [bukti pengujian akhir](docs/evidence/reliability-2026-10-08/README.md). [Audit persyaratan](docs/requirements-audit.md) memuat pemetaan implementasi ke spesifikasi beserta temuan yang masih terbuka.
+Pengujian regresi mencakup pengiriman event 4 MiB, penolakan event yang melebihi batas, pemulihan backlog, serta pemrosesan ulang setelah gangguan penyimpanan consumer. Uji outage PVMBG selama 10 menit berhasil mempertahankan akses seismic dan memulihkan data volcanic tanpa restart. Bootstrap dengan kredensial baru dan enam volume terisolasi juga berhasil sampai data diterima ketiga consumer. Konfigurasi, hasil lengkap, dan batas interpretasi tersedia pada [bukti pengujian akhir](docs/evidence/final-2026-10-08/README.md). [Audit persyaratan](docs/requirements-audit.md) memuat pemetaan implementasi ke spesifikasi beserta temuan yang masih terbuka.
 
 ## Kontribusi kelompok
 

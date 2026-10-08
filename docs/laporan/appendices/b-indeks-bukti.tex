@@ -17,11 +17,13 @@ E8 & \evidence{services.txt} & Snapshot status container akhir sesi pengujian.\\
 \end{tabularx}
 
 \subsection{Bukti pengujian akhir}
-E9 merujuk \reliabilityevidence{README.md} beserta JSON k6, sampel koneksi, konfigurasi, log polling, serta keadaan container sebelum dan sesudah pengujian pada subfolder load. Angka P2 terbaru menggunakan kelompok bukti ini.
+E9 merujuk \finalevidence{README.md} beserta JSON k6, sampel koneksi, dan konfigurasi pada subfolder load. Angka P2 memakai pengujian final ini.
 
-E10 merujuk \reliabilityevidence{regression.txt}, \reliabilityevidence{postgres.txt}, \reliabilityevidence{modules.txt}, dan \reliabilityevidence{secret-scan.txt}. Regresi stack lulus dalam 306,951 s. Manifest mencatat hash artefak dan normalisasi teks tanpa mengubah nilai pengukuran.
+E10 merujuk \finalevidence{regression.txt} dan \finalevidence{postgres.txt}. Regresi stack lulus dalam 306,263 s. Bukti unit seluruh module dan scan histori yang cakupannya lebih awal tetap tersedia pada \reliabilityevidence{modules.txt} serta \reliabilityevidence{secret-scan.txt}.
 
 E11 merujuk \codepath{docs/evidence/http-attempts-2026-10-08/README.md}, yang memuat hasil tes module Client API dan go vet untuk verifikasi latency per percobaan HTTP. Bukti ini tidak menggantikan pengukuran k6 pada E9.
+
+E12 merujuk \finalevidence{long-outage/result.json}, \finalevidence{long-outage/summary.json}, dan \finalevidence{bootstrap/result.json}. Artefak ini memeriksa outage 600 detik, pemulihan tanpa restart, serta bootstrap dengan kredensial dan volume baru. Manifest pada \finalevidence{manifest.json} mencatat hash artefak serta runner.
 
 \subsection{Contoh trace event nyata}
 \input{assets/evidence/trace-table.tex}

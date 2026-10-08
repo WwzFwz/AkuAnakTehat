@@ -1,0 +1,30 @@
+
+     ✓ seismic returns data or controlled rejection
+
+   ✓ auth_error_rate................: 0.00%   0 out of 40
+     business_latency...............: avg=7.17ms   min=524.7µs  med=6.62ms   max=33.09ms  p(90)=10.65ms  p(95)=12.27ms  p(99)=18.66ms
+     ✓ { endpoint:seismic }.........: avg=7.48ms   min=841.9µs  med=6.94ms   max=31.25ms  p(90)=10.96ms  p(95)=12.51ms  p(99)=19.81ms
+     business_requests..............: 11326   188.487411/s
+     checks.........................: 100.00% 5661 out of 5661
+   ✓ controlled_429.................: 5334    88.768484/s
+     data_received..................: 62 MB   1.0 MB/s
+     data_sent......................: 6.6 MB  110 kB/s
+     http_req_blocked...............: avg=15µs     min=0s       med=0s       max=5.66ms   p(90)=0s       p(95)=0s       p(99)=512.37µs
+     http_req_connecting............: avg=9.29µs   min=0s       med=0s       max=5.12ms   p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_duration..............: avg=5.17ms   min=0s       med=4.48ms   max=33.09ms  p(90)=9.41ms   p(95)=11.17ms  p(99)=16.83ms
+       { expected_response:true }...: avg=7.18ms   min=524.7µs  med=6.62ms   max=33.09ms  p(90)=10.77ms  p(95)=12.33ms  p(99)=18.65ms
+     http_req_failed................: 46.92%  5334 out of 11366
+     http_req_receiving.............: avg=138.33µs min=0s       med=0s       max=17.35ms  p(90)=545.29µs p(95)=627.8µs  p(99)=1.19ms
+     http_req_sending...............: avg=22.17µs  min=0s       med=0s       max=8.9ms    p(90)=0s       p(95)=0s       p(99)=586.81µs
+     http_req_tls_handshaking.......: avg=0s       min=0s       med=0s       max=0s       p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_waiting...............: avg=5.01ms   min=0s       med=4.34ms   max=32.08ms  p(90)=9.21ms   p(95)=10.91ms  p(99)=16.48ms
+     http_reqs......................: 11366   189.153091/s
+     iteration_duration.............: avg=105.98ms min=100.33ms med=105.16ms max=147.42ms p(90)=110.26ms p(95)=112.33ms p(99)=122.59ms
+     iterations.....................: 11326   188.487411/s
+     successful_requests............: 5992    99.718927/s
+     ✓ { endpoint:seismic }.........: 2778    46.231505/s
+     ✓ { endpoint:volcanic }........: 3214    53.487422/s
+   ✓ system_error_rate..............: 0.00%   0 out of 5992
+     vus............................: 20      min=20            max=20
+     vus_max........................: 20      min=20            max=20
+

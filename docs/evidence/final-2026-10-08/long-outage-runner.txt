@@ -1,0 +1,1 @@
+{"k6_passed": true, "nonnegative_timings": true, "outage_duration_observed": true, "seismic_healthy_during_outage": true, "volcanic_stale_after_detection": true, "volcanic_recovers": true, "no_restarts_or_replacements": true}

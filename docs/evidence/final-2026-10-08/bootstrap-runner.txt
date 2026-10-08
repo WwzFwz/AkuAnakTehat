@@ -1,0 +1,3 @@
+Primary stack stopped; original volumes retained. Starting isolated stack.
+Fresh secrets, migrations, healthy API, authorization and all three consumers passed.
+PASS clean bootstrap; primary stack restored and original volumes preserved.

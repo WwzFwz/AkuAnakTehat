@@ -1,0 +1,59 @@
+Running all: .. State-changing suites must run sequentially.
+=== RUN   TestHealth
+--- PASS: TestHealth (0.04s)
+=== RUN   TestMockContracts
+--- PASS: TestMockContracts (6.65s)
+=== RUN   TestPVMBGSchemaAndOutage
+--- PASS: TestPVMBGSchemaAndOutage (10.23s)
+=== RUN   TestTokenRotationAndAuthorization
+--- PASS: TestTokenRotationAndAuthorization (0.19s)
+=== RUN   TestJWTClaimValidation
+=== RUN   TestJWTClaimValidation/exp
+=== RUN   TestJWTClaimValidation/aud
+=== RUN   TestJWTClaimValidation/iss
+=== RUN   TestJWTClaimValidation/iat
+--- PASS: TestJWTClaimValidation (0.02s)
+    --- PASS: TestJWTClaimValidation/exp (0.00s)
+    --- PASS: TestJWTClaimValidation/aud (0.00s)
+    --- PASS: TestJWTClaimValidation/iss (0.00s)
+    --- PASS: TestJWTClaimValidation/iat (0.00s)
+=== RUN   TestPersistenceAndDependencyRecovery
+--- PASS: TestPersistenceAndDependencyRecovery (27.09s)
+=== RUN   TestStructuredLogsDoNotExposeCredentials
+--- PASS: TestStructuredLogsDoNotExposeCredentials (0.49s)
+=== RUN   TestIngestPipeline
+    ingest_test.go:87: mock -> canonical store -> pending outbox; schema drift, isolated outage, recovery and restart passed
+--- PASS: TestIngestPipeline (50.05s)
+=== RUN   TestEventPipeline
+    events_test.go:60: mock -> ingest -> PostgreSQL outbox -> Kafka -> dashboard verified
+    events_test.go:86: fresh pemda group and empty store replayed history without replacing Aggregator
+    events_test.go:131: replay/stale versions, precise additive fields, SIAGA/AWAS filtering and SQLite restart persistence verified
+    events_test.go:152: invalid record reached DLQ for all three groups; subsequent valid record processed
+    events_test.go:163: paused dashboard caught up; notifier and pemda continued independently
+    events_test.go:190: Kafka outage did not block ingest; retained outbox drained after recovery
+--- PASS: TestEventPipeline (81.85s)
+=== RUN   TestQueryIntegration
+    query_test.go:112: client-api {"time":"2026-10-08T13:04:28.90443985Z","level":"INFO","msg":"upstream_request","service":"client-api","operation":"aggregator_get","correlation_id":"query-integration-1791464668781813700","attempt":1,"latency_ms":1.926129,"status":200,"result":"success"}
+    query_test.go:112: client-api {"time":"2026-10-08T13:04:28.904498526Z","level":"INFO","msg":"request","service":"client-api","correlation_id":"query-integration-1791464668781813700","operation":"GET","latency_ms":2,"status":200}
+    query_test.go:112: aggregator {"time":"2026-10-08T13:04:28.903860558Z","level":"INFO","msg":"outbound_call","service":"aggregator","dependency":"postgres","operation":"query","correlation_id":"query-integration-1791464668781813700","latency_ms":1.02,"ok":true}
+    query_test.go:112: aggregator {"time":"2026-10-08T13:04:28.904149974Z","level":"INFO","msg":"outbound_call","service":"aggregator","dependency":"postgres","operation":"query","correlation_id":"query-integration-1791464668781813700","latency_ms":0.25,"ok":true}
+    query_test.go:112: aggregator {"time":"2026-10-08T13:04:28.904206314Z","level":"INFO","msg":"http_request","service":"aggregator","method":"GET","path":"/internal/hazards","correlation_id":"query-integration-1791464668781813700","latency_ms":1}
+    query_test.go:116: P3: Media allowlist, raw rejection, distinct privileged identities; query filters, pagination, errors and cross-service trace passed
+--- PASS: TestQueryIntegration (0.66s)
+=== RUN   TestDynamicSchemaAndStaleAPI
+    query_test.go:207: P1/P4: old/new JSONB attributes coexist and remain readable without migration; P2: stale volcanic data and healthy seismic reads recover without restart
+--- PASS: TestDynamicSchemaAndStaleAPI (26.34s)
+=== RUN   TestNaturalExpiryAndFieldCLI
+    query_test.go:259: P3: real 60s access TTL elapsed; CLI retained its session across 65s and refreshed automatically; expired token rejected before/after refresh
+--- PASS: TestNaturalExpiryAndFieldCLI (68.77s)
+=== RUN   TestIndependentRebuild
+    query_test.go:287: P4: notifier stopped, rebuilt and started independently; public reads continued and other container start timestamps remained unchanged
+--- PASS: TestIndependentRebuild (26.24s)
+=== RUN   TestLargeEventDeliveryAndPermanentRejection
+    large_events_test.go:45: fixture 0 compact envelope bytes=4194304
+    large_events_test.go:45: fixture 1 compact envelope bytes=4194305
+    large_events_test.go:45: fixture 2 compact envelope bytes=2048
+    large_events_test.go:112: 4 MiB event delivered intact to all consumers and raw API; 4 MiB + 1 retained as rejected; following event delivered; Media remains restricted
+--- PASS: TestLargeEventDeliveryAndPermanentRejection (6.48s)
+PASS
+ok  	command-line-arguments	306.263s

@@ -1,0 +1,117 @@
+{
+  "started_at": "2026-10-08T13:14:50.774542+00:00",
+  "outage_seconds": 600,
+  "recovery_seconds": 90,
+  "outage_vus": 5,
+  "recovery_vus": 5,
+  "sample_interval_seconds": 5,
+  "k6": "k6.exe v0.57.0 (commit/50afd82c18, go1.23.6, windows/amd64)",
+  "baseline": {
+    "at": "2026-10-08T13:14:50.457951+00:00",
+    "pvmbg_http": 200,
+    "simulation": {
+      "outage": false,
+      "mode": "error",
+      "schema_version": 1
+    },
+    "seismic": {
+      "http": 200,
+      "data_count": 1,
+      "sources": [
+        {
+          "source": "BMKG",
+          "status": "HEALTHY"
+        }
+      ]
+    },
+    "volcanic": {
+      "http": 200,
+      "data_count": 1,
+      "sources": [
+        {
+          "source": "PVMBG",
+          "status": "HEALTHY"
+        }
+      ]
+    }
+  },
+  "containers_before": {
+    "aggregator": {
+      "id": "760f29fc3d75feab33dd07adf36d184f9d55b98c01061d7f4ad70befdb40db54",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:03:05.00761613Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "auth-service": {
+      "id": "cb95c917d35eb024e32cda99d8e3a05b311e99f14a5fa13b5e72ac34e400be01",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:02:00.971592919Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "auth-store": {
+      "id": "70e00b2df488ea6d812f900e97dbae1d7841c99254679caf307c3c6d0228bd79",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:01:57.764078821Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "bmkg-mock": {
+      "id": "7426668ae3760569bf493693dade973c1b05436589fecf6872cb7585dba1dfdd",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:00:12.771498767Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "canonical-db": {
+      "id": "8db8f6916d1adb06cfc8789d84e24d517bdb6bb4c2dd23f25daa9efd46eca59e",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:01:58.822530123Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "client-api": {
+      "id": "de3da416cbbdf4fbaf463eded8815823f47aa83a36d8e5cf320fe97c05593605",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:00:12.773203165Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "dashboard-updater": {
+      "id": "e9e2b4c50b1be446e0525faa0ecff90f5271dd94cf0ba1a666c7d2c9380a8660",
+      "restart_count": 1,
+      "started_at": "2026-10-08T13:04:11.517001543Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "kafka": {
+      "id": "67a03273dd7d4c63d1efeeab4acdeb4ca4ef15249a5fd09cbef12a2e364d4c4e",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:04:10.71296522Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "notifier": {
+      "id": "e5aa0cbacafeed80c36463cf030a6dc65958ec635ea6f897ffcb9aad6336527d",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:06:12.295749095Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "pemda-portal": {
+      "id": "254f371b4450e18df0ec21b4e4cdb101b99c702143e69cd8b030e9aa0c9be383",
+      "restart_count": 1,
+      "started_at": "2026-10-08T13:04:03.031631239Z",
+      "state": "running",
+      "health": "healthy"
+    },
+    "pvmbg-mock": {
+      "id": "752f2e2f5ce6b94baf5ae544835d1318735eaa006b81178b50d91a346072475e",
+      "restart_count": 0,
+      "started_at": "2026-10-08T13:11:06.31780035Z",
+      "state": "running",
+      "health": "healthy"
+    }
+  }
+}

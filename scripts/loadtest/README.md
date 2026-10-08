@@ -2,9 +2,7 @@
 
 [Peta repository](../../README.md)
 
-Konfigurasi k6 untuk pengukuran P2. Hasil terbaru: [integrasi](../../docs/evidence/integration/README.md).
-
-**Pemilik rencana:** B. **Tahap:** Baseline / pendukung baseline.
+Konfigurasi k6 untuk pengukuran P2. Hasil terbaru: [pengujian final](../../docs/evidence/final-2026-10-08/README.md).
 
 **Status:** script menggunakan metrik terpisah untuk autentikasi, request bisnis, dan penolakan terkontrol. Runner menyimpan hasil nyata ke `docs/evidence/integration/load/`.
 

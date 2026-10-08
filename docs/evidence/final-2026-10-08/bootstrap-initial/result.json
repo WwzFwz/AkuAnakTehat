@@ -1,0 +1,83 @@
+{
+  "started_at": "2026-10-08T13:27:04.230725+00:00",
+  "revision": "a465139364001705907e810ca3242f21b924208e",
+  "project": "bnpb-bootstrap-6ae347ad",
+  "checkout": ".local\\bnpb-bootstrap-6ae347ad",
+  "original_volumes_before": {
+    "bnpb-m1_auth-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_canonical-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_dashboard-data": "2026-10-01T03:15:10Z",
+    "bnpb-m1_kafka-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_notifier-data": "2026-10-01T03:15:10Z",
+    "bnpb-m1_pemda-data": "2026-10-01T03:17:13Z"
+  },
+  "isolated_volumes_before": {},
+  "fresh_secret_files": 12,
+  "bootstrap_idempotent": true,
+  "isolated_volume_names": [
+    "bnpb-bootstrap-6ae347ad_auth-data",
+    "bnpb-bootstrap-6ae347ad_canonical-data",
+    "bnpb-bootstrap-6ae347ad_dashboard-data",
+    "bnpb-bootstrap-6ae347ad_kafka-data",
+    "bnpb-bootstrap-6ae347ad_notifier-data",
+    "bnpb-bootstrap-6ae347ad_pemda-data"
+  ],
+  "isolated_network_names": [
+    "bnpb-bootstrap-6ae347ad_auth_net",
+    "bnpb-bootstrap-6ae347ad_bus_net",
+    "bnpb-bootstrap-6ae347ad_consumer_net",
+    "bnpb-bootstrap-6ae347ad_edge_net",
+    "bnpb-bootstrap-6ae347ad_source_net",
+    "bnpb-bootstrap-6ae347ad_store_net"
+  ],
+  "isolated_volumes_created": {
+    "bnpb-bootstrap-6ae347ad_auth-data": "2026-10-08T13:30:35Z",
+    "bnpb-bootstrap-6ae347ad_canonical-data": "2026-10-08T13:30:35Z",
+    "bnpb-bootstrap-6ae347ad_dashboard-data": "2026-10-08T13:30:35Z",
+    "bnpb-bootstrap-6ae347ad_kafka-data": "2026-10-08T13:30:35Z",
+    "bnpb-bootstrap-6ae347ad_notifier-data": "2026-10-08T13:30:35Z",
+    "bnpb-bootstrap-6ae347ad_pemda-data": "2026-10-08T13:30:35Z"
+  },
+  "migration_version": 3,
+  "migration_dirty": false,
+  "canonical_count": 42,
+  "sources": [
+    {
+      "source": "BMKG",
+      "status": "HEALTHY"
+    },
+    {
+      "source": "PVMBG",
+      "status": "HEALTHY"
+    }
+  ],
+  "service_health": {
+    "client-api/health": 200,
+    "client-api/ready": 200,
+    "bmkg-mock/health": 200,
+    "pvmbg-mock/health": 200,
+    "auth-service/health": 200,
+    "auth-service/ready": 200,
+    "dashboard-updater/health": 200,
+    "dashboard-updater/ready": 200,
+    "notifier/health": 200,
+    "notifier/ready": 200,
+    "pemda-portal/health": 200,
+    "pemda-portal/ready": 200
+  },
+  "media_raw_status": 403,
+  "consumer_counts": {},
+  "isolated_volumes_after_cleanup": {},
+  "original_volumes_after": {
+    "bnpb-m1_auth-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_canonical-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_dashboard-data": "2026-10-01T03:15:10Z",
+    "bnpb-m1_kafka-data": "2026-09-30T17:43:28Z",
+    "bnpb-m1_notifier-data": "2026-10-01T03:15:10Z",
+    "bnpb-m1_pemda-data": "2026-10-01T03:17:13Z"
+  },
+  "original_volumes_preserved": true,
+  "original_secret_files_preserved": true,
+  "original_hazard_preserved": true,
+  "finished_at": "2026-10-08T13:32:58.470158+00:00"
+}

@@ -14,8 +14,8 @@ import subprocess
 HERE = Path(__file__).resolve().parents[1]
 ROOT = HERE.parents[1]
 REV = re.search(r"\\newcommand\{\\CodeRevision\}\{([^}]+)\}", (HERE / "metadata.tex").read_text()).group(1)
-RELIABILITY_REV = re.search(r"\\newcommand\{\\ReliabilityEvidenceRevision\}\{([^}]+)\}", (HERE / "metadata.tex").read_text()).group(1)
-RELIABILITY_PATH = "docs/evidence/reliability-2026-10-08"
+FINAL_REV = re.search(r"\\newcommand\{\\FinalEvidenceRevision\}\{([^}]+)\}", (HERE / "metadata.tex").read_text()).group(1)
+FINAL_PATH = "docs/evidence/final-2026-10-08"
 ASSETS = HERE / "assets"
 manifest = {"revision": REV, "files": []}
 
@@ -49,11 +49,11 @@ def main():
         (ASSETS / "code" / target).write_text(text[start:], encoding="utf-8")
         manifest["files"][-1].update(excerpt=target, first_line=text[:start].count("\n")+1)
 
-    log = original(f"{RELIABILITY_PATH}/regression.txt", RELIABILITY_REV)
+    log = original(f"{FINAL_PATH}/regression.txt", FINAL_REV)
     selected = [line for line in log.splitlines() if line.startswith("--- PASS:") or line == "PASS" or line.startswith("ok ")]
     (ASSETS / "evidence/regression-excerpt.txt").write_text("\n".join(selected)+"\n", encoding="utf-8")
 
-    datasets = {name: json.loads(original(f"{RELIABILITY_PATH}/load/{name}.json", RELIABILITY_REV))["metrics"]
+    datasets = {name: json.loads(original(f"{FINAL_PATH}/load/{name}.json", FINAL_REV))["metrics"]
                 for name in ["seismic-only", "sustained", "outage"]}
     rows = [r"\begin{table}[H]\centering\small",
             r"\begin{tabular}{lrrrrr}\toprule",
@@ -65,7 +65,7 @@ def main():
     rows += [r"\bottomrule\end{tabular}", r"\caption{Pengujian ulang k6 pada 8 Oktober 2026. Latency hanya HTTP 200; bisnis/s mencakup 429.}\end{table}"]
     (ASSETS / "evidence/load-table.tex").write_text("\n".join(rows)+"\n", encoding="utf-8")
 
-    connection = json.loads(original(f"{RELIABILITY_PATH}/load/connections.json", RELIABILITY_REV))
+    connection = json.loads(original(f"{FINAL_PATH}/load/connections.json", FINAL_REV))
     plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.spines.top": False,
                          "axes.spines.right": False, "axes.titleweight": "bold", "axes.labelcolor": "#17324d"})
     fig, axes = plt.subplots(2, 1, figsize=(8, 6.3), layout="constrained")

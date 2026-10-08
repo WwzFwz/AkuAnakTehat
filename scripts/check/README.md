@@ -43,3 +43,22 @@ Suite query menggunakan TTL bootstrap 60s dan menunggu 65s dalam satu sesi CLI. 
 `large_events_test.go` membuat fixture outbox administratif untuk menguji envelope 4 MiB melalui relay, broker, tiga consumer, dan API. Fixture 4 MiB ditambah satu byte harus tetap tersimpan sebagai penolakan, sedangkan event berikutnya tetap terkirim. Pengujian batas saat ingest, pagination byte, dan backlog 600 record berada dalam suite PostgreSQL. `py scripts/demo/demo.py verify all` juga memasukkan pengujian event besar; `make events-check` hanya menjalankan suite event dasarnya.
 
 `make load-check` menjalankan runner Python/k6, mengukur 50 koneksi TCP selama minimal 60s, dan memulihkan konfigurasi PVMBG setelah pengujian. Detail metrik di [loadtest](../loadtest/README.md), hasil di [integrasi](../../docs/evidence/integration/README.md). Jalankan seluruh suite secara berurutan, tanpa demo lain yang mengubah state.
+
+## Outage panjang dan bootstrap kosong
+
+`long_outage.py` menjalankan skenario outage k6 dengan durasi default 600 detik dan recovery 90 detik. Selain metrik k6, runner merekam status simulasi, ketersediaan seismic, status basi volcanic, dan identitas container setiap fase. Pemeriksaan memastikan data kembali sehat tanpa restart container. Kredensial dibaca dari konfigurasi lokal dan tidak dicetak.
+
+```powershell
+$env:K6_BINARY = 'C:\lokasi-k6\k6.exe'
+python scripts/check/long_outage.py --output docs/evidence/run-baru/long-outage
+```
+
+`clean_bootstrap.py` mengambil source dari commit HEAD ke direktori `.local/` baru, membangkitkan kredensial terpisah, lalu menjalankan project Compose dengan nama unik. Volume dan network project harus baru serta terpisah. Uji memeriksa bootstrap idempoten, migrasi bersih, seed masuk ke API, hak akses Media, serta distribusi ke ketiga consumer.
+
+```powershell
+python scripts/check/clean_bootstrap.py --output docs/evidence/run-baru/bootstrap
+```
+
+Runner menghentikan stack utama `bnpb-m1` sementara agar port dan sumber daya dapat dipakai secara berurutan. Setelah pengujian, hanya volume project uji yang dihapus; stack utama dinyalakan kembali dan identitas volume aslinya diperiksa. Salinan source beserta kredensial uji tetap berada pada `.local/` yang diabaikan Git. Uji ini memerlukan Docker Linux containers, Go, dan image/dependensi yang dapat dibangun; bukan simulasi host tanpa Docker atau tanpa cache image. Jangan jalankan bersamaan dengan regresi atau load test lain.
+
+Kedua runner memerlukan direktori output baru agar hasil sebelumnya tidak tertimpa.

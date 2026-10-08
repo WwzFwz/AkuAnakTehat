@@ -8,7 +8,7 @@ Verifikasi memeriksa kesesuaian perilaku sistem terhadap persyaratan melalui uji
 \begin{longtable}{P{0.13\linewidth}P{0.40\linewidth}P{0.37\linewidth}}
 \toprule Kriteria & Skenario yang diperiksa & Hasil\\\midrule\endhead
 P1 & Pemetaan sumber, korelasi tsunami, serta penambahan field saat runtime. & Field tambahan dipertahankan; record lama dan baru dapat dibaca tanpa restart service atau perubahan skema tabel.\\
-P2 & Pembacaan seismic dan volcanic bersamaan, beban sustained, serta outage dan recovery PVMBG. & P95 seismic 10,92 ms; sedikitnya 50 TCP selama 88,53 s; error bisnis di luar 429 sebesar 0\%. Rincian pada Bagian~\ref{sec:p2}.\\
+P2 & Pembacaan seismic dan volcanic bersamaan, beban sustained, serta outage dan recovery PVMBG. & P95 seismic 12,51 ms; sedikitnya 50 TCP selama 87,78 s; error bisnis di luar 429 sebesar 0\%. Rincian pada Bagian~\ref{sec:p2}.\\
 P3 & Kredensial lintas domain, scope, proyeksi field, expiry alami 60 s, dan refresh CLI. & Kredensial silang ditolak; Media tidak memperoleh data mentah; token lama kedaluwarsa ditolak dan token baru diterima.\\
 P4 & Rebuild service secara independen, akses melalui API pemilik storage, dan persistensi setelah restart. & Regresi lulus untuk skenario isolasi dan pemulihan yang diuji. Batas kepemilikan diperiksa melalui Compose serta adapter service.\\
 P5 & Distribusi ke consumer independen, replay, dedup, subscriber baru, serta pemulihan broker dan consumer. & Stream diterima sesuai group; view tidak ditimpa versi lama; event pending diproses setelah dependensi pulih.\\
@@ -16,7 +16,7 @@ U7 & HTTP pertama gagal lalu retry berhasil, beserta pembatalan, timeout, dan sa
 \bottomrule
 \end{longtable}
 
-Regresi stack lulus dalam 306,951 s. Uji module dan go vet serta integrasi PostgreSQL juga lulus, dengan transkrip pada \reliabilityevidence{modules.txt}, \reliabilityevidence{postgres.txt}, dan \reliabilityevidence{regression.txt}. Pengujian memakai Docker Desktop lokal; konfigurasi beban, lingkungan pengukuran, serta definisi metrik dijelaskan pada Bagian~\ref{sec:p2}. Penolakan HTTP 429 dilaporkan terpisah dari respons sukses dan tidak dihitung sebagai throughput sukses.
+Regresi stack lulus dalam 306,263 s. Uji module dan go vet serta integrasi PostgreSQL juga lulus, dengan transkrip pada \reliabilityevidence{modules.txt}, \finalevidence{postgres.txt}, dan \finalevidence{regression.txt}. Pengujian memakai Docker Desktop lokal; konfigurasi beban, lingkungan pengukuran, serta definisi metrik dijelaskan pada Bagian~\ref{sec:p2}. Penolakan HTTP 429 dilaporkan terpisah dari respons sukses dan tidak dihitung sebagai throughput sukses.
 
 \lstinputlisting[numbers=none,caption={Petikan hasil regresi stack. Transkrip lengkap tersedia pada artefak pengujian.}]{assets/evidence/regression-excerpt.txt}
 
@@ -32,10 +32,17 @@ Client API mencatat satu log \texttt{upstream\_request} untuk setiap pemanggilan
 \coderef{services/client-api/internal/adapter/outbound/aggregator/attempt_test.go}
 \coderef{docs/evidence/http-attempts-2026-10-08/README.md}
 
-\subsection{Cakupan bukti dan pemeriksaan akhir}
-Regresi stack dan load test di atas berasal dari pengujian implementasi \texttt{2353479}. Perubahan instrumentasi HTTP diverifikasi terpisah melalui tes module Client API; regresi Docker dan k6 tidak dijalankan ulang untuk perubahan tersebut. Pemisahan cakupan ini memastikan angka performa tetap merujuk pada pengukuran yang benar-benar dilakukan.
+\subsection{Bootstrap pada volume kosong}
+Pengujian mengekstrak source commit ke direktori terpisah tanpa konfigurasi lokal lama. Bootstrap membuat 12 berkas konfigurasi dan kunci baru; pemanggilan kedua mempertahankannya tanpa rotasi. Project Compose memakai network tersendiri serta enam volume yang belum ada sebelum pengujian.
 
-Lingkungan uji memakai volume lokal yang sudah ada, sehingga belum membuktikan bootstrap pada mesin kosong. Outage pada load test berlangsung 20 detik dengan fase recovery 30 detik; hasilnya belum menjadi bukti outage 10 hingga 20 menit. Pengujian satu host juga belum membuktikan failover lintas mesin atau kapasitas deployment lain.
+Migrasi mencapai versi 3 dengan status dirty false. API menyajikan 42 hazard dengan kedua sumber HEALTHY, dan permintaan raw oleh Media ditolak dengan 403. Dashboard serta Pemda masing-masing menerima 42 snapshot. Notifier mencatat 46 pemrosesan karena hazard dapat mempunyai beberapa versi. Ketiganya mencakup seluruh ID hazard yang diperiksa pada Canonical Store. Rincian hasil tersedia pada \finalevidence{bootstrap/result.json}.
+
+Setelah pengujian, volume project uji dibersihkan dan stack utama dijalankan kembali. Pemeriksaan memastikan volume, isi kredensial, dan satu hazard acuan stack utama tetap tersedia. Uji ini membuktikan startup dengan data persisten kosong dan konfigurasi baru pada host yang sudah memiliki Docker serta cache build; bukan instalasi host dari nol.
+
+\subsection{Cakupan bukti dan pemeriksaan akhir}
+Regresi stack dan load test dijalankan pada implementasi \texttt{a465139}, yang sudah mencakup instrumentasi latency per percobaan HTTP. Tes module Client API memeriksa cabang retry secara terarah, sedangkan regresi dan k6 memeriksa perilaku stack setelah dibangun ulang. Masing-masing artefak tetap dicatat menurut cakupan pengujiannya.
+
+Regresi dan load test memakai volume stack utama, sedangkan bootstrap diverifikasi terpisah pada enam volume kosong. Selain skenario outage 20 detik, pengujian tambahan telah menjalankan outage 600 detik dengan recovery 90 detik dan memeriksa pemulihan tanpa restart. Pengujian satu host juga belum membuktikan failover lintas mesin atau kapasitas deployment lain.
 
 Pemeriksaan secret menggunakan Gitleaks tidak menemukan temuan pada histori hingga \texttt{2353479}, dengan bukti pada \reliabilityevidence{secret-scan.txt}. Scan revisi pengumpulan dan verifikasi CI hosted tetap diperlukan sebelum penyerahan. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
 

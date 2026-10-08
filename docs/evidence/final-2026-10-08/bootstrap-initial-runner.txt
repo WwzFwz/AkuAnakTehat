@@ -1,0 +1,13 @@
+Primary stack stopped; original volumes retained. Starting isolated stack.
+python : Traceback (most recent call last):
+At line:2 char:1
++ python scripts/check/clean_bootstrap.py --output docs/evidence/final- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+  File "C:\Users\ASUS\AkuAnakTehat\scripts\check\clean_bootstrap.py", line 178, in <module>
+    main()
+  File "C:\Users\ASUS\AkuAnakTehat\scripts\check\clean_bootstrap.py", line 140, in main
+    raise RuntimeError(f"fresh {name} did not receive initial hazards")
+RuntimeError: fresh dashboard did not receive initial hazards

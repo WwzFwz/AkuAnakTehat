@@ -1,14 +1,14 @@
 % !TeX root = ../main.tex
 \section{Matriks Kriteria Spesifikasi}
 \label{app:matrix}
-ID di bawah mengikuti urutan kriteria pada spesifikasi M1. ``Lokal'' berarti telah diperiksa oleh suite yang dirujuk, bukan pengganti pelaksanaan demo sinkron. Rujukan U1 hingga U7 mengikuti ketentuan implementasi umum. Indeks bukti E1 hingga E8 dijelaskan pada Lampiran~\ref{app:evidence}.
+ID di bawah mengikuti urutan kriteria pada spesifikasi M1. ``Lokal'' berarti telah diperiksa oleh suite yang dirujuk, bukan pengganti pelaksanaan demo sinkron. Rujukan U1 hingga U7 mengikuti ketentuan implementasi umum. Indeks bukti E1 hingga E12 dijelaskan pada Lampiran~\ref{app:evidence}.
 
 \small
 \begin{longtable}{P{0.11\linewidth}P{0.45\linewidth}P{0.34\linewidth}}
 \toprule ID & Kriteria dan mekanisme & Verifikasi dan bagian laporan\\\midrule\endhead
 U1 & Panggilan jaringan; tidak berbagi business logic lintas service. & Module terpisah, Compose, dan kode adapter; Bagian~\ref{sec:architecture}.\\
 U2 & Satu pemilik storage; client-api melalui API Aggregator. & Konfigurasi network pada Compose beserta adapter HTTP; Bagian~\ref{sec:p4}.\\
-U3 & Dockerfile per service dan satu orkestrasi. & Dockerfile delapan service, Compose; E8 dan petunjuk start.\\
+U3 & Dockerfile per service dan satu orkestrasi. & Dockerfile delapan service, Compose, serta bootstrap enam volume kosong; E12 dan petunjuk start.\\
 U4 & Kegagalan dan delay benar-benar dipicu. & Outage PVMBG dan Kafka, restart dependensi, rebuild notifier; E2, E3, dan E4.\\
 U5 & Kredensial sumber tidak berlaku lintas instansi. & \texttt{TestMockContracts}; E2.\\
 U6 & Secret dari konfigurasi lokal dan contoh environment. & Generator secret, ignore, \texttt{.env.example}; Bagian~\ref{sec:p3}.\\
@@ -20,9 +20,9 @@ P1.3 & Ingest tetap valid tanpa perubahan kode atau restart. & Record baru terba
 P1.4 & Kebijakan unknown field dinyatakan dan konsisten. & Extra ke attributes, validasi dan karantina; Bagian~\ref{sec:p1}, E1 dan E2.\\
 P1.5 & Mekanisme serta perubahan yang didukung dan yang tidak didukung. & Tolerant reader additive-only dan batas tipe; Bagian~\ref{sec:p1}.\\
 \midrule
-P2.1 & Seismic p95 $<300$ ms saat volcanic paralel dan delay 3 s. & 10,92 ms; E9.\\
-P2.2 & Minimal 50 koneksi, minimal 60 s, error $<1\%$ di luar 429. & 50 TCP selama 88,53 s; error 0\%; 33.773 bisnis 429 dilaporkan; E9.\\
-P2.3 & Seismic tetap dilayani, volcanic stale atau unavailable, lalu recovery. & Seismic 480/480 sehat; volcanic 480/480 basi; recovery sebelum konfigurasi mock dipulihkan; E9.\\
+P2.1 & Seismic p95 $<300$ ms saat volcanic paralel dan delay 3 s. & 12,51 ms; E9.\\
+P2.2 & Minimal 50 koneksi, minimal 60 s, error $<1\%$ di luar 429. & 50 TCP selama 87,78 s; error 0\%; 33.718 bisnis 429 dilaporkan; E9.\\
+P2.3 & Seismic tetap dilayani, volcanic stale atau unavailable, lalu recovery. & Outage 600 s; seismic 14.281/14.281 sehat; volcanic basi setelah deteksi dan pulih tanpa restart; E12.\\
 P2.4 & Model konkurensi, pencegahan tiga kegagalan, konfigurasi load. & Bagian~\ref{sec:p2}; script k6 dan runner.\\
 \midrule
 P3.1 & BMKG dan PVMBG menolak kredensial silang. & HTTP 401 atau 403 pada suite fondasi; E2.\\

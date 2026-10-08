@@ -1,0 +1,3 @@
+PASS: no known local credential values or private-key PEM blocks in published final-run artifacts.
+Scope: primary env and isolated bootstrap env directories. Secret values were not printed.
+This check is not a full Git-history secret scan.
