@@ -1,0 +1,159 @@
+{
+  "seismic-only": {
+    "business_requests": {
+      "count": 11326,
+      "rate": 188.48741094396286
+    },
+    "successful_requests": {
+      "count": 5992,
+      "rate": 99.71892692709035
+    },
+    "controlled_429": {
+      "count": 5334,
+      "rate": 88.76848401687249,
+      "thresholds": {
+        "count>=0": false
+      }
+    },
+    "system_error_rate": {
+      "passes": 0,
+      "fails": 5992,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "business_latency": {
+      "p(90)": 10.65985000000001,
+      "p(95)": 12.2716,
+      "p(99)": 18.666221000000014,
+      "avg": 7.173357526702302,
+      "min": 0.5247,
+      "med": 6.62805,
+      "max": 33.0989
+    },
+    "auth_error_rate": {
+      "passes": 0,
+      "fails": 40,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    }
+  },
+  "sustained": {
+    "business_requests": {
+      "count": 42511,
+      "rate": 471.795109284732
+    },
+    "successful_requests": {
+      "count": 8793,
+      "rate": 97.58637519561168,
+      "thresholds": {
+        "count>0": false
+      }
+    },
+    "controlled_429": {
+      "count": 33718,
+      "rate": 374.2087340891203,
+      "thresholds": {
+        "count>=0": false
+      }
+    },
+    "system_error_rate": {
+      "passes": 0,
+      "fails": 8793,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "business_latency": {
+      "p(90)": 11.934980000000001,
+      "p(95)": 13.92785999999999,
+      "p(99)": 27.109331999999988,
+      "avg": 7.873475980893911,
+      "min": 0.7657,
+      "med": 6.888,
+      "max": 122.7782
+    },
+    "auth_error_rate": {
+      "fails": 100,
+      "passes": 0,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "auth_429": {
+      "count": 9,
+      "rate": 0.09988370030257081
+    }
+  },
+  "outage": {
+    "business_requests": {
+      "count": 1690,
+      "rate": 32.46686849724285
+    },
+    "successful_requests": {
+      "count": 1690,
+      "rate": 32.46686849724285,
+      "thresholds": {
+        "count>0": false
+      }
+    },
+    "controlled_429": {
+      "count": 0,
+      "rate": 0
+    },
+    "system_error_rate": {
+      "passes": 0,
+      "fails": 1690,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "business_latency": {
+      "p(95)": 6.824354999999998,
+      "p(99)": 7.90698399999999,
+      "avg": 4.69627940828402,
+      "min": 2.0636,
+      "med": 4.556,
+      "max": 9.7249,
+      "p(90)": 6.320600000000001
+    },
+    "auth_error_rate": {
+      "passes": 0,
+      "fails": 10,
+      "thresholds": {
+        "rate<0.01": false
+      },
+      "value": 0
+    },
+    "seismic_available": {
+      "passes": 480,
+      "fails": 0,
+      "thresholds": {
+        "rate>0.99": false
+      },
+      "value": 1
+    },
+    "outage_status_observed": {
+      "passes": 435,
+      "fails": 45,
+      "thresholds": {
+        "rate>0": false
+      },
+      "value": 0.90625
+    },
+    "recovery_available": {
+      "passes": 625,
+      "fails": 105,
+      "thresholds": {
+        "rate>0.5": false
+      },
+      "value": 0.8561643835616438
+    }
+  }
+}

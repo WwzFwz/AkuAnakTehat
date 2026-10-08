@@ -1,0 +1,226 @@
+{
+  "application_revision": "a465139364001705907e810ca3242f21b924208e",
+  "normalization": "Text transcripts normalized to UTF-8/LF; terminal ANSI controls and trailing spaces removed; measurement values unchanged. Checksums refer to Git blob bytes after repository LF normalization, including source files.",
+  "files": [
+    {
+      "path": "docs/evidence/final-2026-10-08/analysis.json",
+      "sha256": "47ff69872fcb1509c64c3e63a38a4a42676ea1512181bd41dd512c07faf5ba69",
+      "bytes": 3168
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/bootstrap.txt",
+      "sha256": "2615cbda6ddeb4b4eb0812fb273425c6c1a2b5411e64253c05fac57dff4088d6",
+      "bytes": 126
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/build.txt",
+      "sha256": "09eefa703a2b0755fdcd03151b1e82fb54151c91a96377dfe38bf5a3fae0e6ff",
+      "bytes": 20170
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/cleanup.txt",
+      "sha256": "297f6ad0eba6fd0c814ecea310ba7accfb7def32024a71ff1a56557f89f87484",
+      "bytes": 4060
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/primary-restore.txt",
+      "sha256": "15648f8d50190c51ebfce0ad92e5226a126a00db6a571cb46505da1c2b728a4d",
+      "bytes": 2979
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/primary-stop.txt",
+      "sha256": "d60099335cbcba984d4afbad827d378c5731c47363d2f18d09d045358dbc659b",
+      "bytes": 1006
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap/result.json",
+      "sha256": "f48191a564a30254afba774ef802f88f423bc69f3a3433e62a991c8f3796af1b",
+      "bytes": 2975
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/bootstrap.txt",
+      "sha256": "2615cbda6ddeb4b4eb0812fb273425c6c1a2b5411e64253c05fac57dff4088d6",
+      "bytes": 126
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/build.txt",
+      "sha256": "69a25c0e506515ec6ed4caca4085e5c432f279a45f70b97898221ba178feb8a4",
+      "bytes": 22289
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/cleanup.txt",
+      "sha256": "abda267d63f2e426c87c732f49ff8a56832ff2bc21f08c60c9a3fe4ec6fd9c66",
+      "bytes": 4060
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/primary-restore.txt",
+      "sha256": "06589f550011bacf590f2b3ca8cb6646965b8d344ef86f4872018fda1b62046b",
+      "bytes": 2979
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/primary-stop.txt",
+      "sha256": "7f0864ff93a862924cb4e62ca73d69a86e710abe51149c7d7fa57d7dd8663bd5",
+      "bytes": 1006
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial/result.json",
+      "sha256": "97c78918a19ef394465aa612d8665743eb946b04d7f7ee1cf2f07586809275e2",
+      "bytes": 2887
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-initial-runner.txt",
+      "sha256": "d75803504ceb7e5906f258bda0da45c5f7a9a3ef2493af030153c51db29c9a09",
+      "bytes": 767
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/bootstrap-runner.txt",
+      "sha256": "66648360a62a6886d4fbe6a5392faf9c73452bded85d9813f9d69157ab6ffb85",
+      "bytes": 238
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/build.txt",
+      "sha256": "53963697852be1c00ba81e6c1893c717883531067b9de983e7e6633b23ca6848",
+      "bytes": 20407
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/environment.json",
+      "sha256": "73a485f23dad74a93827ec41495452ef3ce713812dbf16c79195dfb290a83dcd",
+      "bytes": 504
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/final-health.txt",
+      "sha256": "f2d6d0b502f6a656bc29fb0d91f3c6eb27e5f70fdcbc3b20fbf018b7ce764324",
+      "bytes": 628
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/final-sources.json",
+      "sha256": "550e786a8f258bfc5fbcee3beccf80238425bebdc5ef97727af41ceee239ab11",
+      "bytes": 183
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/connections.json",
+      "sha256": "4b10e111990a9fcfcdeb301f708d3334853815578887bc28d9a6b31b3a37fa41",
+      "bytes": 5147
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/environment.txt",
+      "sha256": "c72b56efe3df4fcfd053d0fed2b26a08aec1daa5341e3db93ae8f668a88641a1",
+      "bytes": 142
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/outage.json",
+      "sha256": "eed990a9beb506b4e13f77418c78e7fadb718653b3bc00cf9750fd6818f3e7d4",
+      "bytes": 5825
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/outage.txt",
+      "sha256": "cb357563541169e9c756e7579b8b8022ed2ba5878616c70be02e0332924e3eb1",
+      "bytes": 2654
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/seismic-only.json",
+      "sha256": "051492578a5a0fb763fe5f47abf41037514b104a38b76e470354a2e05705cfb6",
+      "bytes": 5522
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/seismic-only.txt",
+      "sha256": "179e04eebc5f4aeceaf1b1560794883c10ecc5acab092e7530de6749a898d9f3",
+      "bytes": 2452
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/sustained.json",
+      "sha256": "92a0fde529c60d2ae8d4f94b5e3b370f524220eca75d9073265b2a0bbc10e3d2",
+      "bytes": 4936
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load/sustained.txt",
+      "sha256": "21d0a3b320d50cf3c5b63744aa37fa03e92c2172df672e2481992532fc83c6df",
+      "bytes": 2260
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/load-runner.txt",
+      "sha256": "77d66eee4c434384bef74ddf1545fba7e1de9409166b8872f978db892f30f7d4",
+      "bytes": 876
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage/configuration.json",
+      "sha256": "9056a67a8c0525d1c5f4e89f0a84355c0a82db159dcae46f5ee983e461eb9a57",
+      "bytes": 3441
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage/k6.txt",
+      "sha256": "a057b2970448360ac0bb4a343fb2e759043cb3768113aaeafbda2f1fda673e3c",
+      "bytes": 2641
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage/result.json",
+      "sha256": "887f57c778b80bf887807018cc1fe049c735cb25e3832f41bd88bda9ee26dbb7",
+      "bytes": 3034
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage/samples.jsonl",
+      "sha256": "10cac59c123612c5d908149ce72a448cf7d580e4d601183f00a3d975f25f81ec",
+      "bytes": 53426
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage/summary.json",
+      "sha256": "de39bbfcc159362f6f14ff83a7e2c14ba278261636228f73f177083f8e0c4347",
+      "bytes": 5811
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/long-outage-runner.txt",
+      "sha256": "6db431bba8e26ec514e1748337e97f7fa53266b092a8454ea095b7ce28ef1445",
+      "bytes": 226
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/postgres.txt",
+      "sha256": "44e88bf3353046f423daa23e93639a851960c123f38dbcca58630cbe4d1a1322",
+      "bytes": 29417
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/README.md",
+      "sha256": "ca8f106f1ab81a90f93775ddd5c8d6595980c1c904fd88dc7b707817daf91e01",
+      "bytes": 7341
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/regression.txt",
+      "sha256": "a28c8bcb5b91f7fae4d772da98a575f5f86ed678cac16e0e8aadd4000a8ea45f",
+      "bytes": 4679
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/revision.txt",
+      "sha256": "4f9db75d93abb5af3682f2d0e6cecc1ff86740ccbe63657b8614ca39635f353c",
+      "bytes": 41
+    },
+    {
+      "path": "docs/evidence/final-2026-10-08/sanitization.txt",
+      "sha256": "7fdd9a76cce40fdb47f21bd234b2a346a3383360f9cf1c19075a42394976e9ab",
+      "bytes": 240
+    },
+    {
+      "path": "scripts/check/clean_bootstrap.py",
+      "sha256": "8e0f3f072bd26d51ad0772e4e497d33416ba8910c26c1b9e22eed05cf7069b79",
+      "bytes": 10636
+    },
+    {
+      "path": "scripts/check/long_outage.py",
+      "sha256": "e980bc1ad4fcca5ca041e4d1f1c4772556c9b44651d2fd437fbb56ba8f9707d7",
+      "bytes": 6860
+    },
+    {
+      "path": "scripts/loadtest/auth.js",
+      "sha256": "a4a8941b28397535df293e5e44e82e326815aaf8f9c5559d46feb4598fdb8c36",
+      "bytes": 6366
+    },
+    {
+      "path": "scripts/loadtest/outage.js",
+      "sha256": "52a39caf97fda847e930497ab33a587a4c5c8a94f092be1c2d1cba973be3184a",
+      "bytes": 3873
+    },
+    {
+      "path": "scripts/loadtest/run.py",
+      "sha256": "7b66dd6801e5367f2947548d60acb0f94864f371353688cf9706e00bb008ea63",
+      "bytes": 5948
+    }
+  ]
+}

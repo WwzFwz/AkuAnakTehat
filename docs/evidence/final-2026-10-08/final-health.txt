@@ -1,0 +1,42 @@
+[
+  {
+    "service": "client-api",
+    "health": 200,
+    "ready": 200
+  },
+  {
+    "service": "bmkg-mock",
+    "health": 200,
+    "ready": 200
+  },
+  {
+    "service": "pvmbg-mock",
+    "health": 200,
+    "simulation": {
+      "outage": false,
+      "mode": "error",
+      "schema_version": 1
+    },
+    "ready": 200
+  },
+  {
+    "service": "auth-service",
+    "health": 200,
+    "ready": 200
+  },
+  {
+    "service": "dashboard-updater",
+    "health": 200,
+    "ready": 200
+  },
+  {
+    "service": "notifier",
+    "health": 200,
+    "ready": 200
+  },
+  {
+    "service": "pemda-portal",
+    "health": 200,
+    "ready": 200
+  }
+]

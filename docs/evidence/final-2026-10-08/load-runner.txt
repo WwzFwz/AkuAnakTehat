@@ -1,0 +1,21 @@
+python :  Container bnpb-m1-pvmbg-mock-1  Recreate
+At line:3 char:1
++ python scripts/loadtest/run.py --output docs/evidence/final-2026-10-0 ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container bnpb...ock-1  Recreate:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+ Container bnpb-m1-pvmbg-mock-1  Recreated
+ Container bnpb-m1-pvmbg-mock-1  Starting
+ Container bnpb-m1-pvmbg-mock-1  Started
+ Container bnpb-m1-pvmbg-mock-1  Waiting
+ Container bnpb-m1-pvmbg-mock-1  Healthy
+PASS seismic-only
+PASS sustained
+PASS outage
+ Container bnpb-m1-pvmbg-mock-1  Recreate
+ Container bnpb-m1-pvmbg-mock-1  Recreated
+ Container bnpb-m1-pvmbg-mock-1  Starting
+ Container bnpb-m1-pvmbg-mock-1  Started
+ Container bnpb-m1-pvmbg-mock-1  Waiting
+ Container bnpb-m1-pvmbg-mock-1  Healthy

@@ -1,0 +1,32 @@
+
+     ✓ outage request returns an expected status
+     ✓ recovery request returns an expected status
+
+   ✓ auth_error_rate.......................: 0.00%   0 out of 10
+     business_latency......................: avg=4.69ms   min=2.06ms  med=4.55ms   max=9.72ms   p(90)=6.32ms   p(95)=6.82ms   p(99)=7.9ms
+     business_requests.....................: 1690    32.466868/s
+     checks................................: 100.00% 1210 out of 1210
+     controlled_429........................: 0       0/s
+     data_received.........................: 17 MB   322 kB/s
+     data_sent.............................: 986 kB  19 kB/s
+     http_req_blocked......................: avg=10.92µs  min=0s      med=0s       max=1.22ms   p(90)=0s       p(95)=0s       p(99)=522.3µs
+     http_req_connecting...................: avg=7.48µs   min=0s      med=0s       max=1.22ms   p(90)=0s       p(95)=0s       p(99)=516.8µs
+     http_req_duration.....................: avg=4.67ms   min=1.57ms  med=4.53ms   max=9.72ms   p(90)=6.31ms   p(95)=6.8ms    p(99)=7.89ms
+       { expected_response:true }..........: avg=4.67ms   min=1.57ms  med=4.53ms   max=9.72ms   p(90)=6.31ms   p(95)=6.8ms    p(99)=7.89ms
+     http_req_failed.......................: 0.00%   0 out of 1703
+     http_req_receiving....................: avg=115.22µs min=0s      med=0s       max=2.51ms   p(90)=531.1µs  p(95)=544.34µs p(99)=725.4µs
+     http_req_sending......................: avg=5.57µs   min=0s      med=0s       max=692.6µs  p(90)=0s       p(95)=0s       p(99)=357.7µs
+     http_req_tls_handshaking..............: avg=0s       min=0s      med=0s       max=0s       p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_waiting......................: avg=4.55ms   min=539.9µs med=4.38ms   max=9.72ms   p(90)=6.1ms    p(95)=6.65ms   p(99)=7.87ms
+     http_reqs.............................: 1703    32.716614/s
+     iteration_duration....................: avg=207.35ms min=2.5ms   med=206.81ms max=220.29ms p(90)=211.18ms p(95)=212.89ms p(99)=216.24ms
+     iterations............................: 1211    23.264721/s
+   ✓ outage_status_observed................: 90.62%  435 out of 480
+   ✓ recovery_available....................: 85.61%  625 out of 730
+   ✓ seismic_available.....................: 100.00% 480 out of 480
+   ✓ successful_requests...................: 1690    32.466868/s
+     ✓ { endpoint:seismic,phase:outage }...: 480     9.221359/s
+   ✓ system_error_rate.....................: 0.00%   0 out of 1690
+     vus...................................: 5       min=0            max=5
+     vus_max...............................: 11      min=11           max=11
+

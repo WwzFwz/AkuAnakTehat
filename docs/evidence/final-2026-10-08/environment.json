@@ -1,0 +1,10 @@
+{
+  "recorded_at": "2026-10-08T13:04:51.521627+00:00",
+  "implementation_revision": "a465139364001705907e810ca3242f21b924208e",
+  "go": "go version go1.24.2 windows/amd64",
+  "python": "Python 3.12.4",
+  "compose": "Docker Compose version v2.34.0-desktop.1",
+  "docker": "Docker 28.0.4; CPUs=16; MemoryBytes=7936241664; OS=Docker Desktop (containerized)",
+  "k6": "k6.exe v0.57.0 (commit/50afd82c18, go1.23.6, windows/amd64)",
+  "environment": "local Windows host with Docker Desktop Linux containers"
+}

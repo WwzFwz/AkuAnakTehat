@@ -1,0 +1,562 @@
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [pvmbg-mock internal] load build definition from Dockerfile
+#1 transferring dockerfile: 384B 0.0s done
+#1 DONE 0.1s
+
+#2 [aggregator internal] load build definition from Dockerfile
+#2 transferring dockerfile: 552B 0.0s done
+#2 DONE 0.1s
+
+#3 [auth-service internal] load build definition from Dockerfile
+#3 transferring dockerfile: 381B 0.0s done
+#3 DONE 0.1s
+
+#4 [dashboard-updater internal] load build definition from Dockerfile
+#4 transferring dockerfile: 404B 0.0s done
+#4 DONE 0.1s
+
+#5 [bmkg-mock internal] load build definition from Dockerfile
+#5 transferring dockerfile: 383B 0.0s done
+#5 DONE 0.1s
+
+#6 [notifier internal] load build definition from Dockerfile
+#6 transferring dockerfile: 395B done
+#6 DONE 0.1s
+
+#7 [pemda-portal internal] load build definition from Dockerfile
+#7 transferring dockerfile: 399B done
+#7 DONE 0.1s
+
+#8 [auth-service internal] load metadata for docker.io/library/alpine:3.21
+#8 ...
+
+#9 [client-api internal] load build definition from Dockerfile
+#9 transferring dockerfile: 379B done
+#9 DONE 0.1s
+
+#8 [client-api internal] load metadata for docker.io/library/alpine:3.21
+#8 DONE 1.9s
+
+#10 [auth-service internal] load metadata for docker.io/library/golang:1.24.2-alpine
+#10 DONE 1.9s
+
+#11 [aggregator internal] load .dockerignore
+#11 transferring context: 75B done
+#11 DONE 0.0s
+
+#12 [notifier internal] load .dockerignore
+#12 transferring context: 68B done
+#12 DONE 0.0s
+
+#13 [bmkg-mock internal] load .dockerignore
+#13 transferring context: 68B 0.0s done
+#13 DONE 0.1s
+
+#14 [pvmbg-mock internal] load .dockerignore
+#14 transferring context: 68B done
+#14 DONE 0.1s
+
+#15 [auth-service internal] load .dockerignore
+#15 transferring context: 82B done
+#15 DONE 0.1s
+
+#16 [dashboard-updater internal] load .dockerignore
+#16 transferring context: 68B done
+#16 DONE 0.1s
+
+#17 [pemda-portal internal] load .dockerignore
+#17 transferring context: 68B done
+#17 DONE 0.1s
+
+#18 [client-api internal] load .dockerignore
+#18 transferring context: 82B done
+#18 DONE 0.1s
+
+#19 [client-api stage-2 1/3] FROM docker.io/library/alpine:3.21@sha256:ce64758a109eb420d874a118f87920e625e12d3634e03b4a5573fd9f6e5d3507
+#19 resolve docker.io/library/alpine:3.21@sha256:ce64758a109eb420d874a118f87920e625e12d3634e03b4a5573fd9f6e5d3507 0.0s done
+#19 DONE 0.1s
+
+#20 [auth-service build 1/6] FROM docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee
+#20 resolve docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee 0.0s done
+#20 DONE 0.1s
+
+#21 [client-api internal] load build context
+#21 transferring context: 66.82kB 0.1s done
+#21 DONE 0.1s
+
+#22 [pemda-portal build 2/6] WORKDIR /src
+#22 CACHED
+
+#23 [pvmbg-mock internal] load build context
+#23 transferring context: 31.19kB 0.1s done
+#23 DONE 0.1s
+
+#24 [auth-service internal] load build context
+#24 transferring context: 37.03kB 0.1s done
+#24 DONE 0.1s
+
+#25 [notifier internal] load build context
+#25 transferring context: 50.65kB 0.1s done
+#25 DONE 0.2s
+
+#26 [bmkg-mock internal] load build context
+#26 transferring context: 31.28kB 0.1s done
+#26 DONE 0.1s
+
+#27 [dashboard-updater internal] load build context
+#27 transferring context: 46.92kB 0.1s done
+#27 DONE 0.2s
+
+#28 [notifier builder 3/6] COPY go.mod go.sum ./
+#28 ...
+
+#29 [aggregator internal] load build context
+#29 transferring context: 172.40kB 0.1s done
+#29 DONE 0.2s
+
+#30 [pemda-portal internal] load build context
+#30 transferring context: 46.80kB 0.1s done
+#30 DONE 0.2s
+
+#31 [pvmbg-mock build 3/5] COPY go.mod ./
+#31 DONE 0.1s
+
+#32 [client-api build 3/6] COPY go.mod go.sum ./
+#32 DONE 0.1s
+
+#33 [auth-service build 3/6] COPY go.mod go.sum ./
+#33 DONE 0.1s
+
+#34 [bmkg-mock build 3/5] COPY go.mod ./
+#34 DONE 0.1s
+
+#28 [notifier builder 3/6] COPY go.mod go.sum ./
+#28 DONE 0.1s
+
+#35 [dashboard-updater builder 3/6] COPY go.mod go.sum ./
+#35 DONE 0.1s
+
+#36 [aggregator build 3/6] COPY go.mod go.sum ./
+#36 DONE 0.1s
+
+#37 [pemda-portal builder 3/6] COPY go.mod go.sum ./
+#37 DONE 0.1s
+
+#38 [pvmbg-mock build 4/5] COPY . .
+#38 DONE 0.2s
+
+#39 [aggregator build 4/6] RUN go mod download
+#39 ...
+
+#40 [bmkg-mock build 4/5] COPY . .
+#40 DONE 0.2s
+
+#41 [bmkg-mock build 5/5] RUN CGO_ENABLED=0 GOWORK=off go build -trimpath -ldflags="-s -w" -o /out/service ./cmd/bmkg-mock
+#41 ...
+
+#42 [client-api build 4/6] RUN go mod download
+#42 DONE 2.0s
+
+#43 [client-api build 5/6] COPY . .
+#43 DONE 0.1s
+
+#44 [pvmbg-mock build 5/5] RUN CGO_ENABLED=0 GOWORK=off go build -trimpath -ldflags="-s -w" -o /out/service ./cmd/pvmbg-mock
+#44 ...
+
+#45 [auth-service build 4/6] RUN go mod download
+#45 DONE 2.7s
+
+#46 [auth-service build 5/6] COPY . .
+#46 DONE 0.2s
+
+#47 [client-api build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/client-api
+#47 ...
+
+#48 [auth-service build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/auth-service
+#48 ...
+
+#49 [notifier builder 4/6] RUN go mod download
+#49 ...
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#51 [pemda-portal builder 4/6] RUN go mod download
+#51 ...
+
+#47 [client-api build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/client-api
+#47 DONE 33.5s
+
+#44 [pvmbg-mock build 5/5] RUN CGO_ENABLED=0 GOWORK=off go build -trimpath -ldflags="-s -w" -o /out/service ./cmd/pvmbg-mock
+#44 DONE 35.5s
+
+#41 [bmkg-mock build 5/5] RUN CGO_ENABLED=0 GOWORK=off go build -trimpath -ldflags="-s -w" -o /out/service ./cmd/bmkg-mock
+#41 DONE 35.4s
+
+#52 [pvmbg-mock stage-1 3/3] COPY --from=build /out/service /usr/local/bin/service
+#52 CACHED
+
+#53 [pvmbg-mock stage-1 2/3] RUN addgroup -S app && adduser -S -G app app
+#53 CACHED
+
+#54 [bmkg-mock stage-1 3/3] COPY --from=build /out/service /usr/local/bin/service
+#54 CACHED
+
+#55 [pvmbg-mock] exporting to image
+#55 exporting layers done
+#55 exporting manifest sha256:5a7038d71704b723c910e8c2b2e48b78559ea8dc155f66244b19ac5dd898a559 0.0s done
+#55 exporting config sha256:7f2dfc80f3a5b48124378c2c54d1be808add5875097b4fac2632f022b273ee85
+#55 exporting config sha256:7f2dfc80f3a5b48124378c2c54d1be808add5875097b4fac2632f022b273ee85 0.0s done
+#55 exporting attestation manifest sha256:ebcef2e1fc6e059c3f91113bf89eaeabbba473c64620c4d6f9d32c663bed67e6 0.1s done
+#55 exporting manifest list sha256:985313a8c4664904f384a6d86c0873a1109fa471421cdac13b31c4a31bcf2e24 0.0s done
+#55 naming to docker.io/library/bnpb-bootstrap-6ae347ad-pvmbg-mock:latest
+#55 naming to docker.io/library/bnpb-bootstrap-6ae347ad-pvmbg-mock:latest 0.1s done
+#55 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-pvmbg-mock:latest 0.0s done
+#55 DONE 0.4s
+
+#56 [bmkg-mock] exporting to image
+#56 exporting layers done
+#56 exporting manifest sha256:70ed7d24df76a6655bde4d5bd48a3cd994a3e55d9c7d414da2547e3b98ae25dd 0.0s done
+#56 exporting config sha256:708b77de0fbd5210f7bfcf4b10588785e9dc57b2f3bcd4c33964d921d5e63f8c 0.0s done
+#56 exporting attestation manifest sha256:8b96d3a416eee4b999605f53697d77ecc6a0cff250830043841ab27ce48b73b7 0.1s done
+#56 exporting manifest list sha256:1d102d471311ab33d9161bd3f42813c579f98bd8ef4b34a4b53d0251a7b58e74 0.0s done
+#56 naming to docker.io/library/bnpb-bootstrap-6ae347ad-bmkg-mock:latest 0.1s done
+#56 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-bmkg-mock:latest 0.0s done
+#56 DONE 0.4s
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#57 [pvmbg-mock] resolving provenance for metadata file
+#57 DONE 0.1s
+
+#58 [bmkg-mock] resolving provenance for metadata file
+#58 DONE 0.0s
+
+#39 [aggregator build 4/6] RUN go mod download
+#39 ...
+
+#59 [client-api stage-2 2/3] RUN addgroup -g 10001 app && adduser -D -u 10001 -G app app
+#59 CACHED
+
+#60 [client-api stage-1 3/3] COPY --from=build /service /service
+#60 CACHED
+
+#61 [client-api] exporting to image
+#61 exporting layers done
+#61 exporting manifest sha256:97742f7c254a1a5bbb63d65763811ce04634927bec77061c0bef78495aa3ec12 0.0s done
+#61 exporting config sha256:6fb819dceaa3270be49ca5bf1ac6c0bde40f983f37bb31f281a70882b2326a86 0.0s done
+#61 exporting attestation manifest sha256:634983881c7ce50112ef71f015852031b3c96f3543e3476fb7d577e1afdde0ac 0.0s done
+#61 exporting manifest list sha256:f4fea41afef8f1b7e31977714b86453976530b2ed1497d87576ec0a5ffb70100
+#61 exporting manifest list sha256:f4fea41afef8f1b7e31977714b86453976530b2ed1497d87576ec0a5ffb70100 0.0s done
+#61 naming to docker.io/library/bnpb-bootstrap-6ae347ad-client-api:latest done
+#61 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-client-api:latest 0.0s done
+#61 DONE 0.2s
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#62 [client-api] resolving provenance for metadata file
+#62 DONE 0.0s
+
+#49 [notifier builder 4/6] RUN go mod download
+#49 ...
+
+#48 [auth-service build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/auth-service
+#48 DONE 39.8s
+
+#39 [aggregator build 4/6] RUN go mod download
+#39 ...
+
+#59 [auth-service stage-2 2/3] RUN addgroup -g 10001 app && adduser -D -u 10001 -G app app
+#59 CACHED
+
+#59 [aggregator stage-2 2/3] RUN addgroup -g 10001 app && adduser -D -u 10001 -G app app
+#59 CACHED
+
+#63 [auth-service stage-1 3/3] COPY --from=build /service /service
+#63 DONE 0.1s
+
+#51 [pemda-portal builder 4/6] RUN go mod download
+#51 ...
+
+#64 [auth-service] exporting to image
+#64 exporting layers
+#64 exporting layers 0.4s done
+#64 exporting manifest sha256:fdb0d41305da20285d8c95f13d5402109595bddce2ec3177e969e3d4a937eabd 0.0s done
+#64 exporting config sha256:7709c0703dd2e7b8eefee19e90e385757ae90ff8cf88df5e061fcdf3bcdf7b2c 0.0s done
+#64 exporting attestation manifest sha256:a53e16753277c3b92e6619a55e2d57430c6941ab1ab0329f67ada8699c7a8a2f 0.0s done
+#64 exporting manifest list sha256:7a24eef4a6b5248118c5719b41c4e73d8e49ddd86136f583b606f23eb287b972 0.0s done
+#64 naming to docker.io/library/bnpb-bootstrap-6ae347ad-auth-service:latest done
+#64 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-auth-service:latest 0.1s done
+#64 DONE 0.6s
+
+#65 [auth-service] resolving provenance for metadata file
+#65 DONE 0.0s
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#39 [aggregator build 4/6] RUN go mod download
+#39 DONE 80.3s
+
+#66 [aggregator build 5/6] COPY . .
+#66 DONE 0.1s
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#67 [aggregator build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/aggregator
+#67 DONE 17.8s
+
+#51 [pemda-portal builder 4/6] RUN go mod download
+#51 ...
+
+#68 [aggregator stage-2 3/3] COPY --from=build /service /service
+#68 DONE 0.1s
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 ...
+
+#69 [aggregator] exporting to image
+#69 exporting layers
+#69 exporting layers 0.7s done
+#69 exporting manifest sha256:6a038812c14fc116e3679e9b32bfe2520c9e2ea2957472cca4f109995a9c8ea1 0.0s done
+#69 exporting config sha256:ac1469fb3f4cedbf5a0be06c036890dadaed27c51b6415aafdb37a48bce02cec 0.0s done
+#69 exporting attestation manifest sha256:be2d8854065fa4e72f3e38fd95cd1510927f55e1b04666f349c868c01460659a 0.0s done
+#69 exporting manifest list sha256:10a9c241a375ab2e49bf275674c5147b32a209e516c9944db3d4edb2de56c572 0.0s done
+#69 naming to docker.io/library/bnpb-bootstrap-6ae347ad-aggregator:latest
+#69 naming to docker.io/library/bnpb-bootstrap-6ae347ad-aggregator:latest done
+#69 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-aggregator:latest 0.1s done
+#69 DONE 0.9s
+
+#70 [aggregator] resolving provenance for metadata file
+#70 DONE 0.0s
+
+#51 [pemda-portal builder 4/6] RUN go mod download
+#51 ...
+
+#50 [dashboard-updater builder 4/6] RUN go mod download
+#50 DONE 129.6s
+
+#71 [dashboard-updater builder 5/6] COPY . .
+#71 DONE 0.1s
+
+#49 [notifier builder 4/6] RUN go mod download
+#49 ...
+
+#72 [dashboard-updater builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/dashboard-updater
+#72 ...
+
+#51 [pemda-portal builder 4/6] RUN go mod download
+#51 DONE 136.8s
+
+#73 [pemda-portal builder 5/6] COPY . .
+#73 DONE 0.6s
+
+#49 [notifier builder 4/6] RUN go mod download
+#49 ...
+
+#74 [pemda-portal builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/pemda-portal
+#74 ...
+
+#49 [notifier builder 4/6] RUN go mod download
+#49 DONE 146.8s
+
+#75 [notifier builder 5/6] COPY . .
+#75 DONE 0.4s
+
+#72 [dashboard-updater builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/dashboard-updater
+#72 ...
+
+#76 [notifier builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/notifier
+#76 ...
+
+#72 [dashboard-updater builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/dashboard-updater
+#72 DONE 55.9s
+
+#77 [dashboard-updater stage-1 2/3] RUN mkdir -p /data && chown 10001:10001 /data
+#77 CACHED
+
+#78 [dashboard-updater stage-1 3/3] COPY --from=builder /out/service /usr/local/bin/service
+#78 CACHED
+
+#79 [dashboard-updater] exporting to image
+#79 exporting layers done
+#79 exporting manifest sha256:95a97e5e082b4573e026fc0183c962807cb96a2435f64ead900ba3c1e936c5b5 0.0s done
+#79 exporting config sha256:2528d2b68b345b71f456bbba7d7f23ca93b1e2aa113c825d26fc1518389356a0 0.0s done
+#79 exporting attestation manifest sha256:a7038d7ac84cb4eac8077bb7dcdb56c24f7e22cb67e7bfe62b97915285716b22 0.0s done
+#79 exporting manifest list sha256:a9e424fdf52d5da66c76d75c5e3a1ccce0f2bb720ad912d17c598d64693096f7 0.0s done
+#79 naming to docker.io/library/bnpb-bootstrap-6ae347ad-dashboard-updater:latest
+#79 naming to docker.io/library/bnpb-bootstrap-6ae347ad-dashboard-updater:latest done
+#79 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-dashboard-updater:latest done
+#79 DONE 0.1s
+
+#80 [dashboard-updater] resolving provenance for metadata file
+#80 DONE 0.0s
+
+#74 [pemda-portal builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/pemda-portal
+#74 DONE 53.4s
+
+#76 [notifier builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/notifier
+#76 ...
+
+#77 [pemda-portal stage-1 2/3] RUN mkdir -p /data && chown 10001:10001 /data
+#77 CACHED
+
+#81 [pemda-portal stage-1 3/3] COPY --from=builder /out/service /usr/local/bin/service
+#81 CACHED
+
+#82 [pemda-portal] exporting to image
+#82 exporting layers done
+#82 exporting manifest sha256:e841761d7cf1eae5a06dac1b3450b72c32926bdd6b227fca669227ace71e2257 0.0s done
+#82 exporting config sha256:2072d50d83326775e2186869a4a7c7e290c9237a0861d7da1062dd1b328b478b 0.0s done
+#82 exporting attestation manifest sha256:d7934b4c1da3b292d1028cfd43ce2b502fa0685074d3ddbff5de941d813d6e41 0.0s done
+#82 exporting manifest list sha256:c16c09caf1b69bd9a33e81db19975bbc0cbbfa5349e8d7205087b0cdb8b73aa0 0.0s done
+#82 naming to docker.io/library/bnpb-bootstrap-6ae347ad-pemda-portal:latest done
+#82 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-pemda-portal:latest done
+#82 DONE 0.1s
+
+#83 [pemda-portal] resolving provenance for metadata file
+#83 DONE 0.0s
+
+#76 [notifier builder 6/6] RUN CGO_ENABLED=0 go build -trimpath -o /out/service ./cmd/notifier
+#76 DONE 47.8s
+
+#77 [notifier stage-1 2/3] RUN mkdir -p /data && chown 10001:10001 /data
+#77 CACHED
+
+#84 [notifier stage-1 3/3] COPY --from=builder /out/service /usr/local/bin/service
+#84 CACHED
+
+#85 [notifier] exporting to image
+#85 exporting layers done
+#85 exporting manifest sha256:3d477a64ea6760382fcd5027046b675a65dd8be1abb50993872c5f90fab616c7 0.0s done
+#85 exporting config sha256:525c3bbb03b02656bda14566008129f6c0e982b215ce009798d43c5905bd037e 0.0s done
+#85 exporting attestation manifest sha256:882787d71c1c5484b3aa6567420675cfa4d8f21d08e851f2084f8630276dcdbe 0.0s done
+#85 exporting manifest list sha256:7430b23410d56316b586223ba9a31764fc350993f730ce7b9e8e0aadde48b2c4 done
+#85 naming to docker.io/library/bnpb-bootstrap-6ae347ad-notifier:latest done
+#85 unpacking to docker.io/library/bnpb-bootstrap-6ae347ad-notifier:latest done
+#85 DONE 0.1s
+
+#86 [notifier] resolving provenance for metadata file
+#86 DONE 0.0s
+ aggregator  Built
+ auth-service  Built
+ bmkg-mock  Built
+ client-api  Built
+ dashboard-updater  Built
+ notifier  Built
+ pemda-portal  Built
+ pvmbg-mock  Built
+ Network bnpb-bootstrap-6ae347ad_source_net  Creating
+ Network bnpb-bootstrap-6ae347ad_source_net  Created
+ Network bnpb-bootstrap-6ae347ad_auth_net  Creating
+ Network bnpb-bootstrap-6ae347ad_auth_net  Created
+ Network bnpb-bootstrap-6ae347ad_edge_net  Creating
+ Network bnpb-bootstrap-6ae347ad_edge_net  Created
+ Network bnpb-bootstrap-6ae347ad_consumer_net  Creating
+ Network bnpb-bootstrap-6ae347ad_consumer_net  Created
+ Network bnpb-bootstrap-6ae347ad_bus_net  Creating
+ Network bnpb-bootstrap-6ae347ad_bus_net  Created
+ Network bnpb-bootstrap-6ae347ad_store_net  Creating
+ Network bnpb-bootstrap-6ae347ad_store_net  Created
+ Volume "bnpb-bootstrap-6ae347ad_canonical-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_canonical-data"  Created
+ Volume "bnpb-bootstrap-6ae347ad_auth-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_auth-data"  Created
+ Volume "bnpb-bootstrap-6ae347ad_dashboard-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_dashboard-data"  Created
+ Volume "bnpb-bootstrap-6ae347ad_pemda-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_pemda-data"  Created
+ Volume "bnpb-bootstrap-6ae347ad_notifier-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_notifier-data"  Created
+ Volume "bnpb-bootstrap-6ae347ad_kafka-data"  Creating
+ Volume "bnpb-bootstrap-6ae347ad_kafka-data"  Created
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Creating
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Creating
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Creating
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Creating
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Creating
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Creating
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Created
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Created
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Created
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Created
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Creating
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Created
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Creating
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Created
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Creating
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Created
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Created
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Created
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Creating
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Creating
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Creating
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Created
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Created
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Created
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Starting
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Starting
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Starting
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Starting
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Starting
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Starting
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Started
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Started
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Started
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Started
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Started
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Started
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Starting
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Starting
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Started
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Started
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Starting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Started
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Exited
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Starting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Exited
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Starting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Exited
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Starting
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Started
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Started
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Started
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Waiting
+ Container bnpb-bootstrap-6ae347ad-bmkg-mock-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-auth-store-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-canonical-db-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-kafka-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-auth-service-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-kafka-init-1  Exited
+ Container bnpb-bootstrap-6ae347ad-pvmbg-mock-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-client-api-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-aggregator-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-dashboard-updater-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-notifier-1  Healthy
+ Container bnpb-bootstrap-6ae347ad-pemda-portal-1  Healthy

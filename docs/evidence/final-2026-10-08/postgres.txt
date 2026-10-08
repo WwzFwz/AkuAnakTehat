@@ -1,0 +1,417 @@
+docker :  Container bnpb-m1-canonical-db-1  Running
+At line:9 char:1
++ docker compose run --build --rm --env-from-file ./env/aggregator.env  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ( Container bnpb...l-db-1  Running:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Compose can now delegate builds to bake for better performance.
+ To do so, set COMPOSE_BAKE=true.
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [ingest-test internal] load build definition from Dockerfile
+#1 transferring dockerfile: 552B 0.0s done
+#1 DONE 0.0s
+
+#2 [ingest-test internal] load metadata for docker.io/library/golang:1.24.2-alpine
+#2 DONE 1.2s
+
+#3 [ingest-test internal] load .dockerignore
+#3 transferring context: 71B done
+#3 DONE 0.0s
+
+#4 [ingest-test build 1/6] FROM docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee
+#4 resolve docker.io/library/golang:1.24.2-alpine@sha256:7772cb5322baa875edd74705556d08f0eeca7b9c4b5367754ce3f2f00041ccee 0.0s done
+#4 DONE 0.0s
+
+#5 [ingest-test internal] load build context
+#5 transferring context: 5.29kB 0.0s done
+#5 DONE 0.0s
+
+#6 [ingest-test build 4/6] RUN go mod download
+#6 CACHED
+
+#7 [ingest-test build 5/6] COPY . .
+#7 CACHED
+
+#8 [ingest-test build 2/6] WORKDIR /src
+#8 CACHED
+
+#9 [ingest-test build 3/6] COPY go.mod go.sum ./
+#9 CACHED
+
+#10 [ingest-test build 6/6] RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o /service ./cmd/aggregator
+#10 CACHED
+
+#11 [ingest-test integration-test 1/1] RUN CGO_ENABLED=0 go test -c -o /ingest.test ./internal/adapter/outbound/postgres
+#11 DONE 22.4s
+
+#12 [ingest-test] exporting to image
+#12 exporting layers
+#12 exporting layers 11.4s done
+#12 exporting manifest sha256:7b9afb01db3893f00464156b8f2fcd60a2ecc76215e36e0dd62e9eb5e0ec9042 0.0s done
+#12 exporting config sha256:642b4311765956d7da2ebcb6668c642f7fdc5b25283ded00b298aea32f0543de 0.0s done
+#12 exporting attestation manifest sha256:fb02e403437e1880047b15472330785f0b0c51901ec5648a4661faaece68abb5 0.0s done
+#12 exporting manifest list sha256:d71fcb4e6604573e6f782017f2adace0061d47042bf8690db794ae1347772db5 0.0s done
+#12 naming to docker.io/library/bnpb-m1-ingest-test:latest done
+#12 unpacking to docker.io/library/bnpb-m1-ingest-test:latest
+#12 unpacking to docker.io/library/bnpb-m1-ingest-test:latest 5.1s done
+#12 DONE 16.6s
+
+#13 [ingest-test] resolving provenance for metadata file
+#13 DONE 0.0s
+=== RUN   TestIngestPostgres
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=df5e8f13-7c25-4541-a932-d7dc43141870 latency_ms=0.917 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=23351e46-c2e8-4b94-9be1-239aaf223848 latency_ms=0.781 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=beef08ce-c1e7-4478-8173-96b0ccd6f42a latency_ms=0.884 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0a2d5802-43d1-49cd-85ed-92761b52d14b latency_ms=9.979 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=50d29fdc-9c13-4137-9173-9c265d614ce8 latency_ms=33.841 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=a55ab543-388b-4c08-a84e-02a7e7f49a33 latency_ms=0.712 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=2a68204c-ce37-420c-b136-f8d322441957 latency_ms=0.219 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=05a58a9a-3d93-4cdc-af4d-9e149b1db477 latency_ms=2.029 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=f47e2ecc-a582-471d-8acd-298d2ac5cba2 latency_ms=0.292 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=b39dd9d5-e0a8-4dfe-8186-4c3761f7096d latency_ms=4.031 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=195a257b-0c13-4b50-a4fd-81aaa8c1b76a latency_ms=1.437 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=c53f87fd-e9dd-485d-beec-a8dcc994ce51 latency_ms=1.687 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=fc15e51f-afb0-40cc-9c03-828f09ad96bc latency_ms=140.468 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=6670d876-83d6-4997-b031-165217864f15 latency_ms=0.321 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d6ded38a-163f-4793-950f-086b7c79bd7c latency_ms=4.847 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=9b036bbf-8854-468d-b228-94875a7be5c8 latency_ms=0.558 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=e80b2461-7608-46a8-873d-2ea8ec65243b latency_ms=1.55 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=9df0636c-adc7-49e2-aed3-206512699d78 latency_ms=0.199 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=8e2a4f0f-11e0-47aa-bfb0-9354b5428f94 latency_ms=3.726 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4baf8d04-b4fc-4e24-a3cf-a237b4bdcbcd latency_ms=0.503 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=03ea333b-66ac-4f75-8eb1-ac0bc3592d89 latency_ms=1.514 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=90b0ee28-2de5-40dd-8854-6bfa5a030c23 latency_ms=2.781 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=cfa5f967-9c03-43a9-8d80-7e3fb34e6479 latency_ms=0.258 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d733daca-c492-4c35-911e-191dfb74c4cc latency_ms=3.948 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=bf01265d-e9aa-42a2-b8f2-aa68ced08d0a latency_ms=0.579 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4ab7dc4a-a668-4666-97b2-417127749a8b latency_ms=1.615 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=b6040917-cd73-4138-a601-9aa145939a34 latency_ms=0.208 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=dde9fce9-5454-41ba-922e-4618c03c59b6 latency_ms=3.74 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d67b3385-e083-4555-91cc-ae7101ec3129 latency_ms=0.516 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ca8c2e4b-51c8-46be-9ad3-c16c8bec09a4 latency_ms=2.446 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=13cb47d2-3c09-4da2-a9a5-de72c4152f7e latency_ms=14.37 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0ea38b07-5b66-49d4-aa19-e40190d572bc latency_ms=0.171 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=85dfc41a-07d5-467b-a290-01ef2903c056 latency_ms=6.041 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=5a3b221e-896d-4d68-9aad-94435ecbb528 latency_ms=2.784 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=947c84d9-d742-4f1a-9274-ebc1b7095c86 latency_ms=1.67 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0722ba26-ed30-491a-8964-17f99462e549 latency_ms=0.365 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=87fc585d-a489-4a80-89bc-bf87fbf592e3 latency_ms=0.752 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=e74cc3f9-3b85-4370-8c8c-0c921ee51b3d latency_ms=0.541 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=b0a4dfc4-7a22-44ac-93db-4f3cd615b75c latency_ms=0.872 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4429aebb-6d43-4351-bca9-1794c1f93a20 latency_ms=7.945 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ed3aef3b-70ba-4a7e-9d35-777366a267b3 latency_ms=0.629 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=c3770cf3-7fe7-4aa1-aa0e-08fd2f3a1eb1 latency_ms=0.289 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=6a18a27a-fd5d-43c3-8787-dd05b12e078e latency_ms=1.385 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=f1bf3c2a-bdef-4fa7-810b-f5960faee164 latency_ms=0.254 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=1958e987-8324-45e4-b2b0-e5dee7c85f17 latency_ms=0.342 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=e95f61e1-ba2e-4e9b-9a73-c663ce8e5b03 latency_ms=2.804 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d017d469-fd7d-483b-a9f0-2c8e48ac497c latency_ms=1.411 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=3bfccbea-3e1e-4fc4-8b75-10393f05bed6 latency_ms=3.305 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d254d81c-c3fd-42d3-b3a3-53ad25e858dd latency_ms=1.203 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0bcb5464-5eec-487b-a020-2e92d205f46a latency_ms=0.254 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0358c4a7-f6ca-4b0c-a6f0-4cb7df2ed5e9 latency_ms=1.946 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=76ebeaed-7d75-421d-9b80-2a72c5840a58 latency_ms=1.185 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0674a4fb-ef95-4612-a580-9d0b120c70fd latency_ms=0.79 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=fa300655-cad3-44e0-85f3-48f811132d54 latency_ms=0.805 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=35e1085d-b5de-4017-9698-a11a85fa1306 latency_ms=0.382 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=c80c9803-1470-4880-bcc6-8bd140fa69c0 latency_ms=2.044 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=a09e0c66-fc1e-437f-a558-c9ce6f5b8e1a latency_ms=0.571 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=75235f5b-24c1-40d2-93d5-62858b722353 latency_ms=1.585 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=06536c16-a816-4a28-8430-14885305a071 latency_ms=3.003 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=7233e979-f0e2-4014-b4e9-2dcef1525506 latency_ms=1.684 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=8df0fc6b-a179-4b15-961d-c5d0ca8c668f latency_ms=0.208 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=a5534948-350d-4d86-bee9-aab9ff25e630 latency_ms=0.443 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ac2fe128-b150-4707-895c-c11caf9fd9c9 latency_ms=1.233 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=f7457a66-4497-4b7d-a798-e7ffe4518f44 latency_ms=0.835 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=1007a585-77a7-4987-b452-6b62785343f3 latency_ms=0.319 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=386b337f-18f4-45b7-bcfd-d95c04e04596 latency_ms=0.853 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=fc7a6009-3714-4576-a675-ad8d2a1385cf latency_ms=0.922 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4563aec1-aa33-46be-988b-846832aec209 latency_ms=0.928 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=239c6af9-dc57-41e8-a79b-9b443c0d26e4 latency_ms=1.517 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=7b258a22-8d60-4d27-891d-f8866cb9c216 latency_ms=0.268 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=15758a1b-ffb0-43b4-9102-661756d2ae6f latency_ms=0.638 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=64c578d2-211f-4fc6-b2a4-1eec010dffc9 latency_ms=1.163 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=1b5837aa-0dc8-4f86-b1c2-5e6f94fe3588 latency_ms=0.915 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=bb4a707e-dbbe-429b-ac49-b7d626cd79df latency_ms=0.315 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=f3b47bc9-f282-454f-8f0b-d490888a3555 latency_ms=0.512 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ac010210-d492-434d-854e-61a697ef4aad latency_ms=0.51 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ecd4b48b-4dfe-4e96-93d7-c682781e77de latency_ms=0.694 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=78ff9998-cf9e-4d22-9261-5907cbc518e6 latency_ms=0.575 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4e818b17-63a1-48a0-bfcd-d7c34760e7a5 latency_ms=0.591 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=c8017880-9a57-4d0e-a454-3fd474e43e46 latency_ms=0.983 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4320c8af-b9a4-410d-aa2e-ad7a30dbcf49 latency_ms=1.254 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=4aa233c1-4298-4d86-bfb8-88fc723b3d37 latency_ms=0.261 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=3fce445d-8ec0-41d8-bb6b-92466ab405d7 latency_ms=0.394 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=610fa383-2a42-485d-a658-999521702928 latency_ms=1.116 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=844a9296-e3cf-4c61-8c0f-5b6b43056fe6 latency_ms=0.295 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=93910dcf-9a0c-4895-85b4-217f42c61594 latency_ms=0.426 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=dcfbd239-1970-4240-9e2a-f5fbfe284a3a latency_ms=0.705 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=256d55a7-5485-4875-b8b1-361898428746 latency_ms=1.164 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=04ef595f-ea1d-4e94-8184-57a7fe38be82 latency_ms=0.491 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=d173cc7b-de07-4aa3-a5d4-bd12ce57db40 latency_ms=0.702 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=59b53b07-89db-448b-8d0e-532db8b37c24 latency_ms=1.483 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0072fa7b-ec2e-45bf-b368-77d50b17a2c3 latency_ms=0.302 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=65cd5cef-2f94-43f3-af07-fc2cff881dd4 latency_ms=0.459 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=be87cb5c-2197-41e1-96fc-8d9ec71943a3 latency_ms=1.21 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=bccb77e2-882d-4896-a97b-7338068e5366 latency_ms=0.832 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=b8546f3e-f4f6-4041-825e-afb4caa86935 latency_ms=0.626 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=45be58ad-8712-4773-ba43-c0cb4d660882 latency_ms=0.73 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=fc473eb9-8ce5-4ea5-b472-fec2f51081e8 latency_ms=0.708 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=65d414be-7721-41ed-a6a9-bdcc0a36b76c latency_ms=1.483 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=bfe40cbc-2da9-45ec-8258-5fe2d19f4ee5 latency_ms=0.309 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=eeb3655c-c5c5-4afb-a70c-4094080a392c latency_ms=0.564 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=abe5666f-bd45-4872-896a-58033af36d70 latency_ms=1.315 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=688d3ecd-c4dc-4dc0-9f69-9fb5e3a8b217 latency_ms=0.283 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=7efb1afd-4d94-4371-a459-9cc5d195b578 latency_ms=2.167 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=deb85d66-2ef8-4c3f-9973-15f93f17f134 latency_ms=0.29 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=f9bec0c4-4d68-48cc-9b5c-e9920337ef56 latency_ms=0.485 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=241ce723-6b1c-4b39-b375-02fbfa8d4112 latency_ms=0.849 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=998222a6-0a27-46fb-a30f-c78a1a00110d latency_ms=0.724 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=ce4c6cd8-3675-4e0f-b5ad-a2684aab5710 latency_ms=2.062 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=745edee5-c900-427e-b2dd-a2ec19f37d34 latency_ms=0.272 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=1b22268a-9e1f-4764-bb3e-a9fa747fdb81 latency_ms=1.403 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=eff86b4f-4fe1-4389-9695-83035656f28d latency_ms=4.167 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=db1fefbb-e40b-4d4b-837c-77e9066ce803 latency_ms=0.25 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=dd3af383-9c91-4f87-a9de-87ae6df4a91b latency_ms=0.438 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=c134b685-00ea-49d3-8224-905a7a2b4539 latency_ms=1.438 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=cef4cdd5-2971-45e5-bf31-6fe7ad264357 latency_ms=1.023 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=182be51d-0fa0-4128-9f1d-7fbd69908d84 latency_ms=1.061 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=eb36d56e-a725-4bed-bbe7-8d8d99e9419d latency_ms=0.395 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=b4d7a456-a88f-4984-ac11-194b7e814942 latency_ms=0.496 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=e56810f7-6e51-45f8-a000-73a728df7a18 latency_ms=1.672 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=19166afc-a171-4eaf-9c7a-8eebf300f586 latency_ms=0.356 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=5a2e05d8-d168-4d81-8fc3-4fc01075f195 latency_ms=0.512 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=7174cc6c-3112-4d33-9f5d-a8f37b26605d latency_ms=1.383 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=9877635b-e56d-4375-a804-1f42c0cd9b62 latency_ms=0.254 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=0c369ea7-cac9-4ac3-8dbe-581bfe37f6ec latency_ms=0.495 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=424f6af4-668e-4938-a0b4-42a1b876deb7 latency_ms=1.329 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=80cae795-5d09-440b-b74a-090d8246e677 latency_ms=0.338 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=49e2411b-490c-4b48-a511-87d3f1f11f67 latency_ms=0.296 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=5f8685a9-b8e3-44fc-b607-e735d503ccf0 latency_ms=0.306 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=28d9db4b-7130-413a-b9c4-6f4e5c8f721c latency_ms=14.108 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=911a73b8-b32b-4a2a-8123-912979166305 latency_ms=0.359 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=6ef94aea-8ddd-4a83-ace2-ad5fce5ba934 latency_ms=0.457 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=359ba119-6021-4cd9-a212-bd87f7dae7ae latency_ms=0.683 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=98c9fba0-67d7-41fd-86db-87faba772fdd latency_ms=6.671 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=be8565e7-6a3b-407b-bf1d-8d987a380b04 latency_ms=4.153 ok=true
+2026/10/08 13:01:11 INFO outbound_call dependency=postgres operation=query
+correlation_id=7d7b5696-6442-4757-ad2f-b00f08b3d5b9 latency_ms=0.304 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=21781806-8460-4f97-bd22-835da5fb1000 latency_ms=25.073 ok=false
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=65c72167-442d-4633-b21a-c8099c07a514 latency_ms=0.357 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=0b5dbcbf-3e11-4008-a747-b994a6755932 latency_ms=0.368 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=e7b18c51-0caf-4783-94a8-41d7469ebe29 latency_ms=0.263 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=de58f210-7d10-437b-9629-7e1c1f5e03c4 latency_ms=0.605 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=8548981a-7c96-4a6a-8a6f-645408df30bc latency_ms=7.699 ok=true
+2026/10/08 13:01:12 INFO outbound_call dependency=postgres operation=query
+correlation_id=f4824f05-b34a-47a0-aa0b-02d695402546 latency_ms=0.348 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=17e7b206-3999-4233-9e06-3825013421e3 latency_ms=1002.202 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=eda0d36a-0bbe-4e80-a9f7-960dad507eb6 latency_ms=0.005 ok=false
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=c84e9627-df94-4283-b75c-f8a4c3487c2b latency_ms=0.182 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=b9e40ed2-4463-42c3-80cf-3959c94a08db latency_ms=0.011 ok=false
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=50157636-1f44-4245-89f7-edb597bcb8ea latency_ms=0.385 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=0ecfcc0f-5e57-4ab8-aeee-09086121916b latency_ms=0.225 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=4166db73-ba31-4842-8e3a-c7328d5c759d latency_ms=0.293 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=f25861a9-8346-4765-ba56-1be2728cfca7 latency_ms=0.259 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=537978fc-b2bf-412b-9400-8dfafb3c25e4 latency_ms=4.791 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=ffe4444d-16f3-40ec-8751-74e79446f8c6 latency_ms=3.635 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=dada2d57-58f0-42ab-b244-c4857f6672ef latency_ms=1.564 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=379be3e8-0203-4c29-986e-0809d6835839 latency_ms=0.429 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=d3b8ae8a-e963-4e6c-8977-5a9cf22605b0 latency_ms=0.467 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=eaac2348-8e4c-4e27-9a13-21f4705a93e9 latency_ms=0.8 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=ec70efc8-c595-4bf5-99b8-2c9304e19141 latency_ms=1.332 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=827deaa8-c233-4aee-aa51-26f8beadbbfa latency_ms=0.654 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=ca70d293-70cc-415b-b9b3-1a7a165a9659 latency_ms=0.229 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=a5147362-9c6c-4a47-84a8-57a32ae48668 latency_ms=0.538 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=f548a06d-7ce1-4c35-929b-eb8604b73d29 latency_ms=0.838 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=38ac911d-e3cb-4b9a-9970-c25b844f1984 latency_ms=1.398 ok=true
+=== RUN   TestIngestPostgres/outbox_ACK_and_cleanup
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=57fd484a-9ce5-4b44-885b-4a59b9c45b28 latency_ms=0.406 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=fae4aa46-c7f2-4ea7-9a02-4624e28b1017 latency_ms=3.937 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=fd07a388-3c12-4a0c-a311-b23bef0a96a3 latency_ms=1.955 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=7249af91-d3a5-4f12-a884-f1e3f786bbc7 latency_ms=1.393 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=35b25937-0e46-4b01-b7c2-af1cd0eb0a16 latency_ms=1.246 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=3c828c5d-15c2-45bd-bc8f-d6ae24f545e8 latency_ms=2.791 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=5e1ce544-f694-4554-a9d7-567e39bf9fe6 latency_ms=0.652 ok=true
+2026/10/08 13:01:13 INFO outbound_call dependency=postgres operation=query
+correlation_id=c2f110f4-2e97-4ae8-8c45-b683f87ae425 latency_ms=0.395 ok=true
+=== RUN   TestIngestPostgres/compact_envelope_boundary_and_oversized_record_isolation
+    robustness_integration_test.go:103: 4 MiB - 1 and 4 MiB accepted; 4 MiB + 1 quarantined; following records and byte pagination pass
+=== RUN   TestIngestPostgres/backlog_spans_transaction_deadlines_and_safely_resumes
+    robustness_integration_test.go:146: 600-record response, mid-batch failure, replay and recovery passed in 6.888328769s with transaction timeout 2s
+--- PASS: TestIngestPostgres (10.40s)
+    --- PASS: TestIngestPostgres/outbox_ACK_and_cleanup (0.01s)
+    --- PASS: TestIngestPostgres/compact_envelope_boundary_and_oversized_record_isolation (1.85s)
+    --- PASS: TestIngestPostgres/backlog_spans_transaction_deadlines_and_safely_resumes (6.92s)
+=== RUN   TestQueryPostgres
+--- PASS: TestQueryPostgres (0.26s)
+PASS

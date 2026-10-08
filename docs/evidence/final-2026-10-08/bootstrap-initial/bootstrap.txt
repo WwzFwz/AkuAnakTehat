@@ -1,0 +1,2 @@
+Local env and Ed25519 keys created; secret values were not printed.
+Existing local env and keys retained; no secrets rotated.
