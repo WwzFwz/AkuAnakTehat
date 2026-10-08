@@ -22,11 +22,11 @@ Satu instance untuk setiap volume. Ketiganya memakai `bus_net` dan `consumer_net
 
 ## Penyelesaian offset
 
-Auto-commit mati. Consumer membaca satu record, menahan rebalance, lalu menyelesaikan efek bisnis sebelum commit offset. Input invalid langsung ke DLQ. Kegagalan pemrosesan dicoba 3 kali, deadline 2s tiap percobaan, jeda 200ms. Setelah habis, publish DLQ dengan batas penantian 5s; offset asal di-commit hanya setelah ACK DLQ. Commit memakai timeout 5s.
+Auto-commit mati. Consumer membaca satu record, menahan rebalance, lalu menyelesaikan efek bisnis sebelum commit offset. Input invalid langsung ke DLQ. Kegagalan pemrosesan dicoba 3 kali, deadline 2s tiap percobaan, jeda 200ms. Setelah percobaan pemrosesan habis, worker berhenti tanpa DLQ maupun commit offset; Compose memulai ulang untuk mencoba record yang sama setelah dependensi pulih. Hanya input invalid masuk DLQ dengan batas penantian 5s; offset asal di-commit hanya setelah ACK DLQ. Commit memakai timeout 5s.
 
 Kegagalan DLQ atau commit menghentikan worker/proses, dan Compose restart mengulang offset terakhir yang belum tersimpan. Tidak ada commit record berikutnya yang menutupi kegagalan record sebelumnya. Rebalance timeout 60s melebihi batas percobaan yang dikonfigurasi (maksimum 5 × 5s ditambah jeda, DLQ dan commit).
 
-DLQ `bnpb.hazard-events.v1.dlq` menggunakan key dan bytes payload asli. Header: `consumer_group`, `failure_reason` (`invalid_event` atau `processing_failed`), `attempts`, `source_topic`, `source_partition`, `source_offset`, `correlation_id`. Payload invalid tanpa correlation ID tetap memiliki header kosong. DLQ juga at-least-once; crash setelah ACK sebelum commit dapat menggandakan pesan DLQ. DLQ bukan bukti efek bisnis berhasil dan belum memiliki alat redrive otomatis.
+DLQ `bnpb.hazard-events.v1.dlq` menggunakan key dan bytes payload asli. Header: `consumer_group`, `failure_reason` (`invalid_event`), `attempts`, `source_topic`, `source_partition`, `source_offset`, `correlation_id`. Payload invalid tanpa correlation ID tetap memiliki header kosong. DLQ juga at-least-once; crash setelah ACK sebelum commit dapat menggandakan pesan DLQ. DLQ bukan bukti efek bisnis berhasil dan belum memiliki alat redrive otomatis.
 
 Dashboard/pemda melakukan UPSERT hanya bila version masuk lebih tinggi. Unknown fields dan angka JSON disimpan utuh. Notifier memeriksa dedup, mengirim SIAGA/AWAS, lalu mencatat marker; crash pada celah kirim/marker dapat mengirim duplikat. NORMAL/WASPADA dicatat tanpa kirim.
 

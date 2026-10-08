@@ -12,7 +12,7 @@ Diagram berasal dari [PlantUML yang dapat diedit](docs/laporan/diagrams/01-arsit
 
 Sistem memisahkan tiga alur agar kegagalan sumber tidak langsung menghambat pembacaan pengguna.
 
-1. **Pengambilan data.** Worker Aggregator mengambil JSON dari BMKG dan PVMBG secara independen, memvalidasi field wajib, mempertahankan atribut tambahan, dan memetakan data ke `HazardEvent`. Warning tsunami dikorelasikan dengan gempa terkait. Hazard, checkpoint, dan outbox disimpan dalam satu transaksi PostgreSQL.
+1. **Pengambilan data.** Worker Aggregator mengambil JSON dari BMKG dan PVMBG secara independen, memvalidasi field wajib, mempertahankan atribut tambahan, dan memetakan data ke `HazardEvent`. Warning tsunami dikorelasikan dengan gempa terkait. Hazard dan outbox disimpan atomik per record. Checkpoint maju setelah seluruh respons polling ditangani; retry memakai hash untuk menghindari duplikasi.
 2. **Pembacaan data.** Client memperoleh JWT dari Auth Service, kemudian mengakses Client API. Setelah memeriksa token, hak akses, dan batas beban, Client API memanggil API internal Aggregator. Data dibaca dari Canonical Store sehingga request pengguna tidak menunggu HTTP sumber. Media memperoleh ringkasan; Tim Lapangan dan BNPB Pusat boleh membaca data mentah. Status sumber membantu pengguna menilai kebaruan data.
 3. **Distribusi perubahan.** Relay mengirim snapshot outbox ke Kafka dan menandai publish setelah ACK. Dashboard Updater, Notifier, dan Pemda Portal memakai consumer group serta SQLite masing-masing. Consumer yang berhenti dapat melanjutkan pembacaan selama pesannya masih tersedia dalam retensi broker.
 

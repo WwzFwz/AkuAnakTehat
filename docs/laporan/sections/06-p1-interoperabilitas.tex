@@ -31,7 +31,7 @@ Warning disimpan terpisah sehingga boleh mendahului gempa. Ketika gempa tiba, wa
 \subsection{Deteksi perubahan dan transaksi}
 Hash konten dihitung dari makna field kanonik dan atribut; ID BNPB serta timestamp penerimaan tidak menjadi alasan perubahan baru. Angka dan timestamp dinormalisasi agar hasil stabil setelah round-trip penyimpanan. Record yang sama tetap memperbarui informasi pengamatan internal tanpa menghasilkan event baru. Perubahan konten meningkatkan version dan menghasilkan snapshot outbox dengan event ID baru.
 
-Unit of work memakai transaksi PostgreSQL serializable. Upsert hazard, penyimpanan warning dan record karantina yang relevan, outbox, dan checkpoint batch dilakukan bersama. Rollback transaksi tidak boleh meninggalkan checkpoint yang mengklaim data sudah tersimpan. Ini memindahkan persoalan kegagalan Kafka ke relay tanpa mengorbankan konsistensi ingest.
+Unit of work memakai transaksi PostgreSQL serializable per record. Upsert hazard, warning terkait, dan outbox berubah atomik. Checkpoint dimajukan setelah seluruh respons selesai, termasuk karantina record invalid. Jika record berikutnya gagal, bagian yang telah committed tetap tersimpan, sedangkan checkpoint lama menyebabkan replay yang aman melalui hash dan version. Batas transaksi per record mencegah backlog besar terus melampaui deadline transaksi tunggal.
 \coderef{services/aggregator/internal/application/ingest/service.go}
 \lstinputlisting[float=htbp,language=Golang,caption={Pemilihan atribut tambahan pada pemetaan vulkanik; kutipan langsung kode implementasi.}]{assets/code/p1-map-volcanic.txt}
 

@@ -11,7 +11,9 @@ alt valid dan efek berhasil
 Consumer -> db : apply versi / marker dedup
 db --> Consumer : durable
 Consumer -> Kafka : commit offset
-else invalid / percobaan habis
+else record valid tetapi dependensi gagal setelah retry
+Consumer -> Consumer : berhenti tanpa commit\nsupervisor memulai ulang untuk retry
+else record invalid
 Consumer -> Kafka : publish DLQ + metadata
 Kafka --> Consumer : ACK DLQ
 Consumer -> Kafka : commit offset asal

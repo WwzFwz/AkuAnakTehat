@@ -17,7 +17,7 @@ Pemilik interface: `application/ingest`.
 - Mencatat karantina per record beserta alasan dan correlation ID.
 - Memajukan checkpoint endpoint setelah hasil batch berhasil ditangani.
 
-Semua penulisan terkait memakai Tx yang sama. Callback error membatalkan transaksi; error commit diteruskan ke pemanggil. Replay input sama tidak menambah outbox bila hash sama. Keputusan ID/version/hash dibuat konsisten dengan unique constraint dan transaksi.
+Hazard, warning terkait, dan outbox satu record memakai Tx yang sama. Record yang ditolak dicatat pada transaksi karantina. Checkpoint disimpan pada transaksi terakhir setelah seluruh respons ditangani. Callback error membatalkan transaksi record tersebut; record sebelumnya tetap committed dan aman dipoll ulang. Error commit diteruskan ke pemanggil. Replay input sama tidak menambah outbox bila hash sama. Keputusan ID/version/hash dibuat konsisten dengan unique constraint dan transaksi.
 
 Checkpoint pembacaan dan status sumber boleh memiliki port terpisah. Kegagalan satu endpoint BMKG tidak memajukan checkpoint endpoint tersebut atau membuang hasil valid endpoint lainnya.
 
@@ -61,14 +61,14 @@ type CheckpointReader interface {
 Pemilik interface: `application/query`.
 
 - `List(ctx, filter)` menghasilkan halaman hazard, cursor berikutnya, dan metadata sumber.
-- `Get(ctx, hazardID)` menghasilkan satu HazardEvent atau error not-found.
+- `Get(ctx, hazardID)` menghasilkan HazardDetail berisi HazardEvent dan metadata sources atau error not-found.
 
 Filter dan representasi wire mengikuti [HTTP internal](aggregator-http.md). Pool baca memiliki batas koneksi dan timeout sendiri. Query tidak melakukan polling sumber.
 
 ```go
 type HazardQuery interface {
     List(ctx context.Context, filter HazardFilter) (HazardPage, error)
-    Get(ctx context.Context, hazardID string) (HazardEvent, error)
+    Get(ctx context.Context, hazardID string) (HazardDetail, error)
 }
 ```
 
@@ -78,8 +78,9 @@ type HazardQuery interface {
 
 Pemilik interface: `worker/outbox`.
 
-- `Pending(ctx, limit)` membaca row belum di-ACK, urut id.
+- `Pending(ctx, limit)` membaca row yang belum di-ACK dan belum ditolak permanen, urut id.
 - `MarkPublished(ctx, id, acknowledgedAt)` menandai row setelah ACK Kafka.
+- `Reject(ctx, id, reason)` menyimpan penolakan permanen tanpa menandai row sebagai published. Relay baru boleh melanjutkan setelah penolakan tersimpan.
 - `DeletePublishedBefore(ctx, cutoff)` hanya menghapus row yang sudah di-ACK.
 - `Publisher.Publish(ctx, message)` selesai sukses setelah broker ACK; error mempertahankan row sebagai pending.
 
@@ -89,6 +90,7 @@ A menulis row outbox dalam transaksi ingest. C membaca, mengirim, dan menandainy
 type OutboxStore interface {
     Pending(ctx context.Context, limit int) ([]OutboxMessage, error)
     MarkPublished(ctx context.Context, id int64, acknowledgedAt time.Time) error
+    Reject(ctx context.Context, id int64, reason string) error
     DeletePublishedBefore(ctx context.Context, cutoff time.Time) (int64, error)
 }
 

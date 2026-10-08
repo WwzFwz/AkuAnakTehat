@@ -4,7 +4,7 @@ Dokumen ini membantu anggota menjelaskan implementasi dengan kata-kata sendiri. 
 
 ## Cerita sistem dalam satu menit
 
-BMKG dan PVMBG menyediakan data dengan skema serta kredensial berbeda. Aggregator mengambil data secara berkala dan mengubahnya menjadi HazardEvent. Data kanonik disimpan bersama checkpoint dan outbox dalam PostgreSQL. Client membaca data tersimpan melalui Client API dengan hak akses yang diatur Auth Service. Perubahan juga dikirim ke Kafka agar dashboard, notifier, dan portal Pemda dapat memprosesnya secara independen.
+BMKG dan PVMBG menyediakan data dengan skema serta kredensial berbeda. Aggregator mengambil data secara berkala dan mengubahnya menjadi HazardEvent. Data kanonik disimpan atomik bersama outbox per record; checkpoint maju setelah respons polling selesai dalam PostgreSQL. Client membaca data tersimpan melalui Client API dengan hak akses yang diatur Auth Service. Perubahan juga dikirim ke Kafka agar dashboard, notifier, dan portal Pemda dapat memprosesnya secara independen.
 
 Pemisahan tersebut membuat sumber yang lambat tidak langsung memperlambat pembacaan pengguna. Sebagai konsekuensi, data tidak selalu merupakan keadaan terbaru sensor. Respons membawa status sumber agar data basi tidak disamarkan sebagai data segar.
 
@@ -19,13 +19,13 @@ Pemisahan tersebut membuat sumber yang lambat tidak langsung memperlambat pembac
 | Apa fungsi watermark dan overlap? | Checkpoint membatasi data yang diminta pada polling berikutnya. Overlap memberi toleransi keterlambatan terbatas; ini bukan jaminan semua data yang terlambat tanpa batas akan ditemukan. |
 | Mengapa field baru tidak memerlukan restart? | Reader memisahkan field wajib dari atribut tambahan. JSONB menyimpan tambahan tanpa kolom DDL baru. Field wajib yang tidak valid tetap ditolak atau dikarantina. |
 | Mengapa query dan ingest masih satu service? | Keduanya menggunakan data yang dimiliki Aggregator. Pemisahan pool dan worker cukup untuk lingkup M1 tanpa menambah kontrak jaringan dan pemilik transaksi baru. |
-| Mengapa PostgreSQL, bukan MongoDB? | Transaksi hazard, checkpoint, dan outbox serta query kolom kanonik cocok dengan PostgreSQL. JSONB sudah memenuhi kebutuhan atribut fleksibel. MongoDB merupakan alternatif, tetapi tetap memerlukan desain konsistensi dan operasional. |
+| Mengapa PostgreSQL, bukan MongoDB? | Transaksi hazard dan outbox, checkpoint yang aman saat replay, serta query kolom kanonik cocok dengan PostgreSQL. JSONB sudah memenuhi kebutuhan atribut fleksibel. MongoDB merupakan alternatif, tetapi tetap memerlukan desain konsistensi dan operasional. |
 | Mengapa ada outbox? | Menulis database lalu publish secara terpisah dapat kehilangan event ketika proses crash. Niat publish disimpan bersama data sehingga relay dapat melanjutkan setelah pulih. |
 | Apakah outbox menjamin tanpa duplikasi? | Tidak. ACK Kafka dapat berhasil sebelum tanda published tersimpan. Replay masih mungkin; consumer harus idempoten sesuai efek bisnisnya. |
 | Mengapa setiap consumer memakai group berbeda? | Satu group membagi pekerjaan. Group berbeda diperlukan agar masing-masing consumer menerima stream lengkap. |
 | Bagaimana consumer mengejar pesan setelah mati? | Group lama melanjutkan dari committed offset selama pesan masih dalam retensi Kafka. SQLite mempertahankan view dan marker dedup. |
 | Mengapa subscriber baru perlu group baru dan store kosong saat diuji? | Agar replay histori terbukti berasal dari Kafka, bukan data sisa pengujian sebelumnya. |
-| Apa fungsi DLQ? | Menyimpan pesan invalid atau yang gagal setelah batas percobaan beserta metadata asal. Offset asal baru di-commit setelah publish DLQ berhasil. |
+| Apa fungsi DLQ? | Menyimpan pesan invalid beserta metadata asal. Offset asal baru di-commit setelah publish DLQ berhasil. Kegagalan dependensi pada pesan valid mempertahankan offset untuk retry setelah pulih. |
 | Mengapa notifier belum exactly-once? | Pengiriman dan marker SQLite tidak satu transaksi. Crash di antara keduanya dapat mengulang pengiriman. |
 | Mengapa Media tidak boleh menerima raw lalu menyembunyikannya di UI? | Data yang sudah dikirim tetap dapat dibaca client. Server memeriksa scope dan membuat objek baru berdasarkan allowlist. |
 | Mengapa JWT asimetris? | Client API hanya membutuhkan public key untuk verifikasi dan tidak mendapat kemampuan menerbitkan token. |

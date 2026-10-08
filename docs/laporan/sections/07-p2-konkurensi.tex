@@ -44,6 +44,8 @@ Perkiraan tersebut tidak menjadi jaminan batas waktu layanan. Siklus yang panjan
 
 Filter tidak valid menghasilkan 400, identitas atau token invalid 401, akses field terlarang 403, detail yang tidak ditemukan 404, beban ditolak 429, dan dependensi tidak tersedia 503. Hasil filter kosong yang sah tetap 200 dengan array kosong. Error tidak membocorkan detail SQL atau secret.
 
+Metadata \texttt{sources} tersedia pada list serta detail biasa dan raw. Metadata tetap disertakan ketika client memilih sebagian field hazard, sehingga pembaca detail dapat mengetahui status basi. Instrumentasi outbound mencatat latency dan correlation ID untuk HTTP sumber, PostgreSQL, Redis, serta Kafka tanpa menulis SQL, argumen perintah, atau secret. Permintaan protokol Kafka yang mencakup beberapa record memakai identitas operasi tersendiri; publish dan commit per record mempertahankan correlation ID event.
+
 \subsection{Konfigurasi dan hasil pengukuran}
 Pengukuran akhir dilakukan pada \EvidenceDate menggunakan k6 0.57.0 native Windows. Host memakai AMD Ryzen 9 6900HS, 16 logical processor, dan RAM 16.388.050.944 byte; Docker Desktop 28.0.4 menyediakan 16 CPU dan 7.936.237.568 byte RAM untuk lingkungan container. Tool load dibangun dengan Go 1.23.6; service memakai Go 1.24.2. Seluruh angka diambil dari artefak JSON, bukan angka target yang diasumsikan tercapai.
 

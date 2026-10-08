@@ -16,7 +16,7 @@ cursor opaque, limit (default100, maksimum500).
 Rute seismic/volcanic menetapkan type sesuai rute.
 List: `{"data":[<hazard>],"next_cursor":"optional","sources":[{"source":"BMKG","status":"HEALTHY","stale_since":"optional"}]}`.
 Status sumber: HEALTHY, DEGRADED, DOWN.
-Detail: objek hazard langsung. sources hanya memuat field metadata yang diizinkan.
+Detail: objek hazard langsung dengan metadata `sources` pada level yang sama. Metadata ini berisi `source`, `status`, dan `stale_since` opsional, tetap tersedia pada detail biasa maupun raw dan ketika `fields` membatasi field hazard. Field internal lain tidak diteruskan.
 Tidak ada data pengganti/fiktif saat Aggregator gagal.
 
 ## Proyeksi

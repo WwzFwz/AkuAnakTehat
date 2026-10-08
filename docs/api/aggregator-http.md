@@ -41,7 +41,7 @@ Hasil filter kosong tetap 200 dengan array kosong. Apabila sumber belum mempunya
 
 ## Detail
 
-`GET /internal/hazards/{hazard_id}` mengembalikan satu objek HazardEvent langsung, atau 404 `not_found`. Endpoint ini tidak melakukan panggilan ke mock sumber.
+`GET /internal/hazards/{hazard_id}` mengembalikan field HazardEvent pada level teratas beserta `sources` yang sama dengan metadata daftar, atau 404 `not_found`. Endpoint ini tidak melakukan panggilan ke mock sumber.
 
 ## Error
 

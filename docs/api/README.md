@@ -20,11 +20,12 @@ Tempat menyepakati kontrak integrasi sebelum anggota mengimplementasikan kompone
 | [client-http.md](client-http.md) | Kontrak API downstream, proyeksi dan raw-field rejection. |
 | [token-http.md](token-http.md) | Request/response token dan refresh pada fondasi. |
 | [mock-http.md](mock-http.md) | Kontrak sumber, admin, kredensial, dan semantik since. |
+| [reliability.md](reliability.md) | Batas ukuran, karantina, retry storage, checkpoint, freshness, dan trace outbound. |
 
 ## Kontrak dan alur
 
 - Empat titik temu utama: skema Aggregator, envelope Kafka, HTTP internal, dan port di dalam Aggregator.
-- README package dan dokumen kontrak membedakan bagian yang sudah berjalan dari bagian tahap berikutnya. UnitOfWork/Tx/checkpoint/status dan migrasi sudah tersedia untuk jalur A; Store/Publisher relay C dan tiga consumer sudah berjalan; query masih kontrak tahap B.
+- Ingest, query, relay, tiga consumer, serta API downstream telah diimplementasikan. Bukti pengujian berada di `docs/evidence/`; kontrak saja tidak menggantikan verifikasi runtime.
 
 ## Dependensi
 

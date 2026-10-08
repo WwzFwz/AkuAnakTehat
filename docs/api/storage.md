@@ -1,6 +1,6 @@
 # Penyimpanan — batas dan skema baseline
 
-**Status:** DDL Canonical Store dan repository ingest sudah tersedia pada jalur A. SQLite consumer tetap tahap C. Migrasi SQL adalah sumber skema executable; dokumen ini merangkum kontraknya.
+**Status:** DDL Canonical Store dan repository ingest sudah tersedia pada jalur A. SQLite consumer sudah tersedia pada masing-masing service. Migrasi SQL adalah sumber skema executable; dokumen ini merangkum kontraknya.
 
 | Store | Pemilik akses langsung | Pemakai tidak langsung |
 | --- | --- | --- |
@@ -18,12 +18,12 @@
 | outbox | ID urut; event_id UUID unique; hazard_id/version; snapshot payload JSONB; created_at; published_at nullable untuk ACK. |
 | source_status | Status, waktu sukses/percobaan terakhir, dan awal stale; sumber yang sedang down tetap dapat mempunyai data historis. |
 | source_endpoint_status | State sehat, kegagalan berurutan, dan waktu polling masing-masing endpoint; mencegah keberhasilan satu endpoint menutupi kegagalan endpoint lain. |
-| checkpoints | PK endpoint; watermark UTC, diperbarui bersama transaksi batch terkait. |
+| checkpoints | PK endpoint; watermark UTC, maju setelah seluruh record respons selesai; transaksi record terdahulu dapat sudah committed saat record berikutnya gagal. |
 | tsunami_warnings | warning_id unik, related_event_id, seluruh data warning yang diperlukan untuk korelasi ulang. |
 | quarantine | Payload invalid, sumber/endpoint, alasan, correlation_id, dan waktu pencatatan. |
 | schema_migrations | Dikelola migration runner; bukan tabel yang dibuat ulang oleh service lain. |
 
-Migrasi tersedia di `services/aggregator/migrations/001_initial.up.sql` dan `002_source_status_stale_since.up.sql` beserta pasangan `.down.sql`, dijalankan dengan golang-migrate/iofs. Referensi `VOLCANO-DEMO-01`/`VOLCANO-DEMO-02` tersedia pada `reference/volcanoes.json`; nama/koordinat berlabel sintetis.
+Migrasi tersedia di `services/aggregator/migrations/001_initial.up.sql` dan `002_source_status_stale_since.up.sql`, dan `003_outbox_rejections.up.sql` beserta pasangan `.down.sql`, dijalankan dengan golang-migrate/iofs. Referensi `VOLCANO-DEMO-01`/`VOLCANO-DEMO-02` tersedia pada `reference/volcanoes.json`; nama/koordinat berlabel sintetis.
 
 ## Detail field untuk kontrak repository
 
@@ -34,7 +34,7 @@ Waktu kanonik dinormalisasi ke mikrodetik agar hash stabil setelah round-trip Po
 | Tabel | Field kontrak |
 | --- | --- |
 | hazard_events | hazard_id UUID PK; source TEXT; source_ref_id TEXT; hazard_type TEXT; severity TEXT; area_name TEXT; latitude/longitude DOUBLE PRECISION; occurred_at/ingested_at/updated_at/last_seen_at TIMESTAMPTZ; attributes JSONB default `{}`; version BIGINT default 1; content_hash BYTEA. Semua NOT NULL. |
-| outbox | id BIGSERIAL PK; event_id UUID UNIQUE; hazard_id UUID; version BIGINT; payload JSONB; created_at TIMESTAMPTZ; published_at TIMESTAMPTZ NULL. Selain published_at, semua NOT NULL. |
+| outbox | id BIGSERIAL PK; event_id UUID UNIQUE; hazard_id UUID; version BIGINT; payload JSONB; created_at TIMESTAMPTZ; published_at TIMESTAMPTZ NULL; rejected_at TIMESTAMPTZ NULL; rejection_reason TEXT NULL. Ketiganya nullable; kolom lain NOT NULL. |
 | checkpoints | endpoint TEXT PK; watermark TIMESTAMPTZ NOT NULL. |
 | tsunami_warnings | warning_id TEXT PK; related_event_id TEXT NOT NULL; payload JSONB NOT NULL; updated_at TIMESTAMPTZ NOT NULL. Payload mempertahankan seluruh field warning dan unknown fields. |
 | quarantine | id BIGSERIAL PK; source/endpoint/reason/correlation_id TEXT NOT NULL; payload JSONB NOT NULL; observed_at TIMESTAMPTZ NOT NULL. |
@@ -42,7 +42,7 @@ Waktu kanonik dinormalisasi ke mikrodetik agar hash stabil setelah round-trip Po
 
 Constraint: source hanya BMKG/PVMBG; hazard_type hanya SEISMIC/VOLCANIC; severity hanya NORMAL/WASPADA/SIAGA/AWAS; version positif; unique(source,source_ref_id). Warning boleh mendahului gempa sehingga related_event_id tidak memakai FK yang mewajibkan hazard sudah tersedia.
 
-Indeks awal: `(hazard_type, occurred_at DESC, hazard_id DESC)` untuk daftar per tipe, `(occurred_at DESC, hazard_id DESC)` untuk daftar gabungan, `(related_event_id)` pada warning, dan indeks pending outbox berdasarkan id dengan syarat published_at IS NULL. Tambahan indeks mengikuti hasil query nyata.
+Indeks awal: `(hazard_type, occurred_at DESC, hazard_id DESC)` untuk daftar per tipe, `(occurred_at DESC, hazard_id DESC)` untuk daftar gabungan, `(related_event_id)` pada warning, dan indeks pending outbox berdasarkan id dengan syarat published_at IS NULL AND rejected_at IS NULL. Tambahan indeks mengikuti hasil query nyata.
 
 `schema_observations` merupakan tambahan opsional. Kemunculan field sumber seperti confidence_level tidak memerlukan DDL; nilainya masuk attributes JSONB.
 

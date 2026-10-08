@@ -32,4 +32,4 @@ Network \texttt{store\_net} menghubungkan Aggregator dan PostgreSQL; \texttt{edg
 \coderef{docker-compose.yml}
 
 \subsection{Alur lintas komponen}
-Pada ingest, satu batch valid menghasilkan perubahan HazardEvent, outbox, dan checkpoint dalam satu transaksi PostgreSQL. Pada baca, client-api menerapkan autentikasi dan batas beban sebelum mengakses query internal; hasil kemudian diproyeksikan menurut scope. Pada distribusi, relay memublikasikan snapshot yang sudah committed, lalu menandai outbox setelah ACK. Ketiga alur diuraikan lebih lanjut pada P1, P2, P3, dan P5.
+Pada ingest, setiap record menghasilkan perubahan HazardEvent dan outbox dalam satu transaksi PostgreSQL. Checkpoint baru dimajukan setelah seluruh respons polling ditangani; kegagalan di tengah respons mengulang bagian yang sudah committed secara idempoten. Pada baca, client-api menerapkan autentikasi dan batas beban sebelum mengakses query internal; hasil kemudian diproyeksikan menurut scope. Pada distribusi, relay memublikasikan snapshot yang sudah committed, lalu menandai outbox setelah ACK. Ketiga alur diuraikan lebih lanjut pada P1, P2, P3, dan P5.

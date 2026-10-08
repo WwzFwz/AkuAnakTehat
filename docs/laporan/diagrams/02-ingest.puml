@@ -11,11 +11,14 @@ poll -> source : GET since=watermark-overlap\ncorrelation ID + kredensial sumber
 source --> poll : array JSON (field tambahan boleh ada)
 poll -> map : decode field wajib + Extra
 map --> poll : record valid / alasan karantina
-group Satu transaksi serializable
+loop Setiap record
+group Transaksi serializable per record
 poll -> db : korelasi warning + upsert hazard\nhash berubah: version naik + outbox
-poll -> db : karantina record invalid\nsimpan checkpoint batch
+poll -> db : karantina record invalid
 db --> poll : COMMIT
 end
+end
+poll -> db : simpan checkpoint setelah seluruh respons selesai
 poll -> db : catat status hasil polling
 note over source,poll
 HTTP gagal: checkpoint tidak maju.
