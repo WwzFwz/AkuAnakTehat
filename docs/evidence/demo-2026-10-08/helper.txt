@@ -1,0 +1,1479 @@
+COMMAND status
+
+[
+
+  {
+
+    "service": "client-api",
+
+    "health": 200,
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "bmkg-mock",
+
+    "health": 200,
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "pvmbg-mock",
+
+    "health": 200,
+
+    "simulation": {
+
+      "outage": false,
+
+      "mode": "error",
+
+      "schema_version": 1
+
+    },
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "auth-service",
+
+    "health": 200,
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "dashboard-updater",
+
+    "health": 200,
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "notifier",
+
+    "health": 200,
+
+    "ready": 200
+
+  },
+
+  {
+
+    "service": "pemda-portal",
+
+    "health": 200,
+
+    "ready": 200
+
+  }
+
+]
+
+
+
+COMMAND read --identity media
+
+{
+
+  "identity": "media",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-579ad9a742114399b3de33f5cc9a2b71",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "hazard_id": "c93154f5-e5e2-4bca-9f88-4ee408e821f6",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:24:53.043522Z",
+
+        "occurred_at": "2026-10-08T03:24:51.642601Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG"
+
+      },
+
+      {
+
+        "area_name": "Wilayah Demo Sintetis",
+
+        "hazard_id": "f961edbe-54a6-467a-a215-96dbdb72402b",
+
+        "hazard_type": "SEISMIC",
+
+        "ingested_at": "2026-10-08T03:24:46.815976Z",
+
+        "occurred_at": "2026-10-08T03:24:46.72931Z",
+
+        "severity": "SIAGA",
+
+        "source": "BMKG"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjQ6NDYuNzI5MzFaIiwiaGF6YXJkX2lkIjoiZjk2MWVkYmUtNTRhNi00NjdhLWEyMTUtOTZkYmRiNzI0MDJiIn0",
+
+    "sources": [
+
+      {
+
+        "source": "BMKG",
+
+        "status": "HEALTHY"
+
+      },
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND read --identity media --raw --expect 403
+
+{
+
+  "identity": "media",
+
+  "http_status": 403,
+
+  "correlation_id": "demo-cf8782ae11f84bbb9b787939e10fcaf4",
+
+  "body": {
+
+    "error": "insufficient_scope"
+
+  }
+
+}
+
+
+
+COMMAND read --identity field-team --raw
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-d9f022ef04254e6fb64ff750615c13d8",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Siaga",
+
+          "ash_column_height_m": 0,
+
+          "eruption_count_24h": 0,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "c93154f5-e5e2-4bca-9f88-4ee408e821f6",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:24:53.043522Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:24:51.642601Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-10"
+
+      },
+
+      {
+
+        "area_name": "Wilayah Demo Sintetis",
+
+        "attributes": {
+
+          "depth_km": 15,
+
+          "magnitude": 6.5,
+
+          "potential_tsunami": false
+
+        },
+
+        "hazard_id": "f961edbe-54a6-467a-a215-96dbdb72402b",
+
+        "hazard_type": "SEISMIC",
+
+        "ingested_at": "2026-10-08T03:24:46.815976Z",
+
+        "latitude": -7.5,
+
+        "longitude": 110.2,
+
+        "occurred_at": "2026-10-08T03:24:46.72931Z",
+
+        "severity": "SIAGA",
+
+        "source": "BMKG",
+
+        "source_ref_id": "bmkg-bd295d57b999f783d71244b9b59df882-86"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjQ6NDYuNzI5MzFaIiwiaGF6YXJkX2lkIjoiZjk2MWVkYmUtNTRhNi00NjdhLWEyMTUtOTZkYmRiNzI0MDJiIn0",
+
+    "sources": [
+
+      {
+
+        "source": "BMKG",
+
+        "status": "HEALTHY"
+
+      },
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND read --identity bnpb-ops --raw
+
+{
+
+  "identity": "bnpb-ops",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-554256a7f4e14b7299236c4a5ce70808",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Wilayah Demo Sintetis",
+
+        "attributes": {
+
+          "depth_km": 15,
+
+          "magnitude": 7.5,
+
+          "potential_tsunami": true
+
+        },
+
+        "hazard_id": "ad26dbab-4d03-4daa-9067-41f5cdaa7fc5",
+
+        "hazard_type": "SEISMIC",
+
+        "ingested_at": "2026-10-08T03:24:57.202423Z",
+
+        "latitude": -7.5,
+
+        "longitude": 110.2,
+
+        "occurred_at": "2026-10-08T03:24:56.729304Z",
+
+        "severity": "SIAGA",
+
+        "source": "BMKG",
+
+        "source_ref_id": "bmkg-bd295d57b999f783d71244b9b59df882-87"
+
+      },
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Siaga",
+
+          "ash_column_height_m": 0,
+
+          "eruption_count_24h": 0,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "c93154f5-e5e2-4bca-9f88-4ee408e821f6",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:24:53.043522Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:24:51.642601Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-10"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjQ6NTEuNjQyNjAxWiIsImhhemFyZF9pZCI6ImM5MzE1NGY1LWU1ZTItNGJjYS05Zjg4LTRlZTQwOGU4MjFmNiJ9",
+
+    "sources": [
+
+      {
+
+        "source": "BMKG",
+
+        "status": "HEALTHY"
+
+      },
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND view dashboard-updater
+
+{
+
+  "service": "dashboard-updater",
+
+  "http_status": 200,
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "schema_version": 1,
+
+        "event_id": "00000004-0000-4000-8000-49858d14c5cc",
+
+        "event_type": "hazard.upserted",
+
+        "hazard_id": "00000000-0000-4000-8000-49858d14c5cc",
+
+        "version": 4,
+
+        "correlation_id": "49858d14c5cc",
+
+        "published_at": "2026-10-01T00:00:01Z",
+
+        "hazard": {
+
+          "hazard_id": "00000000-0000-4000-8000-49858d14c5cc",
+
+          "source": "BMKG",
+
+          "source_ref_id": "EVENT-TEST",
+
+          "hazard_type": "SEISMIC",
+
+          "severity": "AWAS",
+
+          "area_name": "Synthetic event check",
+
+          "latitude": 0,
+
+          "longitude": 0,
+
+          "occurred_at": "2026-10-01T00:00:00Z",
+
+          "ingested_at": "2026-10-01T00:00:01Z",
+
+          "attributes": {
+
+            "future_integer": 9007199254740993
+
+          }
+
+        },
+
+        "future_envelope": true
+
+      },
+
+      {
+
+        "schema_version": 1,
+
+        "event_id": "00000004-0000-4000-8000-6f54adb80978",
+
+        "event_type": "hazard.upserted",
+
+        "hazard_id": "00000000-0000-4000-8000-6f54adb80978",
+
+        "version": 4,
+
+        "correlation_id": "6f54adb80978",
+
+        "published_at": "2026-10-01T00:00:01Z",
+
+        "hazard": {
+
+          "hazard_id": "00000000-0000-4000-8000-6f54adb80978",
+
+          "source": "BMKG",
+
+          "source_ref_id": "EVENT-TEST",
+
+          "hazard_type": "SEISMIC",
+
+          "severity": "AWAS",
+
+          "area_name": "Synthetic event check",
+
+          "latitude": 0,
+
+          "longitude": 0,
+
+          "occurred_at": "2026-10-01T00:00:00Z",
+
+          "ingested_at": "2026-10-01T00:00:01Z",
+
+          "attributes": {
+
+            "future_integer": 9007199254740993
+
+          }
+
+        },
+
+        "future_envelope": true
+
+      }
+
+    ],
+
+    "next_cursor": "00000000-0000-4000-8000-6f54adb80978"
+
+  }
+
+}
+
+
+
+COMMAND view notifier
+
+{
+
+  "service": "notifier",
+
+  "http_status": 200,
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "alert": true,
+
+        "event_id": "00000001-0000-4000-8000-49858d14c5cc",
+
+        "hazard_id": "00000000-0000-4000-8000-49858d14c5cc",
+
+        "processed_at": "2026-10-01T03:17:21.358180007Z",
+
+        "version": 2
+
+      },
+
+      {
+
+        "alert": true,
+
+        "event_id": "00000001-0000-4000-8000-6f54adb80978",
+
+        "hazard_id": "00000000-0000-4000-8000-6f54adb80978",
+
+        "processed_at": "2026-10-08T03:12:56.448306916Z",
+
+        "version": 2
+
+      }
+
+    ],
+
+    "next_cursor": "00000001-0000-4000-8000-6f54adb80978"
+
+  }
+
+}
+
+
+
+COMMAND view pemda-portal
+
+{
+
+  "service": "pemda-portal",
+
+  "http_status": 200,
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "schema_version": 1,
+
+        "event_id": "00000004-0000-4000-8000-49858d14c5cc",
+
+        "event_type": "hazard.upserted",
+
+        "hazard_id": "00000000-0000-4000-8000-49858d14c5cc",
+
+        "version": 4,
+
+        "correlation_id": "49858d14c5cc",
+
+        "published_at": "2026-10-01T00:00:01Z",
+
+        "hazard": {
+
+          "hazard_id": "00000000-0000-4000-8000-49858d14c5cc",
+
+          "source": "BMKG",
+
+          "source_ref_id": "EVENT-TEST",
+
+          "hazard_type": "SEISMIC",
+
+          "severity": "AWAS",
+
+          "area_name": "Synthetic event check",
+
+          "latitude": 0,
+
+          "longitude": 0,
+
+          "occurred_at": "2026-10-01T00:00:00Z",
+
+          "ingested_at": "2026-10-01T00:00:01Z",
+
+          "attributes": {
+
+            "future_integer": 9007199254740993
+
+          }
+
+        },
+
+        "future_envelope": true
+
+      },
+
+      {
+
+        "schema_version": 1,
+
+        "event_id": "00000004-0000-4000-8000-6f54adb80978",
+
+        "event_type": "hazard.upserted",
+
+        "hazard_id": "00000000-0000-4000-8000-6f54adb80978",
+
+        "version": 4,
+
+        "correlation_id": "6f54adb80978",
+
+        "published_at": "2026-10-01T00:00:01Z",
+
+        "hazard": {
+
+          "hazard_id": "00000000-0000-4000-8000-6f54adb80978",
+
+          "source": "BMKG",
+
+          "source_ref_id": "EVENT-TEST",
+
+          "hazard_type": "SEISMIC",
+
+          "severity": "AWAS",
+
+          "area_name": "Synthetic event check",
+
+          "latitude": 0,
+
+          "longitude": 0,
+
+          "occurred_at": "2026-10-01T00:00:00Z",
+
+          "ingested_at": "2026-10-01T00:00:01Z",
+
+          "attributes": {
+
+            "future_integer": 9007199254740993
+
+          }
+
+        },
+
+        "future_envelope": true
+
+      }
+
+    ],
+
+    "next_cursor": "00000000-0000-4000-8000-6f54adb80978"
+
+  }
+
+}
+
+
+
+COMMAND schema 1
+
+{
+
+  "outage": false,
+
+  "mode": "error",
+
+  "schema_version": 1
+
+}
+
+
+
+COMMAND read --identity field-team --type volcanic --raw --limit 2
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-44998f5b50d9479785b66a2326725ed9",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Normal",
+
+          "ash_column_height_m": 1000,
+
+          "eruption_count_24h": 2,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "1c6ff7fe-1cd6-42e7-90f5-1193ec6a5c09",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:13.999701Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:25:11.552057Z",
+
+        "severity": "NORMAL",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-12"
+
+      },
+
+      {
+
+        "area_name": "Gunung Demo 02 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Awas",
+
+          "ash_column_height_m": 500,
+
+          "eruption_count_24h": 1,
+
+          "volcano_id": "VOLCANO-DEMO-02"
+
+        },
+
+        "hazard_id": "259d2d77-43f2-48e8-8585-10375656d338",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:03.218818Z",
+
+        "latitude": -8.11,
+
+        "longitude": 112.92,
+
+        "occurred_at": "2026-10-08T03:25:01.6426Z",
+
+        "severity": "AWAS",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-11"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjU6MDEuNjQyNloiLCJoYXphcmRfaWQiOiIyNTlkMmQ3Ny00M2YyLTQ4ZTgtODU4NS0xMDM3NTY1NmQzMzgifQ",
+
+    "sources": [
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND schema 2
+
+{
+
+  "outage": false,
+
+  "mode": "error",
+
+  "schema_version": 2
+
+}
+
+
+
+COMMAND read --identity field-team --type volcanic --raw --limit 2
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-0d3612ba1d2d459f9942adb13a2c50dc",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Siaga",
+
+          "ash_column_height_m": 2000,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 4,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "f6f92478-de1d-4d2a-ac41-3db94f78b068",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:35.345989Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:25:31.552056Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-14"
+
+      },
+
+      {
+
+        "area_name": "Gunung Demo 02 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Waspada",
+
+          "ash_column_height_m": 1500,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 3,
+
+          "volcano_id": "VOLCANO-DEMO-02"
+
+        },
+
+        "hazard_id": "9d0cf568-4d7b-477c-8996-58907baf2b7a",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:26.131894Z",
+
+        "latitude": -8.11,
+
+        "longitude": 112.92,
+
+        "occurred_at": "2026-10-08T03:25:21.552058Z",
+
+        "severity": "WASPADA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-13"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjU6MjEuNTUyMDU4WiIsImhhemFyZF9pZCI6IjlkMGNmNTY4LTRkN2ItNDc3Yy04OTk2LTU4OTA3YmFmMmI3YSJ9",
+
+    "sources": [
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND read --identity field-team --id 1c6ff7fe-1cd6-42e7-90f5-1193ec6a5c09 --raw
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-99f98d13a7c043b29f7c94edf936c171",
+
+  "body": {
+
+    "area_name": "Gunung Demo 01 (sintetis)",
+
+    "attributes": {
+
+      "alert_level": "Normal",
+
+      "ash_column_height_m": 1000,
+
+      "eruption_count_24h": 2,
+
+      "volcano_id": "VOLCANO-DEMO-01"
+
+    },
+
+    "hazard_id": "1c6ff7fe-1cd6-42e7-90f5-1193ec6a5c09",
+
+    "hazard_type": "VOLCANIC",
+
+    "ingested_at": "2026-10-08T03:25:13.999701Z",
+
+    "latitude": -7.54,
+
+    "longitude": 110.44,
+
+    "occurred_at": "2026-10-08T03:25:11.552057Z",
+
+    "severity": "NORMAL",
+
+    "source": "PVMBG",
+
+    "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-12"
+
+  }
+
+}
+
+
+
+PASS old/new fields coexist through demo read commands
+
+COMMAND outage on --mode error
+
+{
+
+  "outage": true,
+
+  "mode": "error",
+
+  "schema_version": 2
+
+}
+
+
+
+COMMAND read --identity field-team --type seismic
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-febccecbd18d4ebaafef3c0cc939afce",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Wilayah Demo Sintetis",
+
+        "attributes": {
+
+          "depth_km": 15,
+
+          "magnitude": 4.5,
+
+          "potential_tsunami": true,
+
+          "tsunami_warnings": [
+
+            {
+
+              "affected_zones": [
+
+                "Pesisir Demo Sintetis"
+
+              ],
+
+              "estimated_arrival": "2026-10-08T03:55:46.543452978Z",
+
+              "related_event_id": "bmkg-bd295d57b999f783d71244b9b59df882-92-early",
+
+              "threat_level": "Waspada",
+
+              "warning_id": "warning-bmkg-bd295d57b999f783d71244b9b59df882-92-early"
+
+            }
+
+          ]
+
+        },
+
+        "hazard_id": "8888e0dd-b18e-437b-b91a-2005b051e249",
+
+        "hazard_type": "SEISMIC",
+
+        "ingested_at": "2026-10-08T03:25:58.492435Z",
+
+        "latitude": -7.5,
+
+        "longitude": 110.2,
+
+        "occurred_at": "2026-10-08T03:25:56.543471Z",
+
+        "severity": "WASPADA",
+
+        "source": "BMKG",
+
+        "source_ref_id": "bmkg-bd295d57b999f783d71244b9b59df882-92-early"
+
+      },
+
+      {
+
+        "area_name": "Wilayah Demo Sintetis",
+
+        "attributes": {
+
+          "depth_km": 15,
+
+          "magnitude": 5.5,
+
+          "potential_tsunami": true
+
+        },
+
+        "hazard_id": "604f0a9b-4883-47bb-bd9d-85d44f5776da",
+
+        "hazard_type": "SEISMIC",
+
+        "ingested_at": "2026-10-08T03:25:58.492435Z",
+
+        "latitude": -7.5,
+
+        "longitude": 110.2,
+
+        "occurred_at": "2026-10-08T03:25:56.543471Z",
+
+        "severity": "WASPADA",
+
+        "source": "BMKG",
+
+        "source_ref_id": "bmkg-bd295d57b999f783d71244b9b59df882-93"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjU6NTYuNTQzNDcxWiIsImhhemFyZF9pZCI6IjYwNGYwYTliLTQ4ODMtNDdiYi1iZDlkLTg1ZDQ0ZjU3NzZkYSJ9",
+
+    "sources": [
+
+      {
+
+        "source": "BMKG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND read --identity field-team --type volcanic
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-50b0a87d241848e491f3d31ede4c0ca5",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Siaga",
+
+          "ash_column_height_m": 2000,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 4,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "f6f92478-de1d-4d2a-ac41-3db94f78b068",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:35.345989Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:25:31.552056Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-14"
+
+      },
+
+      {
+
+        "area_name": "Gunung Demo 02 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Waspada",
+
+          "ash_column_height_m": 1500,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 3,
+
+          "volcano_id": "VOLCANO-DEMO-02"
+
+        },
+
+        "hazard_id": "9d0cf568-4d7b-477c-8996-58907baf2b7a",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:25:26.131894Z",
+
+        "latitude": -8.11,
+
+        "longitude": 112.92,
+
+        "occurred_at": "2026-10-08T03:25:21.552058Z",
+
+        "severity": "WASPADA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-13"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjU6MjEuNTUyMDU4WiIsImhhemFyZF9pZCI6IjlkMGNmNTY4LTRkN2ItNDc3Yy04OTk2LTU4OTA3YmFmMmI3YSJ9",
+
+    "sources": [
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "DOWN",
+
+        "stale_since": "2026-10-08T03:25:44.537169Z"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+COMMAND outage off
+
+{
+
+  "outage": false,
+
+  "mode": "error",
+
+  "schema_version": 2
+
+}
+
+
+
+COMMAND read --identity field-team --type volcanic
+
+{
+
+  "identity": "field-team",
+
+  "http_status": 200,
+
+  "correlation_id": "demo-da4bdddcabff4392b1cb58f99704d9b4",
+
+  "body": {
+
+    "data": [
+
+      {
+
+        "area_name": "Gunung Demo 01 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Siaga",
+
+          "ash_column_height_m": 1500,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 8,
+
+          "volcano_id": "VOLCANO-DEMO-01"
+
+        },
+
+        "hazard_id": "c03b470a-dc45-4bd3-91ce-821ec82175a4",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:26:12.312404Z",
+
+        "latitude": -7.54,
+
+        "longitude": 110.44,
+
+        "occurred_at": "2026-10-08T03:26:11.356078Z",
+
+        "severity": "SIAGA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-18"
+
+      },
+
+      {
+
+        "area_name": "Gunung Demo 02 (sintetis)",
+
+        "attributes": {
+
+          "alert_level": "Waspada",
+
+          "ash_column_height_m": 1000,
+
+          "confidence_level": 0.9,
+
+          "eruption_count_24h": 7,
+
+          "volcano_id": "VOLCANO-DEMO-02"
+
+        },
+
+        "hazard_id": "fad275d8-12d9-494a-9100-9cfb3dee7006",
+
+        "hazard_type": "VOLCANIC",
+
+        "ingested_at": "2026-10-08T03:26:08.700052Z",
+
+        "latitude": -8.11,
+
+        "longitude": 112.92,
+
+        "occurred_at": "2026-10-08T03:26:01.45675Z",
+
+        "severity": "WASPADA",
+
+        "source": "PVMBG",
+
+        "source_ref_id": "pvmbg-4df64f98443065e7c1786ce6da0e3afd-17"
+
+      }
+
+    ],
+
+    "next_cursor": "eyJvY2N1cnJlZF9hdCI6IjIwMjYtMTAtMDhUMDM6MjY6MDEuNDU2NzVaIiwiaGF6YXJkX2lkIjoiZmFkMjc1ZDgtMTJkOS00OTRhLTkxMDAtOWNmYjNkZWU3MDA2In0",
+
+    "sources": [
+
+      {
+
+        "source": "PVMBG",
+
+        "status": "HEALTHY"
+
+      }
+
+    ]
+
+  }
+
+}
+
+
+
+PASS outage isolation and recovery through demo commands
+
+COMMAND restore
+
+{
+
+  "outage": false,
+
+  "mode": "error",
+
+  "schema_version": 1
+
+}
+
+Baseline restored. Allow polling/breaker recovery before checking source status.
+
+ Container bnpb-m1-pvmbg-mock-1  Running
+
+ Container bnpb-m1-pemda-portal-1  Running
+
+ Container bnpb-m1-canonical-db-1  Running
+
+ Container bnpb-m1-notifier-1  Running
+
+ Container bnpb-m1-dashboard-updater-1  Running
+
+ Container bnpb-m1-bmkg-mock-1  Running
+
+ Container bnpb-m1-client-api-1  Running
+
+ Container bnpb-m1-auth-store-1  Running
+
+ Container bnpb-m1-kafka-1  Running
+
+ Container bnpb-m1-aggregator-1  Running
+
+ Container bnpb-m1-auth-service-1  Running
+
+ Container bnpb-m1-auth-store-1  Waiting
+
+ Container bnpb-m1-canonical-db-1  Waiting
+
+ Container bnpb-m1-canonical-db-1  Healthy
+
+ Container bnpb-m1-auth-store-1  Healthy
+
+ Container bnpb-m1-notifier-1  Waiting
+
+ Container bnpb-m1-pvmbg-mock-1  Waiting
+
+ Container bnpb-m1-bmkg-mock-1  Waiting
+
+ Container bnpb-m1-canonical-db-1  Waiting
+
+ Container bnpb-m1-auth-store-1  Waiting
+
+ Container bnpb-m1-kafka-1  Waiting
+
+ Container bnpb-m1-auth-service-1  Waiting
+
+ Container bnpb-m1-aggregator-1  Waiting
+
+ Container bnpb-m1-client-api-1  Waiting
+
+ Container bnpb-m1-pemda-portal-1  Waiting
+
+ Container bnpb-m1-dashboard-updater-1  Waiting
+
+ Container bnpb-m1-pemda-portal-1  Healthy
+
+ Container bnpb-m1-notifier-1  Healthy
+
+ Container bnpb-m1-bmkg-mock-1  Healthy
+
+ Container bnpb-m1-auth-store-1  Healthy
+
+ Container bnpb-m1-auth-service-1  Healthy
+
+ Container bnpb-m1-kafka-1  Healthy
+
+ Container bnpb-m1-pvmbg-mock-1  Healthy
+
+ Container bnpb-m1-dashboard-updater-1  Healthy
+
+ Container bnpb-m1-client-api-1  Healthy
+
+ Container bnpb-m1-aggregator-1  Healthy
+
+ Container bnpb-m1-canonical-db-1  Healthy

@@ -1,0 +1,9 @@
+Running p4: TestDynamicSchemaAndStaleAPI|TestIndependentRebuild. State-changing suites must run sequentially.
+=== RUN   TestDynamicSchemaAndStaleAPI
+    query_test.go:194: P1/P4: old/new JSONB attributes coexist and remain readable without migration; P2: stale volcanic data and healthy seismic reads recover without restart
+--- PASS: TestDynamicSchemaAndStaleAPI (27.31s)
+=== RUN   TestIndependentRebuild
+    query_test.go:274: P4: notifier stopped, rebuilt and started independently; public reads continued and other container start timestamps remained unchanged
+--- PASS: TestIndependentRebuild (19.17s)
+PASS
+ok  	command-line-arguments	47.360s

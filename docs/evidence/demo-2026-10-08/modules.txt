@@ -1,0 +1,114 @@
+ok  	command-line-arguments	0.899s
+Checking aggregator
+go: downloading github.com/golang-migrate/migrate/v4 v4.18.2
+go: downloading github.com/jackc/pgx/v5 v5.7.4
+go: downloading github.com/twmb/franz-go v1.18.1
+go: downloading github.com/klauspost/compress v1.17.11
+go: downloading github.com/twmb/franz-go/pkg/kmsg v1.9.0
+go: downloading github.com/pierrec/lz4/v4 v4.1.22
+go: downloading github.com/jackc/puddle/v2 v2.2.2
+go: downloading golang.org/x/text v0.21.0
+go: downloading golang.org/x/crypto v0.32.0
+go: downloading github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761
+go: downloading github.com/jackc/pgpassfile v1.0.0
+go: downloading golang.org/x/sync v0.10.0
+go: downloading github.com/hashicorp/go-multierror v1.1.1
+go: downloading go.uber.org/atomic v1.7.0
+go: downloading github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
+go: downloading github.com/hashicorp/errwrap v1.1.0
+?   	example.com/akuanaktehat/aggregator/cmd/aggregator	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/inbound/http	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/bmkg	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/kafka	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/outbound/postgres	1.234s
+?   	example.com/akuanaktehat/aggregator/internal/adapter/outbound/pvmbg	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/adapter/outbound/sourcehttp	(cached)
+ok  	example.com/akuanaktehat/aggregator/internal/application/canonicalize	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/application/ingest	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/application/query	(cached)
+?   	example.com/akuanaktehat/aggregator/internal/config	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/domain/hazard	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/domain/tsunami	[no test files]
+?   	example.com/akuanaktehat/aggregator/internal/observability	[no test files]
+ok  	example.com/akuanaktehat/aggregator/internal/worker/outbox	(cached)
+ok  	example.com/akuanaktehat/aggregator/internal/worker/poller	(cached)
+?   	example.com/akuanaktehat/aggregator/migrations	[no test files]
+?   	example.com/akuanaktehat/aggregator/reference	[no test files]
+Checking auth-service
+?   	example.com/akuanaktehat/auth-service/cmd/auth-service	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/adapter/inbound/http	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/adapter/outbound/redis	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/application	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/config	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/domain	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/observability	[no test files]
+?   	example.com/akuanaktehat/auth-service/internal/token	[no test files]
+Checking bmkg-mock
+?   	example.com/akuanaktehat/bmkg-mock/cmd/bmkg-mock	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/auth	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/config	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/domain	[no test files]
+ok  	example.com/akuanaktehat/bmkg-mock/internal/generator	0.687s
+?   	example.com/akuanaktehat/bmkg-mock/internal/http	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/internal/store	[no test files]
+?   	example.com/akuanaktehat/bmkg-mock/seed	[no test files]
+Checking client-api
+?   	example.com/akuanaktehat/client-api/cmd/client-api	[no test files]
+ok  	example.com/akuanaktehat/client-api/internal/adapter/inbound/http	1.062s
+ok  	example.com/akuanaktehat/client-api/internal/adapter/outbound/aggregator	1.421s
+?   	example.com/akuanaktehat/client-api/internal/application	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authn	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/authz	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/config	[no test files]
+ok  	example.com/akuanaktehat/client-api/internal/middleware	0.713s
+?   	example.com/akuanaktehat/client-api/internal/observability	[no test files]
+?   	example.com/akuanaktehat/client-api/internal/projection	[no test files]
+Checking dashboard-updater
+go: downloading modernc.org/sqlite v1.36.1
+go: downloading modernc.org/libc v1.61.13
+go: downloading modernc.org/memory v1.8.2
+go: downloading golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
+go: downloading github.com/ncruces/go-strftime v0.1.9
+go: downloading github.com/dustin/go-humanize v1.0.1
+go: downloading github.com/mattn/go-isatty v0.0.20
+go: downloading golang.org/x/sys v0.30.0
+go: downloading modernc.org/mathutil v1.7.1
+go: downloading github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec
+?   	example.com/akuanaktehat/dashboard-updater/cmd/dashboard-updater	[no test files]
+?   	example.com/akuanaktehat/dashboard-updater/internal/application	[no test files]
+?   	example.com/akuanaktehat/dashboard-updater/internal/config	[no test files]
+ok  	example.com/akuanaktehat/dashboard-updater/internal/consumer	1.568s
+ok  	example.com/akuanaktehat/dashboard-updater/internal/contract	0.494s
+?   	example.com/akuanaktehat/dashboard-updater/internal/http	[no test files]
+ok  	example.com/akuanaktehat/dashboard-updater/internal/store	1.023s
+Checking notifier
+?   	example.com/akuanaktehat/notifier/cmd/notifier	[no test files]
+ok  	example.com/akuanaktehat/notifier/internal/application	1.440s
+?   	example.com/akuanaktehat/notifier/internal/config	[no test files]
+ok  	example.com/akuanaktehat/notifier/internal/consumer	1.800s
+ok  	example.com/akuanaktehat/notifier/internal/contract	0.616s
+?   	example.com/akuanaktehat/notifier/internal/dedup	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/dlq	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/http	[no test files]
+?   	example.com/akuanaktehat/notifier/internal/sender	[no test files]
+Checking pemda-portal
+?   	example.com/akuanaktehat/pemda-portal/cmd/pemda-portal	[no test files]
+?   	example.com/akuanaktehat/pemda-portal/internal/application	[no test files]
+?   	example.com/akuanaktehat/pemda-portal/internal/config	[no test files]
+ok  	example.com/akuanaktehat/pemda-portal/internal/consumer	1.585s
+ok  	example.com/akuanaktehat/pemda-portal/internal/contract	0.455s
+?   	example.com/akuanaktehat/pemda-portal/internal/http	[no test files]
+ok  	example.com/akuanaktehat/pemda-portal/internal/store	1.097s
+Checking pvmbg-mock
+?   	example.com/akuanaktehat/pvmbg-mock/cmd/pvmbg-mock	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/auth	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/config	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/domain	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/generator	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/http	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/simulation	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/internal/store	[no test files]
+?   	example.com/akuanaktehat/pvmbg-mock/seed	[no test files]
+Checking field-cli
+ok  	example.com/akuanaktehat/field-cli/cmd/field-cli	0.983s
+ok  	example.com/akuanaktehat/field-cli/internal/client	1.122s

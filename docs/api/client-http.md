@@ -47,4 +47,4 @@ JWT_ISSUER=bnpb-auth; JWT_AUDIENCE=bnpb-api; AGGREGATOR_URL=http://aggregator:90
 AGGREGATOR_TIMEOUT=1500ms; MAX_CONCURRENT=100; RATE_LIMIT_RPS=100 per client terverifikasi;
 RATE_LIMIT_BURST=200; PAGE_DEFAULT=100; PAGE_MAX=500.
 Kredensial upstream X-Internal-Key dan X-Correlation-ID diteruskan; credential tidak dicatat.
-Verifikasi integrasi Aggregator serta load test P2/P3 masih menjadi pekerjaan evidence berikutnya.
+Integrasi Aggregator, otorisasi, dan load test sudah memiliki [bukti eksekusi](../evidence/integration/README.md). Pengulangan terbaru dicatat pada [gladi demo](../evidence/demo-2026-10-08/README.md).

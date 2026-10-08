@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Jakarta",
+  "repository_base": "0ffb30123b1febb328d331f78d870c7860f83ec2",
+  "application_reference": "f6e99cc10fec64042eb184c9d7f92d14cb22fd23",
+  "source_files": [
+    {
+      "path": "scripts/demo/demo.py",
+      "sha256": "b6a545d4646bcff719ef4e4d37e2178737ab05a489584641bb2202d6da1a7d75",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/demo/test_demo.py",
+      "sha256": "c0ca5ff580d8f397951a2d4d659189ae655fb0a738b0f26a07206c46ea38ef18",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/loadtest/run.py",
+      "sha256": "7b66dd6801e5367f2947548d60acb0f94864f371353688cf9706e00bb008ea63",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/loadtest/auth.js",
+      "sha256": "a4a8941b28397535df293e5e44e82e326815aaf8f9c5559d46feb4598fdb8c36",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/loadtest/outage.js",
+      "sha256": "b1412d9256b1ee57ff016ae22bc5282b472df8ca447b0259e3815d45384a2e1a",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/loadtest/seismic-only.js",
+      "sha256": "19a48427e510253e53413561dac6ba7c37b9ca04b53c96a1ba795c43771cc482",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/loadtest/sustained.js",
+      "sha256": "5e51e482cd020512a74949f01df803e0e2c2d73c747a4b5f47f76de602d5942d",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/check/events_test.go",
+      "sha256": "aebe8355f303953bde77e98761f752aa44852d8d77c35d9cc994d5ffcb566c0c",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/check/foundation_test.go",
+      "sha256": "def2fddf542d2f62423f93c2813bae7b1d1c5b104737193bcaf2d0a1c3361371",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/check/ingest_test.go",
+      "sha256": "a650f20e2e1569d66a418d98f2152e74a77a9d95f55d9bb0e39c876262d4d367",
+      "normalization": "LF"
+    },
+    {
+      "path": "scripts/check/query_test.go",
+      "sha256": "e6ddc274b00702ccd10355b3239ae5bd194ce9749f1c60906f07eac226e6743f",
+      "normalization": "LF"
+    }
+  ],
+  "historical_report_evidence_unchanged": true
+}

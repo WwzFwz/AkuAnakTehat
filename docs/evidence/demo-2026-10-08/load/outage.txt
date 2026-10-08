@@ -1,0 +1,29 @@
+
+     ✓ outage request returns an expected status
+     ✓ recovery request returns an expected status
+
+   ✓ auth_error_rate................: 0.00%   0 out of 10
+     business_latency...............: avg=4.73ms   min=571.1µs med=4.58ms   max=13.28ms  p(90)=5.97ms   p(95)=6.81ms   p(99)=9.08ms
+     business_requests..............: 1221    23.431185/s
+     checks.........................: 100.00% 1221 out of 1221
+     controlled_429.................: 0       0/s
+     data_received..................: 13 MB   242 kB/s
+     data_sent......................: 703 kB  14 kB/s
+     http_req_blocked...............: avg=16.66µs  min=0s      med=0s       max=2.78ms   p(90)=0s       p(95)=0s       p(99)=572.5µs
+     http_req_connecting............: avg=13µs     min=0s      med=0s       max=2.78ms   p(90)=0s       p(95)=0s       p(99)=562.6µs
+     http_req_duration..............: avg=4.72ms   min=571.1µs med=4.58ms   max=13.28ms  p(90)=5.96ms   p(95)=6.77ms   p(99)=9.02ms
+       { expected_response:true }...: avg=4.72ms   min=571.1µs med=4.58ms   max=13.28ms  p(90)=5.96ms   p(95)=6.77ms   p(99)=9.02ms
+     http_req_failed................: 0.00%   0 out of 1234
+     http_req_receiving.............: avg=103.89µs min=0s      med=0s       max=3.46ms   p(90)=527.5µs  p(95)=563.94µs p(99)=1.07ms
+     http_req_sending...............: avg=7.63µs   min=0s      med=0s       max=675.3µs  p(90)=0s       p(95)=0s       p(99)=506.51µs
+     http_req_tls_handshaking.......: avg=0s       min=0s      med=0s       max=0s       p(90)=0s       p(95)=0s       p(99)=0s
+     http_req_waiting...............: avg=4.61ms   min=571.1µs med=4.5ms    max=13.28ms  p(90)=5.89ms   p(95)=6.65ms   p(99)=8.67ms
+     http_reqs......................: 1234    23.680657/s
+     iteration_duration.............: avg=205.49ms min=2.5ms   med=205.44ms max=222.17ms p(90)=207.08ms p(95)=207.85ms p(99)=211.01ms
+     iterations.....................: 1222    23.450375/s
+   ✓ outage_status_observed.........: 95.91%  470 out of 490
+   ✓ recovery_available.............: 91.79%  671 out of 731
+   ✓ successful_requests............: 1221    23.431185/s
+   ✓ system_error_rate..............: 0.00%   0 out of 1221
+     vus............................: 5       min=0            max=5
+     vus_max........................: 11      min=11           max=11

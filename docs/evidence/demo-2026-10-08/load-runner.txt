@@ -1,0 +1,18 @@
+ Container bnpb-m1-pvmbg-mock-1  Recreate
+ Container bnpb-m1-pvmbg-mock-1  Recreated
+ Container bnpb-m1-pvmbg-mock-1  Starting
+ Container bnpb-m1-pvmbg-mock-1  Started
+ Container bnpb-m1-pvmbg-mock-1  Waiting
+ Container bnpb-m1-pvmbg-mock-1  Healthy
+PASS seismic-only
+
+PASS sustained
+
+PASS outage
+
+ Container bnpb-m1-pvmbg-mock-1  Recreate
+ Container bnpb-m1-pvmbg-mock-1  Recreated
+ Container bnpb-m1-pvmbg-mock-1  Starting
+ Container bnpb-m1-pvmbg-mock-1  Started
+ Container bnpb-m1-pvmbg-mock-1  Waiting
+ Container bnpb-m1-pvmbg-mock-1  Healthy
