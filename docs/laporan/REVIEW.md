@@ -18,19 +18,20 @@ Kontribusi penulisan laporan kedua anggota adalah **Keseluruhan**, sesuai konfir
 
 ## Status instrumentasi wajib
 
-Temuan U7 tentang latency retry HTTP sudah ditutup. Log per percobaan, correlation ID yang sama, deadline bersama, sanitasi, batas retry, pembatalan, dan timeout diverifikasi oleh tes module Client API serta go vet. [Bukti U7](../evidence/http-attempts-2026-10-08/README.md) tersedia terpisah dari regresi stack dan load test yang belum dijalankan ulang setelah perubahan instrumentasi.
+Temuan U7 tentang latency retry HTTP sudah ditutup. Log per percobaan, correlation ID yang sama, deadline bersama, sanitasi, batas retry, pembatalan, dan timeout diverifikasi oleh tes module Client API serta go vet. [Bukti U7](../evidence/http-attempts-2026-10-08/README.md) melengkapi regresi stack dan load test yang sudah dijalankan ulang setelah perubahan instrumentasi pada source `a465139`.
 
 Cari `\pending` serta `[Isi` untuk meninjau bagian yang belum final. Placeholder ini disengaja agar data tidak dikarang.
 
 ## Pemeriksaan fakta dan cakupan
 
-- Rujukan kode mengikuti `5cb1367`, termasuk instrumentasi per percobaan HTTP. Bukti regresi stack dan load test tetap berasal dari implementasi `2353479`.
-- Bukti gladi awal tetap dipin pada `811e314`. Pengujian setelah perbaikan dipin pada `6cbcf52`, termasuk regresi 306,951 s dan k6 terbaru; angka P2 dalam laporan memakai run terbaru. Pengujian memakai volume yang sudah ada, bukan mesin kosong.
-- Metrik final berasal dari native Windows k6, bukan direktori `load-docker-invalid` yang memiliki durasi negatif.
-- P95 seismic 10,92 ms adalah metrik endpoint seismic; p95 gabungan skenario berbeda. Throughput semua respons bukan throughput sukses.
-- Sustained terbaru berisi 42.801 respons bisnis, 9.028 sukses, 33.773 bisnis 429, dan 10 auth 429; 50 TCP teramati selama 88,53 s. Error 0% memakai denominator tanpa 429. Throughput sukses 100,20/s dan total respons 475,03/s.
-- Outage terbaru menghasilkan 480/480 seismic sehat dan 480/480 volcanic dengan data basi. Recovery 420/730 HEALTHY sebelum pengembalian konfigurasi mock; pemulihan tidak instan.
-- Outage load yang direkam 20 s dan recovery 30 s. Jangan menyebutnya bukti outage 10–20 menit yang sudah dijalankan.
+- Rujukan kode dan bukti final mengikuti `4976a1f`. Regresi serta load memakai source `a465139`, termasuk instrumentasi per percobaan HTTP.
+- Regresi stack final lulus dalam 306,263 s; integrasi PostgreSQL juga lulus. Bukti pada `docs/evidence/final-2026-10-08/`.
+- Metrik final berasal dari native Windows k6. P95 seismic 12,51 ms adalah metrik endpoint seismic; p95 gabungan skenario berbeda.
+- Sustained berisi 42.511 respons bisnis, 8.793 sukses, 33.718 bisnis 429, dan 9 auth 429; 50 TCP teramati selama 87,78 s. Error 0% memakai denominator tanpa 429. Throughput sukses 97,59/s dan total 471,80/s.
+- Outage singkat menghasilkan 480/480 seismic sehat, 435/480 volcanic dengan status basi, dan recovery 625/730 HEALTHY. Deteksi dan pemulihan tidak instan.
+- Outage tambahan 600 s dengan recovery 90 s lulus tanpa restart container. Seluruh 30.753 respons bisnis sukses; 14.281 pembacaan seismic selama outage sehat.
+- Bootstrap dengan source bersih, kredensial baru, dan enam volume kosong lulus. Migrasi versi 3 bersih; 42 hazard diterima API serta seluruh consumer. Volume, kredensial, dan hazard acuan stack utama dipertahankan.
+- Bootstrap memakai Docker serta cache build host yang tersedia; bukan instalasi mesin baru dari nol. Percobaan runner awal salah meminta limit consumer 500, diperbaiki menjadi 200, lalu diulang dengan project kosong baru. Artefak awal tetap disimpan.
 - Singleflight, micro-cache, LISTEN/NOTIFY, schema_observations dan header deadline belum dibangun.
 - Tidak ada klaim exactly-once notifikasi, revocation access JWT seketika, atau HA satu broker RF1.
 - Spesifikasi menerima kutipan log/hasil ukur; tidak semua bukti harus berupa screenshot. Listing kode bukan bukti runtime dan diberi label berbeda.

@@ -1,55 +1,55 @@
 {
-  "revision": "5cb1367a3886a504e0a5a2f7da8d2bb1ced2ef73",
+  "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
   "files": [
     {
       "path": "services/aggregator/internal/application/canonicalize/mapper.go",
-      "revision": "5cb1367a3886a504e0a5a2f7da8d2bb1ced2ef73",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
       "sha256": "d0a9aa845a0afc9745b8aab7aca4b7de446085a3e9201fdc9c95123e7c5c9103",
       "excerpt": "p1-map-volcanic.txt",
       "first_line": 80
     },
     {
       "path": "services/client-api/internal/projection/projector.go",
-      "revision": "5cb1367a3886a504e0a5a2f7da8d2bb1ced2ef73",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
       "sha256": "9b6d4e7f48a7b1311030ae71dea853d8c6bbd311487f2eabb48181fc28b40618",
       "excerpt": "p3-projector.txt",
       "first_line": 6
     },
     {
       "path": "services/notifier/internal/application/apply.go",
-      "revision": "5cb1367a3886a504e0a5a2f7da8d2bb1ced2ef73",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
       "sha256": "641264b275d031b128095f2af2d9d958a66a41ced4a9a830e22a410c06d8d58e",
       "excerpt": "p5-notifier.txt",
       "first_line": 20
     },
     {
-      "path": "docs/evidence/reliability-2026-10-08/regression.txt",
-      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
-      "sha256": "50cf1f06b9e440ef3af339667d6bac74330388349a366be9b7bfadf60a9cfd6b"
+      "path": "docs/evidence/final-2026-10-08/regression.txt",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
+      "sha256": "a28c8bcb5b91f7fae4d772da98a575f5f86ed678cac16e0e8aadd4000a8ea45f"
     },
     {
-      "path": "docs/evidence/reliability-2026-10-08/load/seismic-only.json",
-      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
-      "sha256": "8de23eca694aa1ace1be26ec6ccde88bffc5cdd8d41f2b6bb829778020126fee"
+      "path": "docs/evidence/final-2026-10-08/load/seismic-only.json",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
+      "sha256": "051492578a5a0fb763fe5f47abf41037514b104a38b76e470354a2e05705cfb6"
     },
     {
-      "path": "docs/evidence/reliability-2026-10-08/load/sustained.json",
-      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
-      "sha256": "25834c0d6c5dec64412a7b5e4810c5f6f80d9c6f6caba30fd75c9f262d30cbb3"
+      "path": "docs/evidence/final-2026-10-08/load/sustained.json",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
+      "sha256": "92a0fde529c60d2ae8d4f94b5e3b370f524220eca75d9073265b2a0bbc10e3d2"
     },
     {
-      "path": "docs/evidence/reliability-2026-10-08/load/outage.json",
-      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
-      "sha256": "7716f39511b3bec4fa1cd08d77750f323f12db367d30e56bdad8bda836943c44"
+      "path": "docs/evidence/final-2026-10-08/load/outage.json",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
+      "sha256": "eed990a9beb506b4e13f77418c78e7fadb718653b3bc00cf9750fd6818f3e7d4"
     },
     {
-      "path": "docs/evidence/reliability-2026-10-08/load/connections.json",
-      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
-      "sha256": "32d7a099eb0e08ba263231e1c0f98af519c8acac0e3023f195b7b28b8036192d"
+      "path": "docs/evidence/final-2026-10-08/load/connections.json",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
+      "sha256": "4b10e111990a9fcfcdeb301f708d3334853815578887bc28d9a6b31b3a37fa41"
     },
     {
       "path": "docs/evidence/integration/event-trace.jsonl",
-      "revision": "5cb1367a3886a504e0a5a2f7da8d2bb1ced2ef73",
+      "revision": "4976a1f0b47e0eb56b6602f37d9dd3b2630c7fbc",
       "sha256": "9b307fcb99c484804f4ebb639d0a84cb9555477fac48c39402ffcfea669af0e0"
     }
   ]
