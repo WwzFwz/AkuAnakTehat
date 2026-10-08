@@ -13,6 +13,7 @@ const outageVUs = Number(__ENV.OUTAGE_VUS || 5);
 const recoveryVUs = Number(__ENV.RECOVERY_VUS || 5);
 const pause = Number(__ENV.SLEEP || 0.2);
 const outageStatusObserved = new Rate('outage_status_observed');
+const seismicAvailable = new Rate('seismic_available');
 const recoveryAvailable = new Rate('recovery_available');
 const outageSession = new TokenSession();
 const recoverySession = new TokenSession();
@@ -46,6 +47,8 @@ export const options = {
   },
   thresholds: {
     outage_status_observed: ['rate>0'],
+    seismic_available: ['rate>0.99'],
+    'successful_requests{endpoint:seismic,phase:outage}': ['count>0'],
     recovery_available: ['rate>0.5'],
     system_error_rate: ['rate<0.01'],
     auth_error_rate: ['rate<0.01'],
@@ -58,10 +61,17 @@ export function setup() {
 }
 
 export function duringOutage() {
-  const response = outageSession.request('GET', '/v1/hazards?limit=20', {
-    tags: { endpoint: 'hazards' },
+  const seismic = outageSession.request('GET', '/v1/hazards/seismic?limit=20', { tags: { endpoint: 'seismic', phase: 'outage' } });
+  observe(seismic, { endpoint: 'seismic', phase: 'outage' }, [200]);
+  if (seismic.status !== 429) {
+    let healthy = false;
+    try { const b = seismic.json(); healthy = seismic.status === 200 && b.data.length > 0 && sourceStatus(b, 'BMKG').status === 'HEALTHY'; } catch (_) {}
+    seismicAvailable.add(healthy);
+  }
+  const response = outageSession.request('GET', '/v1/hazards/volcanic?limit=20', {
+    tags: { endpoint: 'volcanic' },
   });
-  observe(response, { endpoint: 'hazards', phase: 'outage' }, [200, 503]);
+  observe(response, { endpoint: 'volcanic', phase: 'outage' }, [200, 503]);
   let body = null;
   try {
     body = response.json();
@@ -69,7 +79,7 @@ export function duringOutage() {
     body = null;
   }
   const pvmbg = sourceStatus(body, 'PVMBG');
-  const visible = response.status === 503 || (pvmbg && (pvmbg.status !== 'HEALTHY' || pvmbg.stale_since));
+  const visible = response.status === 503 || (response.status === 200 && body && body.data && body.data.length > 0 && pvmbg && pvmbg.status !== 'HEALTHY' && pvmbg.stale_since);
   outageStatusObserved.add(visible ? 1 : 0);
   check(response, {
     'outage request returns an expected status': (result) => result.status === 200 || result.status === 429 || result.status === 503,
@@ -82,10 +92,10 @@ export function restorePVMBG() {
 }
 
 export function duringRecovery() {
-  const response = recoverySession.request('GET', '/v1/hazards?limit=20', {
-    tags: { endpoint: 'hazards' },
+  const response = recoverySession.request('GET', '/v1/hazards/volcanic?limit=20', {
+    tags: { endpoint: 'volcanic' },
   });
-  observe(response, { endpoint: 'hazards', phase: 'recovery' }, [200, 503]);
+  observe(response, { endpoint: 'volcanic', phase: 'recovery' }, [200]);
   let body = null;
   try {
     body = response.json();

@@ -14,7 +14,7 @@ Konfigurasi k6 untuk pengukuran P2. Hasil terbaru: [integrasi](../../docs/eviden
 | --- | --- |
 | `seismic-only.js` | Dua skenario seismic/volcanic berjalan bersamaan; p95 request seismic sukses <300 ms. |
 | `sustained.js` | Default 50 VU selama 90 s dengan sesi token per VU. |
-| `outage.js` | Aktifkan outage PVMBG, ukur stale/unavailable, pulihkan, lalu verifikasi HEALTHY. |
+| `outage.js` | Aktifkan outage PVMBG, verifikasi seismic tetap tersedia dengan BMKG sehat, ukur volcanic stale/unavailable, lalu verifikasi pemulihan. |
 | `auth.js` | Helper token per VU, refresh serial, retry satu kali setelah 401, dan metrik error. |
 | `run.py` | Runner Compose k6 0.57.0; PVMBG 3s, hasil JSON/text, dan pengukuran koneksi TCP nyata. |
 

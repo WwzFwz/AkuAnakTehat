@@ -48,6 +48,12 @@ jobs:
         run: make events-check
       - name: Test query integration, natural token expiry, and independent rebuild
         run: make query-check
+      - name: Test large event delivery and durable rejection
+        env:
+          GOTELEMETRY: 'off'
+          GOTOOLCHAIN: local
+          GOWORK: 'off'
+        run: go test ./scripts/check/foundation_test.go ./scripts/check/large_events_test.go -run TestLargeEventDeliveryAndPermanentRejection -v -count=1 -timeout=3m
       - name: Measure concurrent reads, sustained connections, and outage recovery
         run: make load-check
       - name: Inspect service state

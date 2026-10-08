@@ -20,7 +20,7 @@ SUITES = {
     "p2": "TestDynamicSchemaAndStaleAPI",
     "p3": "TestMockContracts|TestTokenRotationAndAuthorization|TestJWTClaimValidation|TestQueryIntegration|TestNaturalExpiryAndFieldCLI",
     "p4": "TestDynamicSchemaAndStaleAPI|TestIndependentRebuild",
-    "p5": "TestEventPipeline",
+    "p5": "TestEventPipeline|TestLargeEventDeliveryAndPermanentRejection",
     "all": ".",
 }
 
@@ -45,8 +45,8 @@ def request(port, path, data=None, headers=None, form=False):
     except urllib.error.HTTPError as error:
         response = error
     with response:
-        raw = response.read(4 * 1024 * 1024 + 1)
-        if len(raw) > 4 * 1024 * 1024:
+        raw = response.read(8 * 1024 * 1024 + 1)
+        if len(raw) > 8 * 1024 * 1024:
             raise RuntimeError("Response exceeds demo display limit")
         try:
             body = json.loads(raw)
@@ -122,7 +122,7 @@ def verify(suite):
     env = os.environ.copy()
     env.update(GOWORK="off", GOTOOLCHAIN="local", GOTELEMETRY="off",
                GOCACHE=str(ROOT / ".local/go-cache"), GOMODCACHE=str(ROOT / ".local/go-mod-cache"))
-    args = ["go", "test", *[f"./scripts/check/{s}_test.go" for s in ("foundation", "ingest", "events", "query")],
+    args = ["go", "test", *[f"./scripts/check/{s}_test.go" for s in ("foundation", "ingest", "events", "query", "large_events")],
             "-run", f"^({SUITES[suite]})$" if suite != "all" else ".", "-v", "-count=1", "-timeout=15m"]
     return subprocess.run(args, cwd=ROOT, env=env).returncode
 

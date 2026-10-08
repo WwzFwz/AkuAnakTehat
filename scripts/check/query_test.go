@@ -185,6 +185,19 @@ func TestDynamicSchemaAndStaleAPI(t *testing.T) {
 	if len(seismic.Data) == 0 || len(seismic.Sources) != 1 || seismic.Sources[0].Status != "HEALTHY" {
 		t.Fatal("PVMBG outage affected seismic reads")
 	}
+	for _, identity := range []string{"media", "field-team"} {
+		detail := request(t, "GET", api+"/v1/hazards/"+oldID, "", bearer(login(t, identity)))
+		status(t, detail, 200)
+		var result struct {
+			Sources []struct {
+				Status     string `json:"status"`
+				StaleSince string `json:"stale_since"`
+			} `json:"sources"`
+		}
+		if err := json.Unmarshal(detail.body, &result); err != nil || len(result.Sources) != 1 || result.Sources[0].Status == "HEALTHY" || result.Sources[0].StaleSince == "" {
+			t.Fatal("detail missing outage metadata", identity)
+		}
+	}
 	status(t, request(t, "POST", pvmbg+"/admin/outage", `{"enabled":false}`, admin), 200)
 	field = login(t, "field-team")
 	waitQuery(t, "source recovers without restart", func() bool {

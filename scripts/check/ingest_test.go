@@ -69,6 +69,7 @@ func TestIngestPipeline(t *testing.T) {
 	}
 	marker := query(`SELECT hazard_id FROM hazard_events ORDER BY ingested_at,hazard_id LIMIT 1;`)
 	beforeRestart := query(`SELECT clock_timestamp();`)
+	migrationBefore := query(`SELECT version::text || chr(58) || dirty::text FROM schema_migrations;`)
 	docker(t, "", "restart", "aggregator")
 	wait("Aggregator resumes from durable checkpoints", func() bool {
 		return query(`SELECT max(last_attempt_at)>'`+beforeRestart+`' FROM source_status;`) == "t"
@@ -76,7 +77,7 @@ func TestIngestPipeline(t *testing.T) {
 	if query(`SELECT count(*) FROM hazard_events WHERE hazard_id='`+marker+`';`) != "1" {
 		t.Fatal("restart lost stable hazard identity")
 	}
-	if query(`SELECT count(*) FROM schema_migrations WHERE version=2 AND dirty=false;`) != "1" {
+	if query(`SELECT version::text || chr(58) || dirty::text FROM schema_migrations;`) != migrationBefore || !strings.HasSuffix(migrationBefore, ":false") {
 		t.Fatal("migration version changed on restart")
 	}
 	logs := docker(t, "", "logs", "--no-log-prefix", "--tail=400", "aggregator")

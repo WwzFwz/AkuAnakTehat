@@ -75,7 +75,7 @@ func request(t *testing.T, method, address, body string, headers map[string]stri
 		t.Fatalf("%s %s failed: %v", method, address, err)
 	}
 	defer res.Body.Close()
-	b, err := io.ReadAll(io.LimitReader(res.Body, 4<<20))
+	b, err := io.ReadAll(io.LimitReader(res.Body, (8<<20)+1))
 	if err != nil {
 		t.Fatal("reading response failed")
 	}
