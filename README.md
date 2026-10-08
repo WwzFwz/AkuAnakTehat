@@ -84,16 +84,7 @@ AkuAnakTehat/
 `-- Makefile                # Shortcut untuk shell POSIX
 ```
 
-Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/` menampung domain, aplikasi, adapter, konfigurasi, dan observability sesuai kebutuhan service. Aggregator juga memiliki `migrations/` dan referensi gunung sintetis. README pada level komponen menjelaskan tanggung jawab folder. Label A/B/C yang tersisa pada dokumentasi rencana lama merupakan penanda rancangan awal; kontribusi aktual dijelaskan berikut.
-
-## Kontribusi kelompok
-
-| Anggota | Perancangan dan validasi | Implementasi |
-| --- | --- | --- |
-| **Dzaky Aurelia Fawwaz (13523065)** | Merancang arsitektur dan mekanisme penyelesaian P1 hingga P5 | Mock BMKG dan PVMBG; Auth Service; ingest, pemetaan, korelasi tsunami, transaksi, dan watermark Aggregator; relay dan producer Kafka; ketiga consumer; infrastruktur, integrasi, serta pengujian lintas komponen. |
-| **Muhammad Alfansya (13523005)** | Membantu verifikasi dan validasi kesesuaian rancangan dengan spesifikasi | Query dan API internal Aggregator; Client API beserta proteksi beban, pagination, dan galat; CLI Tim Lapangan; script load test k6. |
-
-Kontribusi penulisan laporan masih perlu dikonfirmasi pada [metadata laporan](docs/laporan/metadata.tex). Claude membantu rancangan awal, sedangkan OpenAI Codex membantu review, implementasi, pengujian, dan dokumentasi. [Deklarasi LLM](docs/laporan/sections/12-deklarasi-ai.tex) menjelaskan cakupannya; anggota tetap bertanggung jawab memahami kode dan keputusan yang dikumpulkan.
+Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/` menampung domain, aplikasi, adapter, konfigurasi, dan observability sesuai kebutuhan service. Aggregator juga memiliki `migrations/` dan referensi gunung sintetis. README pada level komponen menjelaskan tanggung jawab folder.
 
 ## Menjalankan sistem
 
@@ -148,3 +139,12 @@ Uji unit tidak membutuhkan stack. Regresi, load test, dan demo yang mengubah sta
 Hasil pengujian akhir pada lingkungan lokal menunjukkan p95 seismic **10,92 ms**, sedikitnya **50 koneksi TCP selama 88,53 detik**, serta **error bisnis di luar 429 sebesar 0%**. Pada beban sustained, 9.028 respons berhasil dan 33.773 respons ditolak dengan 429 sesuai pembatasan beban. Throughput sukses sebesar 100,20 respons per detik; respons 429 tidak dihitung sebagai throughput sukses.
 
 Pengujian regresi mencakup pengiriman event 4 MiB, penolakan event yang melebihi batas, pemulihan backlog, serta pemrosesan ulang setelah gangguan penyimpanan consumer. Konfigurasi, hasil lengkap, dan batas interpretasi tersedia pada [bukti pengujian akhir](docs/evidence/reliability-2026-10-08/README.md). [Audit persyaratan](docs/requirements-audit.md) memuat pemetaan implementasi ke spesifikasi beserta temuan yang masih terbuka.
+
+## Kontribusi kelompok
+
+| Anggota | Perancangan dan validasi | Implementasi |
+| --- | --- | --- |
+| **Dzaky Aurelia Fawwaz (13523065)** | Merancang arsitektur dan mekanisme penyelesaian P1 hingga P5 | Mock BMKG dan PVMBG; Auth Service; ingest, pemetaan, korelasi tsunami, transaksi, dan watermark Aggregator; relay dan producer Kafka; ketiga consumer; infrastruktur, integrasi, serta pengujian lintas komponen. |
+| **Muhammad Alfansya (13523005)** | Membantu verifikasi dan validasi kesesuaian rancangan dengan spesifikasi | Query dan API internal Aggregator; Client API beserta proteksi beban, pagination, dan galat; CLI Tim Lapangan; script load test k6. |
+
+Kedua anggota berkontribusi pada keseluruhan penulisan laporan.

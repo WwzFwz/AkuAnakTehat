@@ -10,7 +10,7 @@ Kontribusi penulisan laporan kedua anggota adalah **Keseluruhan**, sesuai konfir
 
 ## Placeholder yang memang belum diketahui
 
-1. Rincian bantuan LLM tambahan per anggota, khususnya query/API internal Aggregator, Client API, CLI Tim Lapangan, dan script k6 (`sections/12-deklarasi-ai.tex`). Jangan mengklaim semua anggota sudah memahami kode sebelum mereka meninjau sendiri.
+1. Deklarasi penggunaan LLM (`sections/12-deklarasi-ai.tex`) sengaja dikosongkan untuk diisi sendiri oleh anggota kelompok.
 2. Status/tautan run GitHub Actions dari akun yang punya akses (`sections/11-verifikasi-dan-batasan.tex`). API tanpa autentikasi mengembalikan 404 saat diperiksa; bukan bukti workflow lulus maupun gagal.
 3. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
 

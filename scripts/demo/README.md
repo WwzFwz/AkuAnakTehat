@@ -186,5 +186,5 @@ Jika Docker tidak dapat diakses, aktifkan Docker Desktop dan periksa `docker inf
 
 - Baca [panduan pemahaman](../../docs/demo/pemahaman-sistem.md) dan lakukan latihan menjelaskan diagram tanpa membaca script.
 - Konfirmasi hasil workflow pada tab Actions GitHub. Hasil lokal tidak membuktikan hosted CI lulus.
-- Lengkapi kontribusi penulisan dan rincian LLM yang masih placeholder.
+- Lengkapi bagian laporan yang masih berupa placeholder.
 - Setelah kelompok meninjau versi final, buat tag `milestone-1` dan isi formulir sesuai spesifikasi. Panduan ini tidak membuat tag atau mengirim tugas secara otomatis.

@@ -31,7 +31,7 @@ Konfigurasi `.vscode` berada di folder laporan, tidak mengubah pengaturan editor
 | `sections/09-p4-service-dan-storage.tex` | P4: service boundary, akses DB, perbandingan storage. |
 | `sections/10-p5-pubsub.tex` | P5: outbox, Kafka, delivery, dedup, DLQ dan catch-up. |
 | `sections/11-verifikasi-dan-batasan.tex` | Hasil lokal, kegagalan yang diperbaiki, status CI, batas klaim. |
-| `sections/12-deklarasi-ai.tex` | Deklarasi LLM dan bagian yang perlu dikonfirmasi anggota. |
+| `sections/12-deklarasi-ai.tex` | Placeholder deklarasi LLM untuk diisi sendiri oleh kelompok. |
 | `appendices/a-matriks-kriteria.tex` | Pemetaan tiap kriteria spesifikasi ke mekanisme/bukti. |
 | `appendices/b-indeks-bukti.tex` | Indeks file bukti dan contoh trace. |
 | `references.tex` | Spesifikasi, rancangan awal, kode dan dokumentasi primer. |

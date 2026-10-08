@@ -42,7 +42,7 @@ Pada ekspor JSON k6 ini, nilai `thresholds: false` berarti threshold tidak dilan
 - Tidak dilakukan manipulasi TTL atau jam untuk demo expiry. CLI benar-benar melewati access TTL 60 detik pada regresi.
 - Uji outage singkat bukan bukti outage 10 atau 20 menit. Gunakan perintah manual pada panduan jika durasi lain diminta penguji.
 - Status workflow GitHub Actions hosted masih belum terkonfirmasi. Hasil lokal tidak dianggap sebagai hasil hosted CI.
-- Placeholder kontribusi penulisan, rincian LLM anggota, tag final, formulir, dan demo sinkron tetap perlu diselesaikan kelompok.
+- Bagian laporan yang masih berupa placeholder, tag final, formulir, dan demo sinkron tetap perlu diselesaikan kelompok.
 
 ## Mengulang
 

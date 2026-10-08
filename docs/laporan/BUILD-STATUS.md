@@ -5,6 +5,7 @@ Dijalankan lokal pada 8 Oktober 2026. Ini validasi artefak laporan, bukan pengul
 - `scripts/build.ps1 -RefreshAssets` selesai dengan exit code 0.
 - Setelah audit README dan persyaratan ditambahkan, `scripts/build.ps1 -RefreshAssets` kembali selesai dengan exit code 0. Halaman hasil pengukuran, verifikasi, dan indeks bukti serta diagram yang berubah dirender untuk inspeksi; ukuran seluruh halaman dan log tata letak diperiksa.
 - Revisi editorial berikutnya dibangun dengan `scripts/build.ps1` dan selesai dengan exit code 0. Sampul, alur arsitektur, asumsi, batasan, dan listing kode dirender untuk inspeksi. Seluruh teks sampul berwarna hitam dan nomor baris berada di dalam bingkai kode.
+- Setelah rincian penggunaan LLM dikosongkan untuk diisi anggota, `scripts/build.ps1` kembali berhasil. PDF diperiksa untuk memastikan rincian penggunaan tersebut sudah tidak tercantum, placeholder tersedia, dan tata letak tetap valid.
 - PDF keluaran: `IF4031_M1_AkuAnakTehat.pdf`, 38 halaman.
 - Enam diagram PlantUML, satu grafik hasil uji, tiga kutipan kode, serta tabel/log bukti berhasil dibuat ulang.
 - 50 tautan repository pada PDF diperiksa keberadaannya di revisi yang dirujuk.
