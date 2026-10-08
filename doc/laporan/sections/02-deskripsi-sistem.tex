@@ -5,7 +5,7 @@ BNPB membutuhkan representasi yang konsisten atas informasi gempa, potensi tsuna
 Lingkup Milestone 1 mengikuti dokumen spesifikasi M1 dan konteks tugas terpusat~\cite{spec-m1,spec-central}. Kedua instansi berupa mock yang dibangun kelompok; data serta referensi gunung api bersifat sintetis. Tiga identitas downstream adalah Media, Tim Lapangan, dan BNPB Pusat. Seluruh akses downstream bersifat baca saja. Pelaporan dari lapangan, integrasi sistem instansi nyata, dan pengoperasian banyak instance tidak termasuk implementasi ini.
 
 \subsection{Prinsip rancangan}
-Tiga alur utama dipisahkan. Jalur ingest menangani ketidakpastian sumber; jalur baca menggunakan data yang sudah tersimpan; jalur event memindahkan perubahan melalui outbox dan Kafka. Pemisahan ini membuat satu request client tidak harus menunggu HTTP ke instansi sumber. Sebagai konsekuensi, hasil baca bukan data real-time langsung dari sensor: kebaruan harus dijelaskan melalui waktu data dan status sumber.
+Sistem memisahkan proses ingest, pembacaan data, dan distribusi event. Proses ingest menangani ketidakpastian sumber, sedangkan pembacaan menggunakan data yang sudah tersimpan. Perubahan data selanjutnya diteruskan melalui outbox dan Kafka. Pemisahan ini membuat satu request client tidak harus menunggu HTTP ke instansi sumber. Hasil pembacaan karena itu dapat tertinggal dari kondisi terbaru di sumber. Waktu data dan status sumber disertakan agar pengguna dapat menilai kebaruannya.
 
 \begin{tabularx}{\linewidth}{lY}
 \toprule Problem & Mekanisme inti yang diimplementasikan\\\midrule

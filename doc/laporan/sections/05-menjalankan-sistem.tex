@@ -1,18 +1,18 @@
 % !TeX root = ../main.tex
 \section{Petunjuk Menjalankan Sistem}
 \label{sec:run}
-Prasyarat aplikasi adalah Go 1.24.2 dan Docker dengan Compose v2. Python 3 diperlukan untuk runner load dan helper trace. Dari root repository pada PowerShell:
+Prasyarat aplikasi adalah Go 1.24.2 dan Docker dengan Compose v2. Python 3 diperlukan untuk runner load dan helper trace. Perintah berikut dijalankan melalui PowerShell dari direktori utama repository.
 \begin{lstlisting}[numbers=none]
 powershell -NoProfile -File scripts/secrets/generate.ps1
 docker compose config --quiet
 docker compose up -d --build --wait --wait-timeout 180
 \end{lstlisting}
-Generator menyiapkan kredensial berbeda, pasangan key JWT, dan berkas environment lokal yang diabaikan Git. Nilai rahasia tidak disalin ke laporan. Pada POSIX, \texttt{make up} menyediakan bootstrap dan start. Pemda dapat ditambahkan kemudian dengan:
+Generator menyiapkan kredensial berbeda, pasangan key JWT, dan berkas environment lokal yang diabaikan Git. Nilai rahasia tidak disalin ke laporan. Pada POSIX, \texttt{make up} menyediakan bootstrap dan start. Pemda Portal dapat ditambahkan melalui perintah berikut.
 \begin{lstlisting}[numbers=none]
 docker compose --profile demo up -d --build pemda-portal
 \end{lstlisting}
 
-Pengujian unit dan analisis statis dengan go vet dijalankan melalui \nolinkurl{scripts/check/check.ps1} atau \texttt{make check}. Pengujian runtime harus berurutan karena memicu perubahan skema, outage, dan restart dependensi. Contoh regresi lengkap:
+Pengujian unit dan analisis statis dengan go vet dijalankan melalui \nolinkurl{scripts/check/check.ps1} atau \texttt{make check}. Pengujian runtime harus berurutan karena memicu perubahan skema, outage, dan restart dependensi. Rangkaian regresi lengkap dijalankan dengan perintah berikut.
 \begin{lstlisting}[numbers=none]
 $env:GOWORK='off'
 go test ./scripts/check/foundation_test.go `
@@ -21,11 +21,11 @@ go test ./scripts/check/foundation_test.go `
 py scripts/loadtest/run.py
 \end{lstlisting}
 
-CLI dijalankan dari module \nolinkurl{tools/field-cli}; kredensial dibaca dari environment lokal. Contoh sesi yang melintasi TTL access token:
+CLI dijalankan dari module \nolinkurl{tools/field-cli}; kredensial dibaca dari environment lokal. Perintah berikut menjalankan sesi yang melewati masa berlaku access token.
 \begin{lstlisting}[numbers=none]
 go run ./cmd/field-cli list --raw --limit 1 --watch 65s --count 2
 \end{lstlisting}
-Gunakan identitas Tim Lapangan untuk raw. Endpoint \texttt{/health} menyatakan proses hidup; endpoint \texttt{/ready} aplikasi memeriksa dependensi yang relevan. Status proses hidup saja tidak membuktikan bahwa data semua sumber masih baru. Untuk melihat satu alur:
+Gunakan identitas Tim Lapangan untuk raw. Endpoint \texttt{/health} menyatakan proses hidup; endpoint \texttt{/ready} aplikasi memeriksa dependensi yang relevan. Status proses hidup saja tidak membuktikan bahwa data semua sumber masih baru. Jejak satu alur dapat ditelusuri menggunakan correlation ID melalui perintah berikut.
 \begin{lstlisting}[numbers=none]
 py scripts/trace/trace.py <correlation-id>
 \end{lstlisting}

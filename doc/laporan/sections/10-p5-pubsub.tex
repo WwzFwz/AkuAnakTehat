@@ -1,5 +1,5 @@
 % !TeX root = ../main.tex
-\section{P5: Publish dan Subscribe dan Consumer Independen}
+\section{P5. Distribusi Event dengan Consumer Independen}
 \label{sec:p5}
 \subsection{Broker dan pola yang dipilih}
 Kafka menyediakan log yang dapat dibaca ulang dan posisi baca per consumer group. Topic utama adalah \texttt{bnpb.hazard-events.v1}; kegagalan pesan masuk ke topic DLQ terpisah. Konfigurasi M1 memakai satu partisi, replication factor 1, serta retensi broker tujuh hari. Dashboard-updater, notifier, dan pemda-portal memakai group berbeda sehingga masing-masing memperoleh stream yang sama. Jika mereka memakai satu group, Kafka justru membagi pekerjaan antaranggota; perilaku itu tidak memenuhi kebutuhan tiga proyeksi independen.
@@ -36,7 +36,7 @@ SQLite memakai volume sendiri, WAL, dan synchronous FULL. Efek view persisten se
 Pemanggilan HTTP setiap consumer dari Aggregator lebih sederhana di awal, tetapi mengikat pengetahuan producer tentang subscriber dan membuat kegagalan subscriber masuk jalur pengiriman. RabbitMQ dengan fan-out queue per consumer merupakan alternatif wajar untuk distribusi tugas, namun mekanisme replay histori dan lifecycle queue tetap perlu dirancang. Kafka dipilih untuk retensi log dan offset group; biaya memori, operasional broker, duplikasi, dan pengelolaan retention diterima pada demo lokal. Evaluasi ini tidak mengklaim Kafka selalu lebih unggul pada semua beban.
 
 \subsection{Bukti penyelesaian}
-\texttt{TestEventPipeline} memeriksa jalur dari mock melalui outbox dan Kafka hingga dashboard, replay event, penolakan versi lama, dedup notifier, dan persistensi setelah restart. Dashboard dihentikan sementara; notifier dan pemda tetap memproses versi berikutnya. Setelah dashboard dimulai lagi, offset yang belum dikonsumsi tersusul. Kafka juga dihentikan: ingest tetap menghasilkan outbox pending, kemudian backlog terkirim setelah broker pulih.
+\texttt{TestEventPipeline} memeriksa jalur dari mock melalui outbox dan Kafka hingga dashboard, replay event, penolakan versi lama, dedup notifier, dan persistensi setelah restart. Dashboard dihentikan sementara; notifier dan pemda tetap memproses versi berikutnya. Setelah dashboard dimulai lagi, offset yang belum dikonsumsi tersusul. Ketika Kafka dihentikan, proses ingest tetap menghasilkan outbox dengan status pending. Backlog kemudian terkirim setelah broker kembali tersedia.
 
 Uji subscriber baru menggunakan group pemda unik dan SQLite kosong, sehingga bukti replay tidak bergantung pada state run sebelumnya. Aggregator tidak diganti. Konfigurasi group dan volume pemda reguler dipulihkan setelahnya. Catch-up berlaku selama pesan masih tersedia pada retensi; consumer yang offline melewati retensi tidak dijamin mendapatkan seluruh histori. Replikasi satu broker juga tidak melindungi dari kehilangan seluruh volume Kafka.
 \proof{events-fresh-group.txt}

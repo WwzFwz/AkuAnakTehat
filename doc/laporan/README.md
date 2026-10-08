@@ -60,7 +60,7 @@ Alternatif distribusi TeX lengkap: dari folder ini jalankan `latexmk -pdf -outdi
 
 ## Mengubah dan merender diagram
 
-Diagram memakai [PlantUML](https://plantuml.com/command-line), dengan layout [Smetana](https://plantuml.com/smetana02) untuk arsitektur sehingga tidak memerlukan Graphviz eksternal. File `.puml` dapat diedit sebagai teks. Tidak perlu mengambil screenshot dari web: PDF vector yang disertakan tajam ketika diperbesar.
+Diagram memakai [PlantUML](https://plantuml.com/command-line), dengan layout ELK bawaan jar untuk arsitektur dan konektor siku-siku sehingga tidak memerlukan Graphviz eksternal. File `.puml` dapat diedit sebagai teks. Tidak perlu mengambil screenshot dari web: PDF vector yang disertakan tajam ketika diperbesar.
 
 Untuk membuat ulang seluruh aset diperlukan Java, Python 3, `matplotlib`, dan `PyMuPDF`, serta jar PlantUML dari bootstrap:
 
@@ -78,3 +78,5 @@ Jika render lokal tidak tersedia, sumber PlantUML tetap dapat ditempel pada edit
 Spesifikasi menerima potongan log, pengukuran, atau keluaran load test sebagai bukti; screenshot bukan satu-satunya bentuk yang sah. Laporan memakai listing kode yang dapat disalin serta transkrip test nyata. Tidak ada screenshot palsu. Jika menambah screenshot demo, simpan pada `assets/screenshots/`, beri caption perintah/skenario/tanggal, sensor token, dan gunakan `\includegraphics`. Jangan mengganti angka bukti lama dengan angka yang belum diukur.
 
 Rujukan kode/bukti dipin ke `f6e99cc`, hasil eksekusi **6 Oktober 2026**, sedangkan tanggal penyusunan laporan **8 Oktober 2026**. Status CI tetap belum terkonfirmasi; respons API GitHub 404 tidak membuktikan workflow gagal.
+
+Seluruh halaman PDF memakai A4 potret, termasuk diagram arsitektur. Susunan diagram dibuat lebih ringkas agar label tetap terbaca pada lebar halaman.

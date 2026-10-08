@@ -1,29 +1,32 @@
 @startuml
-!pragma layout smetana
+!pragma layout elk
 !include theme.puml
+skinparam linetype ortho
+skinparam roundcorner 0
+skinparam defaultFontSize 16
 top to bottom direction
-actor "Client\nMedia / Lapangan / BNPB" as client
-node "client-api :8080\n<<container>>" as api
-node "auth-service :8090\n<<container>>" as auth
-database "Redis\n<<container>>\npemilik: auth-service" as redis
-node "aggregator :9000\n<<container>>\npoller / mapper\nquery / relay" as agg
-node "bmkg-mock :8081\n<<container>>\nmemori milik BMKG" as bmkg
-node "pvmbg-mock :8082\n<<container>>\nmemori milik PVMBG" as pv
-database "PostgreSQL\n<<container>>\npemilik: Aggregator" as pg
-node "Kafka\n<<container>>\nlog + offset group" as kafka
-node "kafka-init\n<<container sekali jalan>>" as init
-node "dashboard-updater :8091\n<<container>>\nSQLite sendiri" as dash
-node "notifier :8092\n<<container>>\nSQLite sendiri" as note
-node "pemda-portal :8093\n<<container>>\nprofile demo / SQLite sendiri" as pemda
-client --> api : HTTP / JWT
-client --> auth : HTTP / token
+actor "Client\nMedia, Lapangan, BNPB" as client
+node "client-api\nport 8080" as api
+node "auth-service\nport 8090" as auth
+database "Redis\nmilik Auth Service" as redis
+node "aggregator\nport 9000\npoller, mapper\nquery, relay" as agg
+node "bmkg-mock\nport 8081\nmemori BMKG" as bmkg
+node "pvmbg-mock\nport 8082\nmemori PVMBG" as pv
+database "PostgreSQL\nmilik Aggregator" as pg
+node "Kafka\nlog dan offset group" as kafka
+node "kafka-init\nsekali jalan" as init
+node "dashboard-updater\nport 8091\nSQLite sendiri" as dash
+node "notifier\nport 8092\nSQLite sendiri" as note
+node "pemda-portal\nport 8093\nSQLite sendiri\nprofile demo" as pemda
+client --> api : HTTP\nJWT
+client --> auth : HTTP\ntoken
 auth --> redis : RESP
-api --> agg : HTTP / internal key
-agg --> bmkg : HTTP / API key
-agg --> pv : HTTP / Bearer
-agg --> pg : PostgreSQL protocol
-agg --> kafka : Kafka produce
-init --> kafka : create topics
+api --> agg : HTTP\ninternal key
+agg --> bmkg : HTTP\nAPI key
+agg --> pv : HTTP\nBearer
+agg --> pg : Protokol\nPostgreSQL
+agg --> kafka : Kafka\nproduce
+init --> kafka : Membuat\ntopic
 kafka --> dash : Kafka fetch\ngroup dashboard
 kafka --> note : Kafka fetch\ngroup notifier
 kafka --> pemda : Kafka fetch\ngroup pemda

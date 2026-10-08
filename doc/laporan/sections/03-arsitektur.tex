@@ -1,4 +1,5 @@
 % !TeX root = ../main.tex
+\clearpage
 \section{Arsitektur Sistem}
 \label{sec:architecture}
 Gambar~\ref{fig:architecture} memperlihatkan container, protokol, dan kepemilikan storage sistem.
@@ -23,7 +24,7 @@ Sistem memiliki delapan service aplikasi apabila pemda-portal diaktifkan. Postgr
 Port host aplikasi dipublikasikan pada loopback \texttt{127.0.0.1}. Port database, Redis, Kafka, dan API internal Aggregator tidak dipublikasikan ke host pada konfigurasi normal. Container memakai named volume untuk store persisten; restart biasa tidak menghapus state.
 
 \subsection{Protokol dan batas kepercayaan}
-Aggregator mengambil JSON melalui HTTP: BMKG memerlukan \texttt{X-BMKG-Key}, sedangkan PVMBG memerlukan Bearer token miliknya sendiri. Client menukar kredensial ke \texttt{/oauth/token}, kemudian mengirim JWT ke client-api. Client-api membaca lewat HTTP internal Aggregator dengan \texttt{X-Internal-Key}; ia tidak mempunyai kredensial PostgreSQL. Auth-service mengakses Redis melalui RESP dan password yang berbeda.
+Aggregator mengambil data JSON melalui HTTP dengan kredensial yang berbeda untuk setiap instansi. BMKG memerlukan \texttt{X-BMKG-Key}, sedangkan PVMBG memerlukan Bearer token miliknya sendiri. Client menukar kredensial ke \texttt{/oauth/token}, kemudian mengirim JWT ke client-api. Client-api membaca lewat HTTP internal Aggregator dengan \texttt{X-Internal-Key}; ia tidak mempunyai kredensial PostgreSQL. Auth-service mengakses Redis melalui RESP dan password yang berbeda.
 
 Relay mengirim envelope melalui protokol Kafka. Consumer mengambil stream dengan group masing-masing dan melakukan efek lokal di SQLite. Tidak ada pemanggilan fungsi maupun shared business package lintas service. Kontrak yang sama direpresentasikan secara lokal di setiap module. Komponen dalam Aggregator tetap boleh berkomunikasi lewat port berupa interface Go karena berada pada service pemilik yang sama.
 

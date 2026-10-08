@@ -1,5 +1,5 @@
 % !TeX root = ../main.tex
-\section{P4: Batas Service dan Flexible Storage}
+\section{P4. Batas Service dan Flexible Storage}
 \label{sec:p4}
 \subsection{Alasan menentukan batas service}
 BMKG dan PVMBG dipisah karena mewakili instansi otonom, kontrak berbeda, serta kegagalan dan kredensial terpisah. Auth-service menjadi pemilik kebijakan penerbitan token dan sesi; client-api menjadi batas akses downstream. Aggregator menjadi pemilik data kanonik, pemetaan, dan transaksi perubahan data. Consumer dipisahkan karena mempunyai tujuan, siklus hidup, serta state lokal yang berbeda.

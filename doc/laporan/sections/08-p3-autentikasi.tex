@@ -1,5 +1,5 @@
 % !TeX root = ../main.tex
-\section{P3: Autentikasi dan Domain Kepercayaan}
+\section{P3. Autentikasi dan Domain Kepercayaan}
 \label{sec:p3}
 \subsection{Pemisahan kredensial}
 \begin{tabularx}{\linewidth}{P{0.25\linewidth}P{0.28\linewidth}Y}
@@ -20,8 +20,8 @@ Access token ditandatangani EdDSA dengan key Ed25519 dan TTL default 60 detik. V
 
 \begin{tabularx}{\linewidth}{P{0.24\linewidth}Y}
 \toprule Identitas & Hak akses\\\midrule
-Media & Ringkasan: hazard ID, sumber, jenis, severity, nama area, occurred-at, ingested-at.\\
-Tim Lapangan & Ringkasan dan mentah: source reference ID, koordinat, dan seluruh attributes.\\
+Media & Ringkasan yang mencakup hazard ID, sumber, jenis, severity, nama area, occurred-at, dan ingested-at.\\
+Tim Lapangan & Ringkasan beserta data mentah yang mencakup source reference ID, koordinat, dan seluruh attributes.\\
 BNPB Pusat & Ringkasan dan mentah; baseline hak tertinggi pada M1 yang tetap read-only.\\
 \bottomrule
 \end{tabularx}
@@ -45,7 +45,7 @@ JWT yang sudah diterbitkan diverifikasi offline. Pencabutan refresh family tidak
 \subsection{Alasan pemilihan dan risiko yang ditangani}
 Satu kredensial bersama antarinstansi ditolak karena menghapus otonomi trust. Session lookup terpusat untuk setiap request menyederhanakan revocation langsung, tetapi menjadikan auth-store dependensi jalur baca. JWT asimetris dipilih agar client-api hanya memiliki kemampuan verifikasi; berbeda dari shared signing secret yang akan memperluas kemampuan penerbitan token.
 
-Validasi algoritma dan claim menghindari penerimaan token untuk issuer atau audience yang salah. Allowlist dan pemeriksaan scope berada di server. Help CLI tidak mencetak secret dari environment; redirect HTTP ditolak untuk mencegah penerusan body login ke tujuan lain. Galat dan trace tidak memuat token atau password. Namun sistem ini tetap PoC lokal: TLS dan mTLS, rotasi key online, MFA, dan revocation access token seketika belum diimplementasikan. Oleh sebab itu tidak ada klaim bahwa sistem bebas dari seluruh celah keamanan.
+Validasi algoritma dan claim menghindari penerimaan token untuk issuer atau audience yang salah. Allowlist dan pemeriksaan scope berada di server. Help CLI tidak mencetak secret dari environment; redirect HTTP ditolak untuk mencegah penerusan body login ke tujuan lain. Galat dan trace tidak memuat token atau password. Implementasi ini masih ditujukan untuk PoC lokal. TLS dan mTLS, rotasi key online, MFA, serta pencabutan access token secara langsung belum diimplementasikan. Oleh sebab itu tidak ada klaim bahwa sistem bebas dari seluruh celah keamanan.
 
 \subsection{Bukti penyelesaian}
 Suite fondasi memeriksa kredensial lintas instansi ditolak serta claim JWT invalid tidak diterima. Suite query memverifikasi allowlist Media, penolakan raw, dan akses penuh dua identitas lainnya. \texttt{TestNaturalExpiryAndFieldCLI} menjalankan dua request CLI berjarak 65 detik dalam satu sesi dengan default TTL 60 detik, lalu memeriksa token lama 401 sebelum dan sesudah refresh dan token baru 200. Tidak ada manipulasi jam atau TTL singkat buatan untuk bukti ini.

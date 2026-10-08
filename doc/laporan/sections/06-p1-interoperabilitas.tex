@@ -1,5 +1,5 @@
 % !TeX root = ../main.tex
-\section{P1: Arsitektur dan Interoperabilitas Data}
+\section{P1. Arsitektur dan Interoperabilitas Data}
 \label{sec:p1}
 \subsection{Masalah dan mekanisme}
 Kontrak inti sumber diketahui, tetapi field tambahan dapat muncul saat runtime. Karena itu parser memisahkan validasi field wajib dari penanganan field lain. Respons dibaca sebagai array \texttt{json.RawMessage}; setiap record diubah menjadi map nilai JSON. Field wajib diambil dan diperiksa tipe dan rentangnya. Field yang tersisa menjadi \texttt{Extra}, kemudian diteruskan ke \texttt{attributes} tanpa dikonversi menjadi float64 secara umum.
