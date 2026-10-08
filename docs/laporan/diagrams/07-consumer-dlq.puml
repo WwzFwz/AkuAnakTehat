@@ -14,7 +14,7 @@ Consumer -> Kafka : commit offset
 else record valid tetapi dependensi gagal setelah retry
 Consumer -> Consumer : berhenti tanpa commit\nsupervisor memulai ulang untuk retry
 else record invalid
-Consumer -> Kafka : publish DLQ + metadata
+Consumer -> Kafka : publish DLQ beserta metadata
 Kafka --> Consumer : ACK DLQ
 Consumer -> Kafka : commit offset asal
 end

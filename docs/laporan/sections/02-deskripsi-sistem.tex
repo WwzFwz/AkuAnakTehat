@@ -18,6 +18,6 @@ P5 & Transactional outbox, Kafka, group consumer terpisah, SQLite persisten, ded
 \end{tabularx}
 
 \subsection{Versi yang dilaporkan}
-Laporan ini mendeskripsikan implementasi acuan \texttt{f6e99cc}, bukan seluruh fitur pada rancangan awal. Bukti lokal bertanggal \EvidenceDate. Singleflight dan micro-cache, \texttt{LISTEN/NOTIFY}, tabel \texttt{schema\_observations}, dan propagasi deadline melalui header belum diimplementasikan. Timeout lokal, relay polling, dan log \texttt{schema\_drift} sudah menjadi bagian inti.
+Laporan ini mendeskripsikan implementasi acuan \texttt{2353479}. Bukti awal bertanggal \EvidenceDate\ dipertahankan bersama pengujian setelah perbaikan pada 8 Oktober 2026. Singleflight dan micro-cache, \texttt{LISTEN/NOTIFY}, tabel \texttt{schema\_observations}, dan propagasi deadline melalui header belum diimplementasikan. Timeout lokal, relay polling, dan log \texttt{schema\_drift} sudah menjadi bagian inti. Audit persyaratan masih mencatat satu celah pencatatan latency retry HTTP yang dijelaskan pada Bagian~\ref{sec:verification}.
 
 Tautan kode dan bukti pada laporan menunjuk revisi acuan tersebut agar klaim dapat ditelusuri meskipun branch utama berubah. Perubahan laporan setelah revisi itu tidak dengan sendirinya berarti pengujian runtime dijalankan ulang.

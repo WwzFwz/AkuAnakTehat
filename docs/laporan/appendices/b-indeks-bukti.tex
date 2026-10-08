@@ -16,6 +16,11 @@ E8 & \evidence{services.txt} & Snapshot status container akhir sesi pengujian.\\
 \bottomrule
 \end{tabularx}
 
+\subsection{Bukti setelah perbaikan 8 Oktober}
+E9 merujuk \reliabilityevidence{README.md} beserta JSON k6, sampel koneksi, konfigurasi, log polling, serta keadaan container sebelum dan sesudah pengujian pada subfolder load. Angka P2 terbaru menggunakan kelompok bukti ini.
+
+E10 merujuk \reliabilityevidence{regression.txt}, \reliabilityevidence{postgres.txt}, \reliabilityevidence{modules.txt}, dan \reliabilityevidence{secret-scan.txt}. Transkrip regresi sebelum pembaruan tes migrasi turut dipertahankan; kegagalan tersebut berasal dari asumsi versi migrasi tetap pada angka 2. Tes diperbaiki untuk memastikan versi aktual dan status migrasi tetap sama setelah restart. Regresi sesudahnya lulus. Manifest mencatat hash artefak dan normalisasi teks tanpa mengubah nilai pengukuran.
+
 \subsection{Contoh trace event nyata}
 \input{assets/evidence/trace-table.tex}
 Correlation ID dibentuk pada polling lalu diteruskan ke mock, transaksi dan envelope, publish, dan consumer. Query client memiliki correlation ID tersendiri; query tidak dianggap sebagai penyebab ingest. Pada log consumer, latency menunjukkan waktu pemrosesan record sampai commit, bukan latency ujung-ke-ujung sejak kejadian bencana.

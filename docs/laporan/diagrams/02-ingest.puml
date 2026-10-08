@@ -4,24 +4,27 @@ hide footbox
 autonumber
 participant "Mock sumber" as source
 participant "Poller" as poll
-participant "Reader + mapper" as map
+participant "Reader dan mapper" as map
 database "PostgreSQL" as db
 poll -> db : baca checkpoint endpoint
-poll -> source : GET since=watermark-overlap\ncorrelation ID + kredensial sumber
+poll -> source : GET since=watermark-overlap\ncorrelation ID dan kredensial sumber
 source --> poll : array JSON (field tambahan boleh ada)
-poll -> map : decode field wajib + Extra
-map --> poll : record valid / alasan karantina
+poll -> map : decode field wajib dan Extra
+map --> poll : record valid atau alasan karantina
 loop Setiap record
-group Transaksi serializable per record
-poll -> db : korelasi warning + upsert hazard\nhash berubah: version naik + outbox
-poll -> db : karantina record invalid
+alt Record valid dan envelope dalam batas
+poll -> db : transaksi record\nkorelasi, hash, hazard dan outbox
 db --> poll : COMMIT
+else Record invalid atau envelope terlalu besar
+poll -> db : rollback bila perlu\nlalu transaksi karantina
+db --> poll : COMMIT karantina
 end
 end
 poll -> db : simpan checkpoint setelah seluruh respons selesai
 poll -> db : catat status hasil polling
 note over source,poll
 HTTP gagal: checkpoint tidak maju.
+DB gagal: checkpoint tidak maju; prefix tersimpan.
 Field aditif valid: attributes JSONB, tanpa DDL.
 end note
 @enduml

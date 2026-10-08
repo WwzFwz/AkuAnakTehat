@@ -77,6 +77,6 @@ Jika render lokal tidak tersedia, sumber PlantUML tetap dapat ditempel pada edit
 
 Spesifikasi menerima potongan log, pengukuran, atau keluaran load test sebagai bukti; screenshot bukan satu-satunya bentuk yang sah. Laporan memakai listing kode yang dapat disalin serta transkrip test nyata. Tidak ada screenshot palsu. Jika menambah screenshot demo, simpan pada `assets/screenshots/`, beri caption perintah/skenario/tanggal, sensor token, dan gunakan `\includegraphics`. Jangan mengganti angka bukti lama dengan angka yang belum diukur.
 
-Rujukan kode/bukti dipin ke `f6e99cc`, hasil eksekusi **6 Oktober 2026**, sedangkan tanggal penyusunan laporan **8 Oktober 2026**. Status CI tetap belum terkonfirmasi; respons API GitHub 404 tidak membuktikan workflow gagal.
+Rujukan implementasi dipin ke `2353479`. Bukti awal **6 Oktober 2026** dipertahankan, sedangkan tabel dan grafik P2 memakai pengujian ulang **8 Oktober 2026** pada revisi bukti `6cbcf52`. `assets/provenance.json` mencatat revisi dan hash setiap input, sehingga sumber historis dan hasil terbaru dapat dibedakan. Narasi mencatat celah U7 pada latency per percobaan retry client-api; kelulusan load test tidak berarti seluruh kewajiban sudah terpenuhi. Status CI tetap belum terkonfirmasi.
 
 Seluruh halaman PDF memakai A4 potret, termasuk diagram arsitektur. Susunan diagram dibuat lebih ringkas agar label tetap terbaca pada lebar halaman.

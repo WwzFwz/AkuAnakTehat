@@ -1,46 +1,55 @@
 {
-  "revision": "f6e99cc10fec64042eb184c9d7f92d14cb22fd23",
+  "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
   "files": [
     {
       "path": "services/aggregator/internal/application/canonicalize/mapper.go",
+      "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
       "sha256": "d0a9aa845a0afc9745b8aab7aca4b7de446085a3e9201fdc9c95123e7c5c9103",
       "excerpt": "p1-map-volcanic.txt",
       "first_line": 80
     },
     {
       "path": "services/client-api/internal/projection/projector.go",
+      "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
       "sha256": "9b6d4e7f48a7b1311030ae71dea853d8c6bbd311487f2eabb48181fc28b40618",
       "excerpt": "p3-projector.txt",
       "first_line": 6
     },
     {
       "path": "services/notifier/internal/application/apply.go",
+      "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
       "sha256": "641264b275d031b128095f2af2d9d958a66a41ced4a9a830e22a410c06d8d58e",
       "excerpt": "p5-notifier.txt",
       "first_line": 20
     },
     {
       "path": "docs/evidence/integration/regression.txt",
+      "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
       "sha256": "a7102774ca9e6d09844816b8ffee4668de34f065f75fe2b554f1f0c5e3197885"
     },
     {
-      "path": "docs/evidence/integration/load/seismic-only.json",
-      "sha256": "151bd126ef4ca61097519c0b8aefa569e251011e3aead18c2e27c52ce3bc9867"
+      "path": "docs/evidence/reliability-2026-10-08/load/seismic-only.json",
+      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
+      "sha256": "8de23eca694aa1ace1be26ec6ccde88bffc5cdd8d41f2b6bb829778020126fee"
     },
     {
-      "path": "docs/evidence/integration/load/sustained.json",
-      "sha256": "219a52c6690bf2788c28e517a4e4e5c4b99418d81c93442eb31068e38eadcdbf"
+      "path": "docs/evidence/reliability-2026-10-08/load/sustained.json",
+      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
+      "sha256": "25834c0d6c5dec64412a7b5e4810c5f6f80d9c6f6caba30fd75c9f262d30cbb3"
     },
     {
-      "path": "docs/evidence/integration/load/outage.json",
-      "sha256": "409eb347e4b79f84c42ff95b81b1ea79e69f06918e0ded144c2f5c4f7201b0d8"
+      "path": "docs/evidence/reliability-2026-10-08/load/outage.json",
+      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
+      "sha256": "7716f39511b3bec4fa1cd08d77750f323f12db367d30e56bdad8bda836943c44"
     },
     {
-      "path": "docs/evidence/integration/load/connections.json",
-      "sha256": "633ebc274167871dadb3a95b31d81d78022f9da0b318fe346f1cfb389ab22bc0"
+      "path": "docs/evidence/reliability-2026-10-08/load/connections.json",
+      "revision": "6cbcf52cfbfd83edbe3b5970fd23442f11213ec7",
+      "sha256": "32d7a099eb0e08ba263231e1c0f98af519c8acac0e3023f195b7b28b8036192d"
     },
     {
       "path": "docs/evidence/integration/event-trace.jsonl",
+      "revision": "2353479dfa7e6693912a28f302b99e5c559b7eef",
       "sha256": "9b307fcb99c484804f4ebb639d0a84cb9555477fac48c39402ffcfea669af0e0"
     }
   ]
