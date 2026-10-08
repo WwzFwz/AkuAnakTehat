@@ -8,7 +8,7 @@ Kedua instansi berupa mock dengan data sintetis. Implementasi mencakup polling, 
 
 ![Arsitektur sistem BNPB](docs/laporan/assets/figures/01-arsitektur.svg)
 
-Diagram berasal dari [PlantUML yang dapat diedit](docs/laporan/diagrams/01-arsitektur.puml). Setiap kotak dan simbol database menunjukkan satu container. SQLite dan memori mock berada dalam container pemilik. Panah dari Kafka menunjukkan aliran data menuju consumer yang menginisiasi pembacaan melalui protokol Kafka.
+Setiap service berjalan dalam container terpisah dan mengakses penyimpanan miliknya sendiri. SQLite dan memori mock berada di dalam container service pemilik. Consumer membaca event dari Kafka secara independen.
 
 Sistem memisahkan tiga alur agar kegagalan sumber tidak langsung menghambat pembacaan pengguna.
 
@@ -31,7 +31,7 @@ Sistem memisahkan tiga alur agar kegagalan sumber tidak langsung menghambat pemb
 
 Setiap service memiliki module Go dan Dockerfile sendiri. Client API tidak mengakses PostgreSQL langsung. Consumer membaca Kafka, sedangkan Auth Service mengelola sesi di Redis. Poller, mapper, query, dan relay tetap menjadi komponen Aggregator karena menggunakan data dan transaksi milik service tersebut.
 
-PostgreSQL berada pada `store_net`, Redis pada `auth_net`, dan Kafka pada `bus_net`. Ketiganya tidak memublikasikan port ke host. Port HTTP operator hanya terikat ke loopback. Detail kontrak tersedia pada [HTTP internal](docs/api/aggregator-http.md), [API client](docs/api/client-http.md), [storage](docs/api/storage.md), [event](docs/api/hazard-event.md), dan [indeks kontrak](docs/api/README.md).
+PostgreSQL, Redis, dan Kafka menggunakan jaringan internal tanpa memublikasikan port ke host. Port HTTP aplikasi hanya terikat ke loopback. Detail endpoint, model data, dan format event tersedia pada [kontrak API](docs/api/README.md).
 
 ## Teknologi dan alasan pemilihan
 
@@ -39,7 +39,7 @@ PostgreSQL berada pada `store_net`, Redis pada `auth_net`, dan Kafka pada `bus_n
 | --- | --- |
 | Go 1.24.2 | Goroutine untuk worker independen dan `context` untuk deadline; module terpisah menjaga build setiap service. |
 | HTTP, JSON, dan `net/http` | Kontrak mudah diperiksa; tolerant reader menerima atribut baru sambil memvalidasi field wajib. |
-| PostgreSQL 16.8, JSONB, dan pgx | Transaksi menyatukan hazard, watermark, dan outbox. Kolom kanonik bertipe mendukung filter; atribut tambahan tidak membutuhkan DDL baru. |
+| PostgreSQL 16.8, JSONB, dan pgx | Hazard dan outbox disimpan atomik per record; checkpoint maju setelah seluruh respons ditangani. Kolom kanonik mendukung filter, sedangkan JSONB menyimpan atribut tambahan tanpa perubahan skema tabel. |
 | golang-migrate | Migrasi tabel berversi yang di-embed dan dijalankan Aggregator. |
 | Redis 7.4.2, AOF, dan Lua | TTL sesi, persistensi refresh token, dan rotasi state secara atomik di Redis. |
 | JWT EdDSA dengan Ed25519 | Auth Service memegang private key; Client API memverifikasi dengan public key tanpa meminta auth pada setiap request. |
@@ -47,7 +47,6 @@ PostgreSQL berada pada `store_net`, Redis pada `auth_net`, dan Kafka pada `bus_n
 | SQLite melalui modernc | View dan deduplikasi lokal tanpa menambah server database untuk setiap consumer. |
 | Docker Compose | Mengatur container, network, volume, serta health check bersama. |
 | k6 0.57.0 | Mengukur latency, throughput, error, serta penolakan beban. Koneksi TCP diukur terpisah dari VU. |
-| LaTeX, PlantUML, dan Tectonic | Laporan modular, diagram berbasis teks, dan PDF yang dapat dibuat ulang. |
 
 Kafka memakai satu broker dengan replication factor 1. Pengiriman event bersifat at-least-once; notifier masih dapat mengirim ulang jika crash terjadi setelah pengiriman tetapi sebelum marker tersimpan. Notifikasi hanya disimulasikan melalui log. Atomisitas Redis tidak menjamin respons HTTP token baru sampai ke client. Sistem belum menggunakan TLS, koordinasi banyak instance, atau failover lintas host.
 
@@ -74,8 +73,8 @@ AkuAnakTehat/
 |-- docs/
 |   |-- api/                # Kontrak HTTP, storage, port, event
 |   |-- demo/               # Pemahaman sistem dan tanya jawab
-|   |-- evidence/           # Bukti eksekusi beserta batasnya
-|   `-- laporan/            # LaTeX per bagian, diagram, aset, PDF
+|   |-- evidence/           # Hasil pengujian
+|   `-- laporan/            # Laporan dan diagram sistem
 |-- infra/                  # Konfigurasi dan panduan infrastruktur
 |-- env/                    # Konfigurasi lokal; secret diabaikan Git
 |-- .github/workflows/      # Uji CI dan secret scanning
@@ -84,7 +83,7 @@ AkuAnakTehat/
 `-- Makefile                # Shortcut untuk shell POSIX
 ```
 
-Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/` menampung domain, aplikasi, adapter, konfigurasi, dan observability sesuai kebutuhan service. Aggregator juga memiliki `migrations/` dan referensi gunung sintetis. README pada level komponen menjelaskan tanggung jawab folder.
+Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/` menampung domain, aplikasi, adapter, konfigurasi, dan observability sesuai kebutuhan service. Aggregator juga memiliki `migrations/` dan referensi gunung sintetis.
 
 ## Menjalankan sistem
 
@@ -98,7 +97,7 @@ py scripts/demo/demo.py status
 py scripts/demo/demo.py read --identity media
 ```
 
-Bootstrap mempertahankan secret yang sudah ada. Kredensial dan private key di `env/` tidak dimasukkan ke Git. Profile `demo` menambahkan Pemda Portal. Helper `status` memeriksa Pemda juga sehingga mengharapkan profile tersebut aktif.
+Bootstrap membuat kredensial lokal di `env/` dan mempertahankan secret yang sudah ada. Profile `demo` menjalankan seluruh service, termasuk Pemda Portal yang diperiksa oleh perintah `status`.
 
 Pada Linux atau macOS gunakan `make up` dan `python3` untuk helper Python, lalu tambahkan Pemda melalui `docker compose --profile demo up -d --build pemda-portal`. Pada Compose manual, ekspor `LOCAL_UID=$(id -u)` dan `LOCAL_GID=$(id -g)` agar bind mount secret dapat dibaca service. [Panduan infrastruktur](infra/README.md) memuat petunjuk lengkap. Untuk menghentikan seluruh stack dengan volume tetap tersimpan, gunakan `docker compose --profile demo down`.
 
@@ -121,11 +120,9 @@ py scripts/demo/demo.py read --identity media --raw --expect 403
 | Generator mock | `GENERATION_INTERVAL=10s` |
 | Delay PVMBG | `PVMBG_DELAY_MIN=500ms`, `PVMBG_DELAY_MAX=3s`; runner P2 sementara mengatur keduanya menjadi `3s` |
 
-Gunakan `docker compose config --quiet` untuk validasi tanpa mencetak ekspansi secret. Untuk presentasi, tampilkan `docker compose ps`, helper demo, dan log yang sudah disanitasi.
-
 ## Demo dan pengujian
 
-[Panduan demo](scripts/demo/README.md) memuat perintah, hasil yang perlu ditunjukkan, dan pemulihan P1 hingga P5. [Panduan memahami sistem](docs/demo/pemahaman-sistem.md) membantu menjelaskan alasan desain. Mekanisme penilaian resmi tetap mengikuti pengumuman asisten.
+Pengujian mencakup pemetaan dan perubahan skema, konkurensi, autentikasi, isolasi service, serta distribusi event. Skenario P1 hingga P5 dapat dijalankan melalui [panduan demo](scripts/demo/README.md).
 
 ```powershell
 powershell -NoProfile -File scripts/check/check.ps1
