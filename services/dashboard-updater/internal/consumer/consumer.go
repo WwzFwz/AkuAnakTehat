@@ -32,7 +32,7 @@ type Consumer struct {
 }
 
 func New(c config.Config, p Processor, l *slog.Logger) (*Consumer, error) {
-	client, err := kgo.NewClient(kgo.SeedBrokers(c.Brokers...), kgo.ConsumerGroup(c.Group), kgo.ConsumeTopics(c.Topic), kgo.DisableAutoCommit(), kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()), kgo.BlockRebalanceOnPoll(), kgo.RebalanceTimeout(60*time.Second), kgo.FetchMaxBytes(2<<20), kgo.RequiredAcks(kgo.AllISRAcks()), kgo.RecordDeliveryTimeout(5*time.Second), kgo.DialTimeout(2*time.Second))
+	client, err := kgo.NewClient(kgo.WithHooks(kafkaHook{l}), kgo.SeedBrokers(c.Brokers...), kgo.ConsumerGroup(c.Group), kgo.ConsumeTopics(c.Topic), kgo.DisableAutoCommit(), kgo.ConsumeResetOffset(kgo.NewOffset().AtStart()), kgo.BlockRebalanceOnPoll(), kgo.RebalanceTimeout(60*time.Second), kgo.FetchMaxBytes(6<<20), kgo.ProducerBatchMaxBytes(5<<20), kgo.RequiredAcks(kgo.AllISRAcks()), kgo.RecordDeliveryTimeout(5*time.Second), kgo.DialTimeout(2*time.Second))
 	if err != nil {
 		return nil, errors.New("invalid Kafka consumer configuration")
 	}
@@ -97,8 +97,10 @@ func Process(ctx context.Context, r *kgo.Record, p Processor, d Delivery, attemp
 				}
 			}
 		}
-		if used > attempts {
-			used = attempts
+		if err != nil {
+			// A valid record failed due to an operational dependency. Preserve
+			// its offset; the supervisor restarts this worker for later retry.
+			return errors.New("processing_dependency_unavailable")
 		}
 	}
 	if ctx.Err() != nil {
@@ -111,7 +113,9 @@ func Process(ctx context.Context, r *kgo.Record, p Processor, d Delivery, attemp
 	}
 	return d.Commit(ctx, r)
 }
-func (c *Consumer) DeadLetter(ctx context.Context, r *kgo.Record, reason string, attempts int) error {
+func (c *Consumer) DeadLetter(ctx context.Context, r *kgo.Record, reason string, attempts int) (resultErr error) {
+	start := time.Now()
+	defer func() { c.traceRecord(r, "dead_letter", start, resultErr) }()
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	record := Record(r, c.Config.DLQ, c.Config.Group, reason, attempts)
@@ -128,7 +132,9 @@ func (c *Consumer) DeadLetter(ctx context.Context, r *kgo.Record, reason string,
 	c.Logger.Warn("event_dead_lettered", "consumer_group", c.Config.Group, "source_partition", r.Partition, "source_offset", r.Offset, "reason", reason, "attempts", attempts)
 	return nil
 }
-func (c *Consumer) Commit(ctx context.Context, r *kgo.Record) error {
+func (c *Consumer) Commit(ctx context.Context, r *kgo.Record) (resultErr error) {
+	start := time.Now()
+	defer func() { c.traceRecord(r, "commit_offset", start, resultErr) }()
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 	if err := c.Client.CommitRecords(ctx, r); err != nil {

@@ -55,12 +55,17 @@ func (s *Store) List(ctx context.Context, after string, limit int) ([]json.RawMe
 	}
 	defer rows.Close()
 	result := []json.RawMessage{}
+	bytes := 0
 	for rows.Next() {
 		var raw string
 		if err = rows.Scan(&raw); err != nil {
 			return nil, err
 		}
 		result = append(result, json.RawMessage(raw))
+		bytes += len(raw)
+		if bytes > 7<<20 {
+			break
+		}
 	}
 	return result, rows.Err()
 }

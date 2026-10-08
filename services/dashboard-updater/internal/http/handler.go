@@ -43,8 +43,20 @@ func Handler(db Health, kafka Health, view View) http.Handler {
 			return
 		}
 		next := ""
-		if len(data) > limit {
-			data = data[:limit]
+		bytes, count := 0, 0
+		for _, item := range data {
+			if count >= limit || bytes+len(item) > 7<<20 {
+				break
+			}
+			bytes += len(item)
+			count++
+		}
+		if count == 0 && len(data) > 0 {
+			write(w, 503, map[string]string{"error": "stored_event_exceeds_response_limit"})
+			return
+		}
+		if count < len(data) {
+			data = data[:count]
 			var last struct {
 				ID string `json:"hazard_id"`
 			}
