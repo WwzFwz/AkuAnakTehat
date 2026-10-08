@@ -2,10 +2,12 @@ package consumer
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"example.com/akuanaktehat/notifier/internal/contract"
 	"example.com/akuanaktehat/notifier/internal/dlq"
 	"github.com/twmb/franz-go/pkg/kgo"
+	"strings"
 	"testing"
 	"time"
 )
@@ -51,7 +53,7 @@ func TestProcessingBoundaries(t *testing.T) {
 		calls, dead, committed int
 		wantErr                bool
 	}{
-		{"success", false, 0, false, false, 1, 0, 1, false}, {"retry succeeds", false, 1, false, false, 2, 0, 1, false}, {"exhausted", false, 9, false, false, 3, 1, 1, false}, {"poison", true, 0, false, false, 0, 1, 1, false}, {"DLQ unavailable", true, 0, true, false, 0, 1, 0, true}, {"offset unavailable", false, 0, false, true, 1, 0, 1, true},
+		{"success", false, 0, false, false, 1, 0, 1, false}, {"retry succeeds", false, 1, false, false, 2, 0, 1, false}, {"exhausted", false, 9, false, false, 3, 0, 0, true}, {"poison", true, 0, false, false, 0, 1, 1, false}, {"DLQ unavailable", true, 0, true, false, 0, 1, 0, true}, {"offset unavailable", false, 0, false, true, 1, 0, 1, true},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -65,7 +67,7 @@ func TestProcessingBoundaries(t *testing.T) {
 			if (err != nil) != tc.wantErr || p.calls != tc.calls || d.dead != tc.dead || d.committed != tc.committed {
 				t.Fatalf("unsafe boundary: p=%+v d=%+v error=%v", p, d, err)
 			}
-			if tc.failures > 3 && d.attempts != 3 {
+			if tc.failures > 3 && p.calls != 3 {
 				t.Fatal("wrong attempt count")
 			}
 		})
@@ -86,5 +88,39 @@ func TestDLQMetadata(t *testing.T) {
 	}
 	if string(r.Value) != string(original.Value) || r.Topic != "dead" || h["consumer_group"] != "group" || h["source_partition"] != "2" || h["source_offset"] != "42" || h["source_topic"] != "source" || h["failure_reason"] != "invalid_event" || h["attempts"] != "1" || h["correlation_id"] != "trace" {
 		t.Fatal("DLQ lost original payload or context")
+	}
+}
+
+func TestRetryAfterDependencyRecovery(t *testing.T) {
+	r := &kgo.Record{Key: []byte("0199a100-0000-7000-8000-000000000002"), Value: []byte(sample)}
+	p := &processStub{failures: 3}
+	d := &deliveryStub{}
+	if Process(context.Background(), r, p, d, 3, time.Second) == nil {
+		t.Fatal("dependency failure hidden")
+	}
+	if d.dead != 0 || d.committed != 0 {
+		t.Fatal("valid record abandoned during dependency outage")
+	}
+	if err := Process(context.Background(), r, p, d, 3, time.Second); err != nil {
+		t.Fatal(err)
+	}
+	if d.committed != 1 || d.dead != 0 {
+		t.Fatal("recovery did not complete original record")
+	}
+}
+func TestEnvelopeSizeBoundaries(t *testing.T) {
+	var e map[string]any
+	if err := json.Unmarshal([]byte(sample), &e); err != nil {
+		t.Fatal(err)
+	}
+	e["padding"] = ""
+	base, _ := json.Marshal(e)
+	for _, delta := range []int{-1, 0, 1} {
+		e["padding"] = strings.Repeat("x", (4<<20)-len(base)+delta)
+		raw, _ := json.Marshal(e)
+		_, err := contract.Decode([]byte("0199a100-0000-7000-8000-000000000002"), raw)
+		if (err != nil) != (delta > 0) {
+			t.Fatalf("bytes=%d error=%v", len(raw), err)
+		}
 	}
 }
