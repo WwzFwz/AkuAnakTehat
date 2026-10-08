@@ -30,6 +30,7 @@ func main() {
 		os.Exit(1)
 	}
 	client := redis.NewClient(&redis.Options{Addr: c.RedisAddr, Password: c.RedisPassword, DialTimeout: c.RedisTimeout, ReadTimeout: c.RedisTimeout, WriteTimeout: c.RedisTimeout, ContextTimeoutEnabled: true, MaxRetries: -1, PoolSize: 20, PoolTimeout: c.RedisTimeout})
+	client.AddHook(observability.RedisHook{})
 	defer client.Close()
 	store := &redisstore.Store{Client: client, Timeout: c.RedisTimeout}
 	app := &application.Service{Clients: c.Clients, Store: store, Signer: token.Signer{Key: key, Issuer: c.Issuer, Audience: c.Audience, Now: time.Now}, AccessTTL: c.AccessTTL, RefreshTTL: c.RefreshTTL, Now: time.Now}
