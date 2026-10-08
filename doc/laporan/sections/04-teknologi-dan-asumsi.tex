@@ -1,0 +1,32 @@
+% !TeX root = ../main.tex
+\section{Teknologi dan Asumsi}
+\subsection{Teknologi terpilih}
+\begin{tabularx}{\linewidth}{P{0.26\linewidth}Y}
+\toprule Teknologi & Alasan terkait kebutuhan\\\midrule
+Go 1.24.2 & Goroutine dan context mendukung worker independen serta pembatasan waktu; module per service memisahkan dependensi build.\\
+HTTP/JSON, \texttt{net/http} & Kontrak mudah diperiksa dan mendukung field aditif dari mock; biaya serialisasi diterima pada skala M1.\\
+PostgreSQL 16.8, pgx & Transaksi menyatukan hazard, outbox, dan checkpoint; kolom bertipe dipadukan dengan JSONB untuk atribut sumber.\\
+Redis 7.4.2, AOF, Lua & TTL untuk sesi dan eksekusi rotasi atomik terhadap state Redis. Redis bukan penyimpan private key.\\
+JWT EdDSA / Ed25519 & Client-api memverifikasi dengan public key tanpa panggilan auth-service pada setiap request.\\
+Kafka 3.9.1, franz-go & Log persisten dan offset per group memungkinkan replay serta subscriber baru yang independen.\\
+SQLite / modernc & View dan dedup lokal consumer tanpa menambah server database untuk setiap consumer.\\
+Docker Compose & Container, network, volume, health check, dan konfigurasi tersusun dalam satu orkestrasi.\\
+golang-migrate & Migrasi DDL berversi, di-embed dan dijalankan Aggregator; field aditif JSONB tidak memicu migrasi.\\
+k6 0.57.0 & Pengukuran beban berkelanjutan, percentile, throughput, dan error dengan denominator eksplisit.\\
+\bottomrule
+\end{tabularx}
+
+\subsection{Asumsi operasional dan data}
+\begin{enumerate}
+\item Satu host Compose, satu instance per service, satu relay berurutan, dan satu broker Kafka. Konfigurasi ini bukan high availability.
+\item Jaringan demo dianggap lingkungan lokal tepercaya. HTTP internal tidak memakai TLS dan Kafka tidak memakai SASL. Isolasi network dan kredensial mencegah akses aplikasi yang tidak semestinya dalam model ini, tetapi tidak melindungi dari administrator host yang berbahaya.
+\item ID logis sumber tetap saat record yang sama dipoll ulang. Hazard disatukan melalui pasangan \texttt{(source, source\_ref\_id)}. Stabilitas ID kanonik bergantung pada keberlangsungan Canonical Store.
+\item Mock memakai seed minimal 20 record, generator default setiap 10 detik, dan memori lokal. Restart mock dapat kehilangan data runtime yang belum diambil; mekanisme ini bukan jaminan histori instansi produksi.
+\item \texttt{since} gempa/laporan bersifat inklusif menurut waktu kejadian/laporan. Warning tidak memiliki timestamp perubahan pada kontrak wire; mock menyimpan waktu perubahan secara internal untuk filtering. Kompatibilitas dengan mock lain memerlukan interpretasi \texttt{since} warning yang sama.
+\item Watermark memakai waktu mulai request Aggregator dengan overlap 10 detik. Ini mengasumsikan jam dan keterlambatan sumber berada dalam batas yang wajar; data bertimestamp lama di luar overlap dapat terlewat. Tidak ada jaminan toleransi keterlambatan tak terbatas.
+\item Tabel referensi gunung api tersedia secara statis dan sintetis. \texttt{volcano\_id} yang tidak dikenal dikarantina, bukan diberi koordinat tebakan.
+\item Clock yang cukup selaras diperlukan untuk JWT dan timestamp. Implementasi verifikator tidak menambahkan leeway 5 detik yang pernah disebut rancangan awal. Anomali pengukuran clock load generator dibahas pada P2.
+\end{enumerate}
+
+\subsection{Keputusan yang berubah dari rancangan awal}
+Versi implementasi memakai log \texttt{schema\_drift}, bukan tabel pengamatan skema. Notifier dan pemda mempunyai endpoint inspeksi loopback 8092/8093. Idempotensi notifikasi dibatasi oleh celah pengiriman sebelum marker persisten. Rotasi Redis tidak menjamin respons HTTP token baru sampai ke client. Urutan Kafka hanya berlaku dalam partisi dengan pemetaan key yang tetap. Perubahan ini dipertahankan sebagai batas rancangan, bukan ditutupi sebagai jaminan yang sudah terpenuhi.

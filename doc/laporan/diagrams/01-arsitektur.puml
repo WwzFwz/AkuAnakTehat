@@ -1,0 +1,30 @@
+@startuml
+!pragma layout smetana
+!include theme.puml
+top to bottom direction
+actor "Client\nMedia / Lapangan / BNPB" as client
+node "client-api :8080\n<<container>>" as api
+node "auth-service :8090\n<<container>>" as auth
+database "Redis\n<<container>>\npemilik: auth-service" as redis
+node "aggregator :9000\n<<container>>\npoller / mapper\nquery / relay" as agg
+node "bmkg-mock :8081\n<<container>>\nmemori milik BMKG" as bmkg
+node "pvmbg-mock :8082\n<<container>>\nmemori milik PVMBG" as pv
+database "PostgreSQL\n<<container>>\npemilik: Aggregator" as pg
+node "Kafka\n<<container>>\nlog + offset group" as kafka
+node "kafka-init\n<<container sekali jalan>>" as init
+node "dashboard-updater :8091\n<<container>>\nSQLite sendiri" as dash
+node "notifier :8092\n<<container>>\nSQLite sendiri" as note
+node "pemda-portal :8093\n<<container>>\nprofile demo / SQLite sendiri" as pemda
+client --> api : HTTP / JWT
+client --> auth : HTTP / token
+auth --> redis : RESP
+api --> agg : HTTP / internal key
+agg --> bmkg : HTTP / API key
+agg --> pv : HTTP / Bearer
+agg --> pg : PostgreSQL protocol
+agg --> kafka : Kafka produce
+init --> kafka : create topics
+kafka --> dash : Kafka fetch\ngroup dashboard
+kafka --> note : Kafka fetch\ngroup notifier
+kafka --> pemda : Kafka fetch\ngroup pemda
+@enduml

@@ -1,0 +1,12 @@
+func MapVolcanic(v VolcanicInput, reference map[string]Volcano) (hazard.Event, error) {
+	r, ok := reference[v.VolcanoID]
+	if !ok {
+		return hazard.Event{}, errors.New("unknown volcano_id")
+	}
+	a := extras(v.Extra)
+	a["volcano_id"] = raw(v.VolcanoID)
+	a["alert_level"] = raw(v.Alert)
+	a["eruption_count_24h"] = raw(v.Eruptions)
+	a["ash_column_height_m"] = raw(v.Ash)
+	return hazard.Event{Source: "PVMBG", SourceRefID: v.ID, Type: "VOLCANIC", Severity: tsunami.Severity(v.Alert), Area: r.Name, Latitude: r.Latitude, Longitude: r.Longitude, OccurredAt: v.ReportedAt, Attributes: a}, nil
+}

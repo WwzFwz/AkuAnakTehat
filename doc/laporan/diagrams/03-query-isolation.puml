@@ -1,0 +1,27 @@
+@startuml
+!include theme.puml
+hide footbox
+autonumber
+actor Client
+participant "client-api" as api
+participant "Aggregator" as agg
+participant "PVMBG" as source
+par Worker polling
+agg -> source : GET dengan timeout 4 s
+source --> agg : delay 3 s / error
+agg -> agg : ingest dan update status\ndi PostgreSQL
+else Jalur baca independen
+Client -> api : GET seismic / volcanic + JWT
+api -> api : scope dan batas beban
+api -> agg : query internal\nbudget 1,5 s
+agg -> agg : query PostgreSQL\npool baca terpisah
+agg --> api : data + status sumber
+api -> api : proyeksi allowlist
+api --> Client : 200 / galat eksplisit
+end
+note over api,agg
+Request baca tidak menunggu HTTP sumber.
+Akses PostgreSQL diringkas di sini;
+lihat diagram arsitektur untuk batas container.
+end note
+@enduml

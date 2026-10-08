@@ -1,0 +1,16 @@
+{
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.tools": [
+    {
+      "name": "report-powershell",
+      "command": "powershell",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "%DIR%/scripts/build.ps1"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {"name": "Build laporan (Tectonic)", "tools": ["report-powershell"]}
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "files.associations": {"*.puml": "plantuml"}
+}

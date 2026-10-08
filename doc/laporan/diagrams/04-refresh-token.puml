@@ -1,0 +1,31 @@
+@startuml
+!include theme.puml
+hide footbox
+autonumber
+actor "CLI Lapangan" as cli
+participant "Auth Service" as auth
+database Redis
+cli -> auth : client_credentials\nID + secret
+auth -> Redis : hash refresh + family\nTTL sesi
+ auth --> cli : JWT 60 s + refresh
+... TTL 60 s berlalu alami ...
+cli -> auth : refresh_token\nserial, bukan paralel
+auth -> Redis : Lua: validasi\nfamily, used, TTL
+alt refresh belum dipakai
+Redis -> Redis : refresh lama used\nsimpan refresh baru
+Redis --> auth : sukses
+auth --> cli : JWT + refresh baru
+else refresh lama dipakai ulang
+Redis -> Redis : revoke family
+Redis --> auth : reuse
+ auth --> cli : 400 invalid_grant
+end
+note over cli,auth
+JWT baru dapat dipakai di client-api.
+JWT lama yang expired tetap ditolak 401.
+end note
+note over cli,Redis
+Atomisitas Redis tidak mencakup respons HTTP.
+Respons hilang dapat memerlukan login ulang.
+end note
+@enduml

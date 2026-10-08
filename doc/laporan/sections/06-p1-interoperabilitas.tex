@@ -1,0 +1,52 @@
+% !TeX root = ../main.tex
+\section{P1 -- Arsitektur dan Interoperabilitas Data}
+\label{sec:p1}
+\subsection{Masalah dan mekanisme}
+Kontrak inti sumber diketahui, tetapi field tambahan dapat muncul saat runtime. Karena itu parser memisahkan validasi field wajib dari penanganan field lain. Respons dibaca sebagai array \texttt{json.RawMessage}; setiap record diubah menjadi map nilai JSON. Field wajib diambil dan diperiksa tipe/rentangnya. Field yang tersisa menjadi \texttt{Extra}, kemudian diteruskan ke \texttt{attributes} tanpa dikonversi menjadi float64 secara umum.
+
+Kebijakan yang dipilih adalah \textbf{mempertahankan field tak dikenal yang valid}. Ini mencakup \texttt{confidence\_level}, objek bersarang, array, boolean, dan angka dalam rentang yang dapat disimpan JSONB. Nama sumber yang bertabrakan dengan atribut buatan BNPB, misalnya \texttt{tsunami\_warnings}, ditempatkan pada namespace \texttt{source\_extensions}. Poller mencatat nama field baru dalam log \texttt{schema\_drift}. Field wajib yang hilang/salah tipe, enum tak dikenal, referensi gunung yang tidak tersedia, atau nilai yang tidak dapat disimpan dikarantina dengan alasan yang eksplisit.
+
+Record invalid dalam array tidak harus menggagalkan record lain. Akan tetapi, respons yang bukan JSON array valid menggagalkan fetch batch; watermark tidak dimajukan untuk fetch yang gagal. Penyimpanan karantina memakai pembungkus teks JSON mentah agar input yang tidak representabel sebagai JSONB masih dapat dicatat.
+\coderef{services/aggregator/internal/application/canonicalize/input.go}
+
+\subsection{Pemetaan kanonik}
+\begin{tabularx}{\linewidth}{P{0.22\linewidth}YY}
+\toprule Field / aturan & BMKG & PVMBG\\\midrule
+Identitas sumber & \texttt{event\_id} menjadi \texttt{source\_ref\_id}. & \texttt{report\_id} menjadi \texttt{source\_ref\_id}.\\
+Jenis dan area & SEISMIC; \texttt{region\_name}. & VOLCANIC; nama pada referensi \texttt{volcano\_id}.\\
+Lokasi dan waktu & Koordinat episentrum; \texttt{occurred\_at}. & Koordinat referensi BNPB; \texttt{reported\_at}.\\
+Severity tanpa warning & NORMAL jika $M<5$; WASPADA jika $5\leq M<6{,}5$; SIAGA jika $M\geq6{,}5$. & Pemetaan langsung Normal/Waspada/Siaga/Awas ke enum huruf besar.\\
+Severity dengan warning & Untuk gempa berpotensi tsunami, ikuti tingkat warning terkait; ambil tingkat tertinggi bila lebih dari satu. & Tidak berlaku.\\
+Atribut sumber & Magnitude, kedalaman, potensi tsunami, warning terkait, serta field tambahan. & ID gunung, alert asli, jumlah erupsi, tinggi abu, serta field tambahan.\\
+\bottomrule
+\end{tabularx}
+
+Aggregator membangkitkan UUID saat hazard pertama dibuat. Upsert mempertahankan identitas itu melalui unique constraint sumber dan ID sumber. \texttt{ingested\_at} merekam penerimaan pertama, bukan waktu pembacaan terakhir; perubahan berikutnya dicatat dalam metadata internal seperti \texttt{updated\_at} dan version.
+
+Warning disimpan terpisah sehingga boleh mendahului gempa. Ketika gempa tiba, warning yang sudah ada digunakan; ketika warning datang belakangan, hazard terkait dikorelasikan ulang. \texttt{related\_event\_id} yang berubah untuk satu warning ditolak. Hasil warning dan zona diurutkan untuk menghindari perubahan hash hanya karena urutan array yang tidak bermakna.
+\coderef{services/aggregator/internal/application/canonicalize/mapper.go}
+
+\diagram{02-ingest}{Ingest dan penambahan field sumber. Kotak transaksi mencakup state yang harus berubah bersama; tidak mencakup publish Kafka.}{fig:ingest}
+
+\subsection{Deteksi perubahan dan transaksi}
+Hash konten dihitung dari makna field kanonik dan atribut; ID BNPB serta timestamp penerimaan tidak menjadi alasan perubahan baru. Angka dan timestamp dinormalisasi agar hasil stabil setelah round-trip penyimpanan. Record yang sama tetap memperbarui informasi pengamatan internal tanpa menghasilkan event baru. Perubahan konten meningkatkan version dan menghasilkan snapshot outbox dengan event ID baru.
+
+Unit of work memakai transaksi PostgreSQL serializable. Upsert hazard, penyimpanan warning/karantina yang relevan, outbox, dan checkpoint batch dilakukan bersama. Rollback transaksi tidak boleh meninggalkan checkpoint yang mengklaim data sudah tersimpan. Ini memindahkan persoalan kegagalan Kafka ke relay tanpa mengorbankan konsistensi ingest.
+\coderef{services/aggregator/internal/application/ingest/service.go}
+\lstinputlisting[float=htbp,language=Golang,caption={Pemilihan atribut tambahan pada pemetaan vulkanik; kutipan langsung kode implementasi.}]{assets/code/p1-map-volcanic.txt}
+
+\subsection{Alternatif dan trade-off}
+\begin{tabularx}{\linewidth}{P{0.25\linewidth}YY}
+\toprule Alternatif & Manfaat & Konsekuensi / keputusan\\\midrule
+Struct ketat dan tolak unknown field & Kontrak sangat eksplisit. & Penambahan aditif memaksa perubahan gateway; tidak dipilih.\\
+JSON tolerant reader & Sesuai wire sumber dan mempertahankan field baru. & Perlu validasi runtime, kebijakan konflik nama, serta batas tipe; dipilih.\\
+Schema registry / Avro / Protobuf & Evolusi skema dapat dikelola dengan aturan formal. & Memerlukan pengelolaan kontrak tambahan dan tidak menggantikan kewajiban menerima wire JSON mock; ditunda.\\
+\bottomrule
+\end{tabularx}
+
+Yang didukung ialah penambahan field valid tanpa mengubah field wajib. Rename, penghapusan field wajib, perubahan tipe/arti field, dan enum baru tidak otomatis didukung. Mempertahankan JSON juga tidak berarti menafsirkan semantik field baru secara otomatis. \texttt{confidence\_level} tersimpan sebagai atribut tambahan; laporan ini tidak mengklaim adanya model kepercayaan yang memakai nilainya untuk menghitung severity.
+
+\subsection{Bukti penyelesaian}
+\texttt{TestIngestPipeline} memicu schema v2 dan menemukan \texttt{confidence\_level} pada Canonical Store serta log drift. \texttt{TestDynamicSchemaAndStaleAPI} memeriksa record skema lama dan baru melalui API, versi migrasi tidak berubah, serta container terkait tidak diganti. Pemetaan, field tambahan, korelasi, dan hash diperiksa pada unit test mapper. Rincian kriteria dan lokasi bukti terdapat pada Lampiran~\ref{app:matrix}.
+\proof{regression.txt}
+\coderef{services/aggregator/internal/application/canonicalize/mapper_test.go}

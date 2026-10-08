@@ -1,0 +1,56 @@
+% !TeX root = ../main.tex
+\section{P3 -- Autentikasi dan Domain Kepercayaan}
+\label{sec:p3}
+\subsection{Pemisahan kredensial}
+\begin{tabularx}{\linewidth}{P{0.25\linewidth}P{0.28\linewidth}Y}
+\toprule Domain & Mekanisme & Pemisahan yang ditegakkan\\\midrule
+BMKG & Header \texttt{X-BMKG-Key}. & Hanya API key BMKG yang sah.\\
+PVMBG & \texttt{Authorization: Bearer} token PVMBG. & Nilai berbeda dari key BMKG dan JWT downstream.\\
+Admin simulasi & \texttt{X-Admin-Key}. & Kredensial operator terpisah dari akses data.\\
+Downstream & Client ID/secret berbeda untuk Media, Lapangan, BNPB. & Auth-service menerbitkan scope berdasarkan konfigurasi server.\\
+API internal & \texttt{X-Internal-Key}. & Client-api mengakses Aggregator; bukan token publik client.\\
+Penyimpanan & Password PostgreSQL dan Redis terpisah. & Hanya service pemilik menerima konfigurasi store.\\
+\bottomrule
+\end{tabularx}
+
+Secret dibangkitkan oleh bootstrap dan dibaca dari environment/file lokal; private key hanya dipasang pada auth-service dan public key dipasang pada client-api. Berkas contoh memuat placeholder. Mengetahui kredensial Media tidak memberikan kredensial sumber ataupun private key penerbit JWT. Pemisahan ini mempersempit dampak kebocoran satu domain, tetapi bukan pengganti enkripsi transport pada deployment nyata.
+
+\subsection{JWT, scope, dan proyeksi}
+Access token ditandatangani EdDSA dengan key Ed25519 dan TTL default 60 detik. Verifikator membatasi algoritma yang diterima serta memeriksa issuer, audience, expiration, issued-at, subject, ID token, dan scope. Client-api memakai public key lokal, sehingga verifikasi tidak membutuhkan panggilan auth-service untuk setiap request. Refresh token berupa nilai acak opaque 32 byte; Redis menyimpan hash dan metadata sesi.
+
+\begin{tabularx}{\linewidth}{P{0.24\linewidth}Y}
+\toprule Identitas & Hak akses\\\midrule
+Media & Ringkasan: hazard ID, sumber, jenis, severity, nama area, occurred-at, ingested-at.\\
+Tim Lapangan & Ringkasan dan mentah: source reference ID, koordinat, dan seluruh attributes.\\
+BNPB Pusat & Ringkasan dan mentah; baseline hak tertinggi pada M1 yang tetap read-only.\\
+\bottomrule
+\end{tabularx}
+
+Permintaan eksplisit field mentah oleh Media ditolak server dengan 403, termasuk raw detail dan \texttt{include=raw}. Sesudah query, projector membangun objek baru berdasarkan allowlist. Menambah field upstream dengan demikian tidak otomatis membocorkannya ke Media. Menyembunyikan koordinat hanya pada UI tidak dipakai sebagai mekanisme keamanan.
+\lstinputlisting[float=htbp,language=Golang,caption={Proyeksi membangun objek baru dari allowlist, bukan menghapus beberapa field dari objek mentah.}]{assets/code/p3-projector.txt}
+\coderef{services/client-api/internal/authn/verifier.go}
+\coderef{services/client-api/internal/projection/projector.go}
+
+\subsection{Rotasi refresh dan batas atomisitas}
+\diagram{04-refresh-token}{Sesi Tim Lapangan, rotasi refresh, serta pemeriksaan token access lama yang sudah kedaluwarsa.}{fig:refresh}
+
+Redis menyimpan keluarga sesi dengan expiry tetap. Lua memvalidasi tipe key, keberadaan, family aktif, kecocokan metadata, dan TTL sebelum mutasi. Pada rotasi normal, refresh lama ditandai used dan refresh baru dibuat dengan sisa masa berlaku yang tidak memperpanjang keluarga. Pemakaian kembali refresh lama mencabut keluarga. Semua langkah tersebut atomik terhadap pengamatan state Redis; script juga menyusun validasi sebelum mutasi karena error runtime Lua tidak otomatis melakukan rollback.
+
+Atomisitas Redis tidak mencakup respons HTTP. Jika rotasi berhasil tetapi respons token baru hilang, retry token lama dapat dianggap reuse; client mungkin harus login ulang. Karena itu satu refresh token tidak digunakan secara paralel oleh CLI maupun antar-VU k6. Ini trade-off proteksi replay yang ketat terhadap kelangsungan sesi pada kegagalan jaringan tertentu.
+
+JWT yang sudah diterbitkan diverifikasi offline. Pencabutan refresh family tidak langsung mencabut access token yang masih belum expired. Jendela itu dibatasi TTL pendek; mekanisme introspection atau denylist access token belum diterapkan. Dalam demo expiry, token lama ditolak karena waktu kedaluwarsanya telah lewat, bukan karena refresh secara ajaib membatalkan semua access token lama.
+\coderef{services/auth-service/internal/adapter/outbound/redis/rotate.lua}
+\coderef{tools/field-cli/internal/client/client.go}
+
+\subsection{Alasan pemilihan dan risiko yang ditangani}
+Satu kredensial bersama antarinstansi ditolak karena menghapus otonomi trust. Session lookup terpusat untuk setiap request menyederhanakan revocation langsung, tetapi menjadikan auth-store dependensi jalur baca. JWT asimetris dipilih agar client-api hanya memiliki kemampuan verifikasi; berbeda dari shared signing secret yang akan memperluas kemampuan penerbitan token.
+
+Validasi algoritma dan claim menghindari penerimaan token untuk issuer/audience yang salah. Allowlist dan pemeriksaan scope berada di server. Help CLI tidak mencetak secret dari environment; redirect HTTP ditolak untuk mencegah penerusan body login ke tujuan lain. Galat dan trace tidak memuat token atau password. Namun sistem ini tetap PoC lokal: TLS/mTLS, rotasi key online, MFA, dan revocation access token seketika belum diimplementasikan. Oleh sebab itu tidak ada klaim bahwa sistem bebas dari seluruh celah keamanan.
+
+\subsection{Bukti penyelesaian}
+Suite fondasi memeriksa kredensial lintas instansi ditolak serta claim JWT invalid tidak diterima. Suite query memverifikasi allowlist Media, penolakan raw, dan akses penuh dua identitas lainnya. \texttt{TestNaturalExpiryAndFieldCLI} menjalankan dua request CLI berjarak 65 detik dalam satu sesi dengan default TTL 60 detik, lalu memeriksa token lama 401 sebelum/sesudah refresh dan token baru 200. Tidak ada manipulasi jam atau TTL singkat buatan untuk bukti ini.
+
+Uji unit CLI memeriksa rotasi serial, respons 401 yang terlambat tidak membatalkan token yang lebih baru, serta penolakan redirect. Catatan fondasi melaporkan Gitleaks 8.24.2 tanpa temuan pada lima commit hingga \texttt{f73c035}; cakupannya tidak boleh diperluas menjadi scan revisi akhir. Hasil scan histori final masih perlu dikonfirmasi pada pemeriksaan pengumpulan. Semua nilai contoh pada laporan bebas kredensial nyata.
+\proof{regression.txt}
+\proof{modules.txt}
+\coderef{docs/evidence/foundation/README.md}

@@ -1,0 +1,27 @@
+% !TeX root = ../main.tex
+\section{Ringkasan Verifikasi dan Batas Hasil}
+\label{sec:verification}
+Hasil lokal yang dilaporkan merupakan pengujian bertanggal \EvidenceDate. Verifikasi dibagi menjadi unit/vet, integrasi PostgreSQL, regresi stack, dan load test. Pemisahan ini penting: unit test membuktikan batas logika tertentu; hasilnya tidak otomatis membuktikan perilaku deployment, ketahanan mesin, atau kapasitas produksi.
+
+\begin{tabularx}{\linewidth}{P{0.30\linewidth}Y}
+\toprule Pemeriksaan & Hasil dan cakupan\\\midrule
+Sembilan module Go & Bootstrap, unit test, dan vet; delapan service serta CLI.\\
+PostgreSQL nyata & Transaksi ingest dan query lulus dalam schema test terisolasi.\\
+Regresi stack & Fondasi, ingest, event, query, expiry token alami, serta rebuild independen lulus; durasi run 234,280 s.\\
+Fresh subscriber & Group baru dan store kosong berhasil replay; suite event tambahan lulus dalam 71,575 s.\\
+Readiness consumer & Test broker tidak merespons memenuhi deadline 50 ms dan menolak penumpukan probe.\\
+Load final & Tiga skenario lulus; angka dan batas pengukuran pada Bagian~\ref{sec:p2}.\\
+GitHub Actions & Workflow tersedia; hasil hosted belum dapat diverifikasi dari sesi penyusunan laporan.\\
+\bottomrule
+\end{tabularx}
+
+Kegagalan awal tidak dihapus dari bukti. Regresi pertama menemukan timeout readiness consumer saat Kafka mati. Pengujian terisolasi menunjukkan \texttt{Ping} library dapat menunggu handshake sekitar 10 s meskipun context sudah deadline. Perbaikan membatasi waktu tunggu caller dan satu probe yang belum selesai; regresi penuh kemudian lulus. Hasil gagal pertama tersedia pada \evidence{regression-before-readiness-fix.txt}, sedangkan hasil akhir pada \evidence{regression.txt}.
+
+\lstinputlisting[numbers=none,caption={Petikan keluaran pengujian aktual. Ini transkrip test, bukan screenshot yang disimulasikan.}]{assets/evidence/regression-excerpt.txt}
+
+\pending{Status GitHub Actions dan tautan run final: \rule{0.53\linewidth}{0.3pt}. API tanpa autentikasi pada sesi penyusunan mengembalikan 404, sehingga keberhasilan CI hosted tidak diasumsikan.}
+
+\subsection{Kesimpulan dan batas cakupan}
+Implementasi menyediakan alur ingest, query, otorisasi, dan pub/sub yang terhubung; bukti lokal mendukung skenario P1--P5 yang dipetakan pada lampiran. Sistem tetap sebuah PoC satu host: belum ada failover lintas node, koordinasi multi-instance Aggregator, limit terdistribusi, transport terenkripsi end-to-end, maupun pengiriman notifikasi nyata ke perangkat.
+
+Demo sinkron tetap perlu dijalankan kelompok dan tidak digantikan oleh laporan test. Verifikasi panjang outage 10--20 menit secara langsung belum direpresentasikan oleh load test 20 detik yang disimpan; endpoint operator mendukung outage hingga dimatikan, tetapi kemampuan konfigurasi tidak sama dengan bukti durasi demo tertentu. Tag final dan pengumpulan juga merupakan tindakan terpisah setelah kelompok meninjau laporan.

@@ -1,0 +1,15 @@
+--- PASS: TestHealth (0.04s)
+--- PASS: TestMockContracts (3.92s)
+--- PASS: TestPVMBGSchemaAndOutage (3.09s)
+--- PASS: TestTokenRotationAndAuthorization (0.11s)
+--- PASS: TestJWTClaimValidation (0.01s)
+--- PASS: TestPersistenceAndDependencyRecovery (18.73s)
+--- PASS: TestStructuredLogsDoNotExposeCredentials (0.42s)
+--- PASS: TestIngestPipeline (44.77s)
+--- PASS: TestEventPipeline (53.22s)
+--- PASS: TestQueryIntegration (0.53s)
+--- PASS: TestDynamicSchemaAndStaleAPI (21.27s)
+--- PASS: TestNaturalExpiryAndFieldCLI (68.92s)
+--- PASS: TestIndependentRebuild (18.32s)
+PASS
+ok  	command-line-arguments	234.280s

@@ -1,0 +1,23 @@
+% !TeX root = ../main.tex
+\section{Deskripsi Umum dan Lingkup}
+BNPB membutuhkan representasi yang konsisten atas informasi gempa, potensi tsunami, dan aktivitas gunung api dari dua instansi yang otonom. BMKG dan PVMBG memiliki skema, kredensial, serta karakteristik latensi berbeda. Sistem ini mengambil data melalui polling, memetakannya menjadi \texttt{HazardEvent}, menyajikan data sesuai hak akses client, dan menyalurkan perubahan melalui broker kepada consumer independen.
+
+Lingkup Milestone 1 mengikuti dokumen spesifikasi M1 dan konteks tugas terpusat~\cite{spec-m1,spec-central}. Kedua instansi berupa mock yang dibangun kelompok; data serta referensi gunung api bersifat sintetis. Tiga identitas downstream adalah Media, Tim Lapangan, dan BNPB Pusat. Seluruh akses downstream bersifat baca saja. Pelaporan dari lapangan, integrasi sistem instansi nyata, dan pengoperasian banyak instance tidak termasuk implementasi ini.
+
+\subsection{Prinsip rancangan}
+Tiga alur utama dipisahkan. Jalur ingest menangani ketidakpastian sumber; jalur baca menggunakan data yang sudah tersimpan; jalur event memindahkan perubahan melalui outbox dan Kafka. Pemisahan ini membuat satu request client tidak harus menunggu HTTP ke instansi sumber. Sebagai konsekuensi, hasil baca bukan data real-time langsung dari sensor: kebaruan harus dijelaskan melalui waktu data dan status sumber.
+
+\begin{tabularx}{\linewidth}{lY}
+\toprule Problem & Mekanisme inti yang diimplementasikan\\\midrule
+P1 & Tolerant reader JSON, pemetaan kanonik, korelasi warning, dan preservasi field tambahan.\\
+P2 & Worker per sumber, baca dari store, timeout, circuit breaker, batas konkurensi, rate limit, dan status stale.\\
+P3 & Kredensial per domain, JWT Ed25519, scope, proyeksi allowlist, dan rotasi refresh token.\\
+P4 & Container/module terpisah, kepemilikan storage, serta PostgreSQL dengan atribut JSONB.\\
+P5 & Transactional outbox, Kafka, group consumer terpisah, SQLite persisten, dedup, dan DLQ.\\
+\bottomrule
+\end{tabularx}
+
+\subsection{Versi yang dilaporkan}
+Laporan ini mendeskripsikan implementasi acuan \texttt{f6e99cc}, bukan seluruh fitur pada rancangan awal. Bukti lokal bertanggal \EvidenceDate. Singleflight/micro-cache, \texttt{LISTEN/NOTIFY}, tabel \texttt{schema\_observations}, dan propagasi deadline melalui header belum diimplementasikan. Timeout lokal, relay polling, dan log \texttt{schema\_drift} sudah menjadi bagian inti.
+
+Tautan kode dan bukti pada laporan menunjuk revisi acuan tersebut agar klaim dapat ditelusuri meskipun branch utama berubah. Perubahan laporan setelah revisi itu tidak dengan sendirinya berarti pengujian runtime dijalankan ulang.

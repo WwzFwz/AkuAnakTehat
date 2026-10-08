@@ -1,0 +1,52 @@
+% !TeX root = ../main.tex
+\section{P4 -- Batas Service dan Flexible Storage}
+\label{sec:p4}
+\subsection{Alasan menentukan batas service}
+BMKG dan PVMBG dipisah karena mewakili instansi otonom, kontrak berbeda, serta kegagalan dan kredensial terpisah. Auth-service menjadi pemilik kebijakan penerbitan token dan sesi; client-api menjadi batas akses downstream. Aggregator menjadi pemilik data kanonik, pemetaan, dan transaksi perubahan data. Consumer dipisahkan karena mempunyai tujuan, siklus hidup, serta state lokal yang berbeda.
+
+Poller, mapper, query internal, dan relay outbox tetap merupakan komponen dalam Aggregator. Memecah setiap komponen itu menjadi service baru akan menambah kontrak jaringan serta mempersulit kepemilikan transaksi tanpa kebutuhan skala M1 yang terbukti. Sebaliknya, menyatukan auth, penyajian client, dan ingest dalam satu deploy akan mengikat perubahan kebijakan akses pada perubahan pemetaan sumber. Pilihan saat ini menerima kompleksitas operasi beberapa container untuk memperoleh perubahan dan recovery yang lebih mandiri.
+
+Setiap service memiliki module Go, entrypoint, Dockerfile, konfigurasi, dan endpoint health. Dependensi shared business package tidak digunakan. Tiga consumer memang memiliki sebagian kode kontrak/delivery serupa; pengulangan kecil ini menjaga build independen pada M1, dengan konsekuensi perubahan envelope perlu diselaraskan dan diuji pada setiap pemakai.
+
+\subsection{Kepemilikan Canonical Store}
+Client-api memanggil \texttt{/internal/hazards} dan detail melalui HTTP Aggregator. Ia tidak berada di \texttt{store\_net} dan tidak menerima kredensial PostgreSQL. Consumer membaca Kafka dan menyimpan view lokal; auth-service memakai Redis. Dengan demikian tidak ada jalur aplikasi biasa yang membaca tabel kanonik secara langsung dari service lain.
+
+Pembatasan ini berlaku pada konfigurasi aplikasi. Test PostgreSQL dan operator yang memiliki Docker dapat mengakses database untuk memeriksa bukti; hak administratif itu tidak diklaim dicegah oleh pemisahan network. Network bukan boundary terhadap administrator mesin.
+\coderef{docker-compose.yml}
+\coderef{services/client-api/internal/adapter/outbound/aggregator/client.go}
+
+\subsection{Skema dan evolusi atribut}
+\begin{tabularx}{\linewidth}{P{0.28\linewidth}Y}
+\toprule Tabel & Fungsi\\\midrule
+\texttt{hazard\_events} & Field kanonik bertipe, \texttt{attributes JSONB}, unique sumber/ID sumber, version dan content hash.\\
+\texttt{outbox} & Snapshot perubahan, event ID unik, hazard/version, dan tanda publish.\\
+\texttt{checkpoints} & Watermark per endpoint yang committed bersama batch.\\
+\texttt{tsunami\_warnings} & Korelasi warning sebelum/sesudah gempa.\\
+\texttt{source\_status} dan \texttt{source\_endpoint\_status} & Status sehat, kegagalan, waktu pengamatan, dan stale.\\
+\texttt{quarantine} & Record yang ditolak beserta alasan dan trace.\\
+\texttt{schema\_migrations} & Versi DDL yang dikelola migration runner.\\
+\bottomrule
+\end{tabularx}
+
+PostgreSQL menyimpan field kanonik yang sering difilter sebagai kolom dengan constraint dan indeks. Atribut yang tidak mempunyai padanan kanonik disimpan sebagai JSONB. Penambahan \texttt{confidence\_level} dengan demikian merupakan perubahan isi dokumen pada kolom yang sudah ada, bukan penambahan kolom. Migrasi \texttt{002\_source\_status\_stale\_since} adalah perubahan struktur fitur status sumber, bukan langkah yang dilakukan saat demo penambahan confidence.
+
+JSONB menyediakan representasi JSON yang dapat diproses dan diindeks, tetapi tidak mempertahankan whitespace, urutan key, atau duplicate keys seperti teks asli~\cite{postgres-json}. Maka ``preservasi atribut'' berarti mempertahankan nilai yang didukung, bukan salinan byte-for-byte seluruh wire payload. Indeks utama query saat ini mengikuti waktu kejadian dan hazard ID; tidak ada klaim semua key JSON dinamis otomatis terindeks.
+\coderef{services/aggregator/migrations/001_initial.up.sql}
+\coderef{services/aggregator/migrations/002_source_status_stale_since.up.sql}
+
+\subsection{Perbandingan alternatif penyimpanan}
+\begin{tabularx}{\linewidth}{P{0.24\linewidth}YY}
+\toprule Pilihan & Keunggulan & Konsekuensi\\\midrule
+PostgreSQL + JSONB (dipilih) & Transaksi hazard/outbox/checkpoint; constraint dan query kolom; atribut fleksibel. & Tetap membutuhkan pengelolaan DDL untuk field inti dan kapasitas DB; validasi atribut menjadi tanggung jawab aplikasi.\\
+MongoDB / document store & Dokumen bersarang dan field aditif cocok untuk data heterogen. & Konsistensi lintas record, outbox, indeks, dan operasi deployment tetap harus dirancang; fleksibilitas dokumen tidak otomatis menyelesaikan transaksi.\\
+Relasional kolom tetap saja & Skema dan tipe seluruh atribut sangat eksplisit. & Field sumber baru memerlukan DDL dan koordinasi deploy; bertentangan dengan tujuan perubahan aditif saat runtime.\\
+\bottomrule
+\end{tabularx}
+Perbandingan ini merupakan pertimbangan desain, bukan benchmark database. JSONB dipilih karena kebutuhan transaksi dan query kanonik sudah sesuai dengan PostgreSQL; mengganti store tidak memberikan manfaat M1 yang cukup untuk menambah model konsistensi baru.
+
+\subsection{Bukti independensi dan batas}
+\texttt{TestIndependentRebuild} mencatat timestamp start Aggregator, client-api, auth-service, kedua mock, dashboard-updater, dan Kafka; menghentikan notifier; memastikan baca Media masih berhasil; lalu build dan start notifier dengan \texttt{--no-deps}. Timestamp komponen lain tidak berubah. Ini bukti konkret satu skenario rebuild independen, bukan klaim semua kombinasi deployment sudah diuji.
+
+\texttt{TestDynamicSchemaAndStaleAPI} mengambil record tanpa confidence, mengaktifkan skema baru, membaca record lama dan baru, serta memeriksa versi migrasi dan container tetap. Named volume Canonical Store dan SQLite mempertahankan data pada restart normal. SQLite cocok untuk satu penulis lokal; banyak replica consumer yang berbagi berkas SQLite atau multi-instance Aggregator belum didukung oleh desain koordinasi M1.
+\proof{regression.txt}
+\coderef{scripts/check/query_test.go}

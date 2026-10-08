@@ -1,0 +1,21 @@
+@startuml
+!include theme.puml
+hide footbox
+autonumber
+database PostgreSQL as db
+participant Relay
+queue Kafka
+note over db
+Hazard + outbox + checkpoint
+sudah COMMIT bersama.
+end note
+Relay -> db : pending ORDER BY id
+db --> Relay : snapshot + event ID
+Relay -> Kafka : produce\nkey=hazard_id\nacks=all
+Kafka --> Relay : ACK
+Relay -> db : tandai published_at
+note over Relay,Kafka
+Crash setelah ACK, sebelum tanda:
+event dapat dikirim lagi dengan ID sama.
+end note
+@enduml

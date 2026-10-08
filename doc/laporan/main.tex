@@ -1,0 +1,33 @@
+% !TeX root = main.tex
+\documentclass[11pt,a4paper]{article}
+\input{preamble}
+\input{metadata}
+\begin{document}
+\special{pdf:minorversion 7}
+\hypersetup{pageanchor=false}
+\input{sections/00-sampul}
+\pagenumbering{roman}
+\hypersetup{pageanchor=true}
+\input{sections/01-kontribusi}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+\input{sections/02-deskripsi-sistem}
+\input{sections/03-arsitektur}
+\input{sections/04-teknologi-dan-asumsi}
+\input{sections/05-menjalankan-sistem}
+\input{sections/06-p1-interoperabilitas}
+\input{sections/07-p2-konkurensi}
+\input{sections/08-p3-autentikasi}
+\input{sections/09-p4-service-dan-storage}
+\input{sections/10-p5-pubsub}
+\input{sections/11-verifikasi-dan-batasan}
+\input{sections/12-deklarasi-ai}
+\clearpage
+\appendix
+\input{appendices/a-matriks-kriteria}
+\clearpage
+\input{appendices/b-indeks-bukti}
+\clearpage
+\input{references}
+\end{document}

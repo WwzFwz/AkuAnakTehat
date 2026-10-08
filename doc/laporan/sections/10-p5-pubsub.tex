@@ -1,0 +1,43 @@
+% !TeX root = ../main.tex
+\section{P5 -- Publish/Subscribe dan Consumer Independen}
+\label{sec:p5}
+\subsection{Broker dan pola yang dipilih}
+Kafka menyediakan log yang dapat dibaca ulang dan posisi baca per consumer group. Topic utama adalah \texttt{bnpb.hazard-events.v1}; kegagalan pesan masuk ke topic DLQ terpisah. Konfigurasi M1 memakai satu partisi, replication factor 1, serta retensi broker tujuh hari. Dashboard-updater, notifier, dan pemda-portal memakai group berbeda sehingga masing-masing memperoleh stream yang sama. Jika mereka memakai satu group, Kafka justru membagi pekerjaan antaranggota; perilaku itu tidak memenuhi kebutuhan tiga proyeksi independen.
+
+Producer memakai key \texttt{hazard\_id}. Envelope memuat schema version, event ID, event type, hazard ID, version, correlation ID, timestamp, dan snapshot hazard. Bentuk snapshot membuat consumer tidak perlu query balik ke Aggregator saat menangani event. Nama field \texttt{published\_at} dalam envelope diisi ketika envelope dibuat pada transaksi ingest; waktu ACK publish dicatat pada kolom outbox. Keduanya tidak boleh dianggap timestamp yang identik.
+\coderef{docs/api/hazard-event.md}
+\coderef{infra/kafka/init-topics.sh}
+
+\subsection{Outbox dan semantik pengiriman}
+\diagram{05-outbox-consumer}{Batas transaksi dan publish. ACK broker mendahului penandaan published pada PostgreSQL; crash di antaranya masih memungkinkan duplikasi.}{fig:outbox}
+
+Menulis database lalu publish langsung dapat kehilangan event ketika proses mati di antaranya. Memublikasikan lebih dahulu dapat menghasilkan event untuk transaksi yang kemudian gagal. Transactional outbox menghindari dua kondisi tersebut dengan menyimpan hazard dan niat publish pada transaksi yang sama. Relay polling membaca pending berurutan berdasarkan ID, mengirim satu record, menunggu ACK, baru menandai baris published. Retensi outbox membersihkan baris yang sudah published lebih dari 24 jam; pending tidak dibersihkan dengan aturan itu.
+
+Producer meminta \texttt{acks=all}. Pada replication factor 1, ini tetap hanya ACK satu broker, bukan replikasi tahan kehilangan mesin. Hasil publish yang masih tidak pasti dipertahankan relay agar versi berikutnya tidak melompati pesan sebelumnya. Bila ACK diterima tetapi proses mati sebelum penandaan PostgreSQL, event yang sama dapat dipublikasikan kembali. Karena itu semantik aplikasi adalah \textbf{at-least-once}, dengan syarat store/broker tetap tersedia kembali dan data masih dalam retensi; bukan exactly-once end-to-end.
+
+Urutan Kafka hanya dijamin di dalam partisi~\cite{kafka-semantics}. Penambahan partisi dapat mengubah pemetaan key, sehingga klaim urutan per hazard tidak diperluas ke perubahan partisi tanpa strategi transisi. Relay tunggal juga merupakan asumsi; multi-relay memerlukan mekanisme claim/koordinasi tambahan.
+\coderef{services/aggregator/internal/worker/outbox/relay.go}
+\coderef{services/aggregator/internal/adapter/outbound/kafka/producer.go}
+
+\subsection{Efek consumer, idempotensi, dan DLQ}
+\diagram{07-consumer-dlq}{Efek lokal atau ACK DLQ mendahului commit offset. Tidak ada transaksi atomik tunggal yang meliputi PostgreSQL, Kafka, dan efek notifikasi.}{fig:consumer}
+Dashboard-updater dan pemda-portal menyimpan view SQLite dengan primary key hazard ID. Upsert hanya mengganti view apabila version masuk lebih besar daripada version tersimpan. Replay atau versi lama tidak menimpa view terbaru. Notifier memeriksa pasangan hazard/version dan hanya mengirim alert untuk SIAGA atau AWAS; implementasi pengiriman saat ini berupa log simulasi.
+
+\lstinputlisting[float=htbp,language=Golang,caption={Notifier mengirim sebelum mencatat marker persisten; celah crash di antara keduanya diakui sebagai kemungkinan duplikasi.}]{assets/code/p5-notifier.txt}
+
+Consumer menonaktifkan auto-commit. Offset asal di-commit sesudah efek lokal berhasil. Record invalid langsung diarahkan ke DLQ; kegagalan pemrosesan yang dapat dicoba ulang dibatasi oleh jumlah percobaan dan timeout. Setelah percobaan habis, DLQ dipublikasikan dengan identitas group asal, topic/partisi/offset, alasan, jumlah percobaan, dan correlation ID. Offset pesan asal baru di-commit setelah ACK DLQ; kegagalan publish DLQ tidak boleh menghilangkan pesan dengan commit lebih dahulu.
+
+SQLite memakai volume sendiri, WAL, dan synchronous FULL. Efek view persisten serta version guard memberi idempotensi proyeksi. Untuk notifier, crash setelah send tetapi sebelum marker dapat menghasilkan pengiriman ulang. Dedup lokal bukan distributed lock maupun jaminan exactly-once ke perangkat eksternal. Log \texttt{record\_completed} menunjukkan penanganan record dan commit selesai; record itu bisa berupa duplicate yang diabaikan atau pesan yang masuk DLQ, bukan selalu notifikasi baru.
+\coderef{services/dashboard-updater/internal/store/sqlite.go}
+\coderef{services/notifier/internal/application/apply.go}
+\coderef{services/notifier/internal/consumer/consumer.go}
+
+\subsection{Alternatif dan trade-off}
+Pemanggilan HTTP setiap consumer dari Aggregator lebih sederhana di awal, tetapi mengikat pengetahuan producer tentang subscriber dan membuat kegagalan subscriber masuk jalur pengiriman. RabbitMQ dengan fan-out queue per consumer merupakan alternatif wajar untuk distribusi tugas, namun mekanisme replay histori dan lifecycle queue tetap perlu dirancang. Kafka dipilih untuk retensi log dan offset group; biaya memori, operasional broker, duplikasi, dan pengelolaan retention diterima pada demo lokal. Evaluasi ini tidak mengklaim Kafka selalu lebih unggul pada semua beban.
+
+\subsection{Bukti penyelesaian}
+\texttt{TestEventPipeline} memeriksa jalur mock--outbox--Kafka--dashboard, replay event, penolakan versi lama, dedup notifier, dan persistensi setelah restart. Dashboard dihentikan sementara; notifier dan pemda tetap memproses versi berikutnya. Setelah dashboard dimulai lagi, offset yang belum dikonsumsi tersusul. Kafka juga dihentikan: ingest tetap menghasilkan outbox pending, kemudian backlog terkirim setelah broker pulih.
+
+Uji subscriber baru menggunakan group pemda unik dan SQLite kosong, sehingga bukti replay tidak bergantung pada state run sebelumnya. Aggregator tidak diganti. Konfigurasi group/volume pemda reguler dipulihkan setelahnya. Catch-up berlaku selama pesan masih tersedia pada retensi; consumer yang offline melewati retensi tidak dijamin mendapatkan seluruh histori. Replikasi satu broker juga tidak melindungi dari kehilangan seluruh volume Kafka.
+\proof{events-fresh-group.txt}
+\proof{event-trace.jsonl}

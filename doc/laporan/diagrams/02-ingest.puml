@@ -1,0 +1,24 @@
+@startuml
+!include theme.puml
+hide footbox
+autonumber
+participant "Mock sumber" as source
+participant "Poller" as poll
+participant "Reader + mapper" as map
+database "PostgreSQL" as db
+poll -> db : baca checkpoint endpoint
+poll -> source : GET since=watermark-overlap\ncorrelation ID + kredensial sumber
+source --> poll : array JSON (field tambahan boleh ada)
+poll -> map : decode field wajib + Extra
+map --> poll : record valid / alasan karantina
+group Satu transaksi serializable
+poll -> db : korelasi warning + upsert hazard\nhash berubah: version naik + outbox
+poll -> db : karantina record invalid\nsimpan checkpoint batch
+db --> poll : COMMIT
+end
+poll -> db : catat status hasil polling
+note over source,poll
+HTTP gagal: checkpoint tidak maju.
+Field aditif valid: attributes JSONB, tanpa DDL.
+end note
+@enduml

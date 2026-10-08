@@ -1,0 +1,32 @@
+% !TeX root = ../main.tex
+\section{Petunjuk Menjalankan Sistem}
+\label{sec:run}
+Prasyarat aplikasi adalah Go 1.24.2 dan Docker dengan Compose v2. Python 3 diperlukan untuk runner load dan helper trace. Dari root repository pada PowerShell:
+\begin{lstlisting}[numbers=none]
+powershell -NoProfile -File scripts/secrets/generate.ps1
+docker compose config --quiet
+docker compose up -d --build --wait --wait-timeout 180
+\end{lstlisting}
+Generator menyiapkan kredensial berbeda, pasangan key JWT, dan berkas environment lokal yang diabaikan Git. Nilai rahasia tidak disalin ke laporan. Pada POSIX, \texttt{make up} menyediakan bootstrap dan start. Pemda dapat ditambahkan kemudian dengan:
+\begin{lstlisting}[numbers=none]
+docker compose --profile demo up -d --build pemda-portal
+\end{lstlisting}
+
+Pengujian unit/vet dijalankan melalui \nolinkurl{scripts/check/check.ps1} atau \texttt{make check}. Pengujian runtime harus berurutan karena memicu perubahan skema, outage, dan restart dependensi. Contoh regresi lengkap:
+\begin{lstlisting}[numbers=none]
+$env:GOWORK='off'
+go test ./scripts/check/foundation_test.go `
+  ./scripts/check/ingest_test.go ./scripts/check/events_test.go `
+  ./scripts/check/query_test.go -v -count=1 -timeout=15m
+py scripts/loadtest/run.py
+\end{lstlisting}
+
+CLI dijalankan dari module \nolinkurl{tools/field-cli}; kredensial dibaca dari environment lokal. Contoh sesi yang melintasi TTL access token:
+\begin{lstlisting}[numbers=none]
+go run ./cmd/field-cli list --raw --limit 1 --watch 65s --count 2
+\end{lstlisting}
+Gunakan identitas Tim Lapangan untuk raw. Endpoint \texttt{/health} menyatakan proses hidup; endpoint \texttt{/ready} aplikasi memeriksa dependensi yang relevan. Status proses hidup saja tidak membuktikan bahwa data semua sumber masih baru. Untuk melihat satu alur:
+\begin{lstlisting}[numbers=none]
+py scripts/trace/trace.py <correlation-id>
+\end{lstlisting}
+Rincian endpoint, konfigurasi, cara memuat kredensial, dan skenario ada pada \codepath{README.md}, \codepath{infra/README.md}, \codepath{scripts/check/README.md}, serta \codepath{scripts/loadtest/README.md}. Stop/start normal mempertahankan volume; menghapus volume tidak dipakai sebagai bukti recovery.

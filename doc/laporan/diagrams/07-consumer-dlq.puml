@@ -1,0 +1,23 @@
+@startuml
+!include theme.puml
+hide footbox
+autonumber
+queue Kafka
+participant Consumer
+database "SQLite lokal" as db
+Consumer -> Kafka : fetch group sendiri
+Kafka --> Consumer : envelope
+alt valid dan efek berhasil
+Consumer -> db : apply versi / marker dedup
+db --> Consumer : durable
+Consumer -> Kafka : commit offset
+else invalid / percobaan habis
+Consumer -> Kafka : publish DLQ + metadata
+Kafka --> Consumer : ACK DLQ
+Consumer -> Kafka : commit offset asal
+end
+note over Consumer,db
+Notifier: send alert, lalu marker.
+Crash di antaranya dapat menggandakan alert.
+end note
+@enduml
