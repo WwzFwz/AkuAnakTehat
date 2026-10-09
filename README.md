@@ -87,51 +87,181 @@ Pada setiap service, `cmd/` merakit proses dan dependensi, sedangkan `internal/`
 
 ## Menjalankan sistem
 
-Siapkan Go 1.24.2, Docker Desktop atau Docker Engine dengan Compose v2, dan Python 3. Aktifkan Docker dengan Linux containers. Dari direktori utama repository pada PowerShell, jalankan perintah berikut.
+Siapkan Git, Go 1.24.2, Docker Desktop atau Docker Engine dengan Compose v2, dan Python 3. Aktifkan Docker dengan Linux containers. Build pertama memerlukan akses internet untuk mengunduh image dan dependensi. Pastikan port host 8080–8082 dan 8090–8093 tersedia.
+
+Jika repository belum tersedia, clone terlebih dahulu. Jika sudah, cukup buka terminal di direktori utamanya.
+
+```powershell
+git clone https://github.com/WwzFwz/AkuAnakTehat.git
+cd AkuAnakTehat
+```
+
+Pada Windows PowerShell, jalankan berurutan. Lanjutkan hanya jika perintah sebelumnya berhasil.
 
 ```powershell
 powershell -NoProfile -File scripts/secrets/generate.ps1
 docker compose config --quiet
-docker compose --profile demo up -d --build --wait --wait-timeout 180
+docker compose --profile demo up -d --build --wait --wait-timeout 240
 py scripts/demo/demo.py status
 py scripts/demo/demo.py read --identity media
 ```
 
-Bootstrap membuat kredensial lokal di `env/` dan mempertahankan secret yang sudah ada. Profile `demo` menjalankan seluruh service, termasuk Pemda Portal yang diperiksa oleh perintah `status`.
+Bootstrap membuat kredensial lokal di `env/` dan mempertahankan secret yang sudah ada. Tidak perlu menyalin `.env.example` menjadi `.env` atau mengisi password secara manual. Migrasi database dan pembuatan topic dijalankan otomatis saat startup. Profile `demo` menjalankan seluruh service, termasuk Pemda Portal yang diperiksa oleh perintah `status`. Jika Python tidak menyediakan launcher `py`, gunakan `python` sebagai penggantinya.
 
-Pada Linux atau macOS gunakan `make up` dan `python3` untuk helper Python, lalu tambahkan Pemda melalui `docker compose --profile demo up -d --build pemda-portal`. Pada Compose manual, ekspor `LOCAL_UID=$(id -u)` dan `LOCAL_GID=$(id -g)` agar bind mount secret dapat dibaca service. [Panduan infrastruktur](infra/README.md) memuat petunjuk lengkap. Untuk menghentikan seluruh stack dengan volume tetap tersimpan, gunakan `docker compose --profile demo down`.
+Pada Linux atau macOS, jalankan dari direktori utama repository:
+
+```sh
+export LOCAL_UID=$(id -u) LOCAL_GID=$(id -g)
+sh scripts/secrets/generate.sh
+docker compose config --quiet
+docker compose --profile demo up -d --build --wait --wait-timeout 240
+python3 scripts/demo/demo.py status
+python3 scripts/demo/demo.py read --identity media
+```
+
+UID/GID memungkinkan service membaca bind mount secret. Tanda startup berhasil adalah container aktif berstatus `healthy`, hasil `status` menunjukkan HTTP 200, dan pembacaan API mengembalikan array `data`. Data awal memerlukan beberapa siklus polling; ulangi pembacaan sampai `sources` BMKG dan PVMBG berstatus `HEALTHY`. Generator selanjutnya menambahkan data sintetis setiap 10 detik.
+
+Untuk memeriksa akses Tim Lapangan dan pembatasan akses Media:
 
 ```powershell
 py scripts/demo/demo.py read --identity field-team --type volcanic --raw
 py scripts/demo/demo.py read --identity media --raw --expect 403
 ```
 
-### Konfigurasi utama
+Jika startup gagal, periksa `docker compose --profile demo ps -a` dan `docker compose logs --tail=100 <nama-service>`. Jika PowerShell menolak eksekusi berkas skrip, jalankan skrip yang sama dengan `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/secrets/generate.ps1`; pengaturan hanya berlaku untuk proses tersebut. Konfigurasi bootstrap yang tidak lengkap harus diperbaiki sebelum startup, bukan ditimpa sebagian dengan secret baru. [Panduan infrastruktur](infra/README.md) menjelaskan konfigurasi jaringan dan volume.
 
-| Parameter | Baseline atau lokasi |
+Untuk menghentikan seluruh stack dengan data tetap tersimpan, gunakan `docker compose --profile demo down`. Menjalankan kembali perintah `up` menggunakan volume yang sama; jangan menambahkan `--volumes` jika ingin mempertahankan data.
+
+### Variabel konfigurasi
+
+Compose membaca `env/<service>.env` yang dihasilkan bootstrap. Nilai opsional yang belum tertulis dapat ditambahkan ke berkas service terkait; tabel berikut mencantumkan nilai bawaan atau nilai hasil bootstrap. Durasi memakai satuan seperti `ms`, `s`, dan `h`. Secret pada tabel berarti nilai acak lokal, bukan nilai yang perlu disalin dari README. [.env.example](.env.example) hanya referensi sebagian variabel, bukan konfigurasi siap jalan.
+
+| Lokasi | Variabel dan nilai | Kegunaan |
+| --- | --- | --- |
+| Semua service HTTP | `HTTP_ADDR` sesuai port pada tabel service | Alamat listen di dalam container. Mengubah port host dilakukan pada `ports` di Compose. |
+| `env/postgres.env` | `POSTGRES_DB=bnpb`, `POSTGRES_USER=bnpb`, `POSTGRES_PASSWORD` berupa secret | Database kanonik milik Aggregator. |
+| `env/redis.env` | `REDIS_PASSWORD` berupa secret | Kredensial Redis, diselaraskan bootstrap dengan Auth Service. |
+| `env/bmkg-mock.env` | `BMKG_KEY_HASH` berupa hash kredensial, `GENERATION_INTERVAL=10s`, `BMKG_FIXED_DELAY=100ms` | Autentikasi, interval generator, dan delay BMKG. |
+| `env/pvmbg-mock.env` | `PVMBG_TOKEN_HASH`, `ADMIN_KEY_HASH` berupa hash kredensial | Autentikasi pembacaan dan kontrol demo PVMBG. |
+| `env/pvmbg-mock.env` | `GENERATION_INTERVAL=10s`, `PVMBG_DELAY_MIN=500ms`, `PVMBG_DELAY_MAX=3s` | Interval generator dan rentang delay sumber. |
+| Auth Service dan Client API | `JWT_ISSUER=bnpb-auth`, `JWT_AUDIENCE=bnpb-api` | Claim yang harus cocok antara penerbit dan pemeriksa token. |
+| `env/auth-service.env` | `JWT_PRIVATE_KEY_FILE=/run/keys/jwt-private.pem`, `CLIENTS_FILE=/run/config/clients.json` | Lokasi kunci privat dan daftar identitas di container. |
+| `env/auth-service.env` | `REDIS_ADDR=auth-store:6379`, `REDIS_PASSWORD` berupa secret, `REDIS_TIMEOUT=200ms` | Koneksi penyimpanan sesi. |
+| `env/auth-service.env` | `ACCESS_TOKEN_TTL=60s`, `REFRESH_TOKEN_TTL=8h`, `TOKEN_RATE_LIMIT=20`, `TOKEN_RATE_BURST=40` | Masa berlaku token dan pembatasan request token. |
+| `env/client-api.env` | `JWT_PUBLIC_KEY_FILE=/run/keys/jwt-public.pem`, `AGGREGATOR_URL=http://aggregator:9000`, `INTERNAL_KEY` berupa secret | Verifikasi JWT dan akses API internal. |
+| `env/client-api.env` | `AGGREGATOR_TIMEOUT=1500ms` | Batas total panggilan Aggregator; harus positif dan tidak melebihi 1500 ms. |
+| `env/client-api.env` | `MAX_CONCURRENT=100`, `RATE_LIMIT_RPS=100`, `RATE_LIMIT_BURST=200` | Batas request aktif serta rate limit per identitas. |
+| `env/client-api.env` | `PAGE_DEFAULT=100`, `PAGE_MAX=500` | Ukuran halaman; default tidak boleh melebihi maksimum, maksimum tidak boleh melebihi 500. |
+| `env/aggregator.env` | `DATABASE_URL` berisi koneksi PostgreSQL dan secret, `INTERNAL_KEY` berupa secret | Akses storage dan autentikasi API internal; key harus cocok dengan Client API. |
+| `env/aggregator.env` | `BMKG_URL=http://bmkg-mock:8081`, `PVMBG_URL=http://pvmbg-mock:8082`, `BMKG_API_KEY`, `PVMBG_TOKEN` | Alamat sumber serta kredensial hasil bootstrap. |
+| `env/aggregator.env` | `BMKG_POLL_INTERVAL=2s`, `PVMBG_POLL_INTERVAL=5s`, `POLL_OVERLAP=10s` | Interval pengambilan data dan overlap watermark. |
+| `env/aggregator.env` | `BMKG_TIMEOUT=1s`, `PVMBG_TIMEOUT=4s`, `DB_TIMEOUT=2s` | Batas waktu panggilan sumber serta operasi database. |
+| `env/aggregator.env` | `DB_POOL_SIZE=5`, `QUERY_DB_POOL_SIZE=3`, `BREAKER_FAILURES=3`, `BREAKER_COOLDOWN=10s` | Pool ingest/query serta circuit breaker sumber. |
+| `env/aggregator.env` | `KAFKA_BROKERS=kafka:9092`, `KAFKA_TOPIC=bnpb.hazard-events.v1`, `KAFKA_PUBLISH_TIMEOUT=5s` | Tujuan dan timeout publish event. |
+| `env/aggregator.env` | `OUTBOX_POLL_INTERVAL=1s`, `OUTBOX_RETENTION=24h` | Interval relay dan retensi record published; pending tidak dihapus oleh retensi ini. |
+| `environment` pada masing-masing consumer di Compose | `KAFKA_BROKERS=kafka:9092`, `KAFKA_TOPIC=bnpb.hazard-events.v1`, `KAFKA_DLQ_TOPIC=bnpb.hazard-events.v1.dlq` | Broker, topic sumber, dan DLQ. |
+| `environment` pada masing-masing consumer di Compose | `KAFKA_GROUP_ID` mengikuti nama service, `PROCESS_TIMEOUT=2s`, `MAX_ATTEMPTS=3` | Subscription independen, timeout pemrosesan, dan jumlah percobaan. Jangan menyamakan group ketiga consumer. |
+| `environment` pada masing-masing consumer di Compose | `SQLITE_PATH=/data/view.db`; Notifier memakai `/data/processed.db` | Penyimpanan lokal pada volume masing-masing consumer. |
+| Shell Linux/macOS | `LOCAL_UID`, `LOCAL_GID` mengikuti pengguna host | Izin baca berkas secret; Windows memakai default 10001. |
+
+Consumer memakai default di kode dan tidak membaca `env/<consumer>.env` secara otomatis. Konfigurasi broker seperti listener, retensi, dan ukuran pesan terdapat pada service `kafka` di [docker-compose.yml](docker-compose.yml); pembuatan topic terdapat pada [init-topics.sh](infra/kafka/init-topics.sh).
+
+Helper demo membaca `BMKG_API_KEY`, `PVMBG_TOKEN`, `PVMBG_ADMIN_KEY`, dan `INTERNAL_KEY` dari `env/demo.env`, serta kredensial client dari `env/demo-clients.json`. Auth Service memakai versi hash pada `env/clients.json`. Kunci JWT berada pada `env/keys/`. Seluruh berkas tersebut dibuat bootstrap dan diabaikan Git.
+
+Untuk mengubah konfigurasi, edit berkas milik service terkait, kemudian buat ulang service tersebut. Contoh setelah mengubah batas beban pada `env/client-api.env`:
+
+```powershell
+docker compose config --quiet
+docker compose up -d --no-deps --force-recreate --wait --wait-timeout 180 client-api
+```
+
+`docker compose restart` saja tidak memuat ulang environment. Perubahan secret yang dipakai bersama harus diselaraskan pada pihak pemakai dan penyimpannya; menjalankan generator kembali mempertahankan konfigurasi yang sudah ada.
+
+### Konfigurasi load test
+
+Variabel berikut diatur pada shell yang menjalankan `scripts/loadtest/run.py`. Kredensial dibaca dari berkas lokal hasil bootstrap.
+
+| Variabel | Nilai bawaan dan fungsi |
 | --- | --- |
-| Kredensial, port, dan koneksi service | `env/<service>.env`, dihasilkan bootstrap; nama variabel pada README service dan [.env.example](.env.example) |
-| Token | `ACCESS_TOKEN_TTL=60s`, `REFRESH_TOKEN_TTL=8h` |
-| Timeout Client API | `AGGREGATOR_TIMEOUT=1500ms` |
-| Proteksi beban | `MAX_CONCURRENT=100`, `RATE_LIMIT_RPS=100`, `RATE_LIMIT_BURST=200` |
-| Pagination | `PAGE_DEFAULT=100`, `PAGE_MAX=500` |
-| Kafka | Topic `bnpb.hazard-events.v1` dan DLQ `bnpb.hazard-events.v1.dlq`; group berbeda per consumer |
-| Relay | `OUTBOX_POLL_INTERVAL=1s`, `OUTBOX_RETENTION=24h`; pending tidak dibersihkan oleh retensi published |
-| Generator mock | `GENERATION_INTERVAL=10s` |
-| Delay PVMBG | `PVMBG_DELAY_MIN=500ms`, `PVMBG_DELAY_MAX=3s`; runner P2 sementara mengatur keduanya menjadi `3s` |
+| `K6_BINARY` | Path executable k6 native. Jika tidak diatur, runner memakai container `grafana/k6:0.57.0`. |
+| `VUS` | Default 10 pada masing-masing skenario seismic/volcanic paralel dan 50 pada sustained. Override berlaku untuk kedua script. |
+| `DURATION` | Default `60s` untuk skenario paralel dan `90s` untuk sustained. |
+| `SLEEP` | Jeda iterasi; default 0,1 s pada paralel/sustained dan 0,2 s pada outage. |
+| `OUTAGE_SECONDS`, `RECOVERY_SECONDS` | Default 20 dan 30 detik. |
+| `OUTAGE_VUS`, `RECOVERY_VUS` | Default masing-masing 5; ada satu VU tambahan untuk kontrol pemulihan. |
+| `K6_HTTP_TIMEOUT` | Default `5s` untuk request HTTP k6. |
+| `K6_RUNNER_TIMEOUT` | Opsional, misalnya `15m`. Jika diisi harus mencakup durasi skenario dan margin 60 s; outage juga menghitung offset recovery 2 s. Tanpa override, deadline minimal 240 s. |
 
 ## Demo dan pengujian
 
-Pengujian mencakup pemetaan dan perubahan skema, konkurensi, autentikasi, isolasi service, serta distribusi event. Skenario P1 hingga P5 dapat dijalankan melalui [panduan demo](scripts/demo/README.md).
+Jalankan pemeriksaan berikut dari root repository. Uji unit tidak membutuhkan stack, sedangkan regresi dan k6 memerlukan seluruh service pada profile `demo` sudah aktif. Pada Linux/macOS gunakan `sh scripts/check/check.sh` untuk pemeriksaan Go dan ganti `py` dengan `python3`.
 
 ```powershell
 powershell -NoProfile -File scripts/check/check.ps1
 py scripts/demo/demo.py verify all
-py scripts/loadtest/run.py --output docs/evidence/demo-local/load
-py scripts/demo/demo.py restore
 ```
 
-Uji unit tidak membutuhkan stack. Regresi, load test, dan demo yang mengubah state harus berjalan **berurutan** karena dapat menghentikan dependensi sementara. `restore` menjalankan service dengan Compose normal, menonaktifkan outage, dan mengembalikan generator PVMBG ke skema 1. Data sintetis serta volume tetap dipertahankan. Status sumber memerlukan beberapa siklus polling untuk kembali sehat.
+Pemeriksaan Go berhasil jika seluruh tes dan `go vet` selesai dengan exit code 0. `verify all` menjalankan regresi tanpa cache hasil Go dan harus berakhir dengan `PASS`. Untuk menjalankan satu kelompok skenario, pilih perintah berikut; tidak perlu menjalankan semuanya lagi setelah `verify all` berhasil.
+
+| Skenario | Perintah | Perilaku yang diperiksa dan tanda berhasil |
+| --- | --- | --- |
+| P1, interoperabilitas | `py scripts/demo/demo.py verify p1` | Ingest, korelasi, dan perubahan skema; record lama dan baru tetap terbaca tanpa perubahan DDL, tes berakhir `PASS`. |
+| P2, degradasi | `py scripts/demo/demo.py verify p2` | Saat PVMBG terganggu, seismic tetap sehat, volcanic menampilkan status basi, lalu pulih; tes berakhir `PASS`. Ukuran beban dan latency diperiksa melalui k6 di bawah. |
+| P3, autentikasi | `py scripts/demo/demo.py verify p3` | Kredensial silang dan raw Media ditolak, expiry alami dan refresh CLI berhasil; tes berakhir `PASS`. Sesi CLI menunggu 65 detik untuk melewati TTL default 60 detik. |
+| P4, isolasi komponen | `py scripts/demo/demo.py verify p4` | Rebuild Notifier tidak mengganti service lain, pembacaan tetap berjalan, dan atribut baru tersimpan tanpa DDL; tes berakhir `PASS`. |
+| P5, pub/sub | `py scripts/demo/demo.py verify p5` | Consumer independen, replay subscriber baru, dedup, DLQ, pemulihan broker, serta event besar; tes berakhir `PASS`. |
+
+Untuk mengamati perubahan secara manual, jalankan satu perintah setiap kali dan beri waktu beberapa siklus polling sebelum membaca data:
+
+```powershell
+py scripts/demo/demo.py schema 2
+py scripts/demo/demo.py read --identity field-team --type volcanic --raw
+py scripts/demo/demo.py outage on --mode error
+py scripts/demo/demo.py read --identity media --type seismic
+py scripts/demo/demo.py read --identity field-team --type volcanic
+py scripts/demo/demo.py outage off
+py scripts/demo/demo.py schema 1
+```
+
+Skema 2 menambahkan field pada record baru; record lama tidak otomatis berubah. Status sumber tidak berubah seketika setelah outage diaktifkan atau dimatikan. [Panduan demo](scripts/demo/README.md) menjelaskan langkah inspeksi setiap skenario. Pengujian tambahan outage 600 detik dan bootstrap terisolasi tersedia pada [panduan pemeriksaan](scripts/check/README.md).
+
+### Load test P2
+
+Bukti performa laporan memakai **k6 0.57.0 native Windows** dengan seluruh service aplikasi tetap di Docker. Untuk memakai alat yang sama, unduh arsip yang sesuai sistem operasi dari [rilis resmi k6 v0.57.0](https://github.com/grafana/k6/releases/tag/v0.57.0), ekstrak, lalu atur `K6_BINARY` ke path absolut executable. Jika k6 sudah berada di `PATH`, gunakan perintah berikut pada PowerShell:
+
+```powershell
+$env:K6_BINARY = (Get-Command k6 -ErrorAction Stop).Source
+& $env:K6_BINARY version
+$loadOutput = 'docs/evidence/demo-local/load-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
+py scripts/loadtest/run.py --output $loadOutput
+```
+
+Pastikan keluaran versi menunjukkan `v0.57.0`. Jika belum ada di `PATH`, ganti baris pertama dengan `$env:K6_BINARY = 'C:\lokasi-ekstraksi\k6.exe'` menggunakan lokasi executable yang nyata. Pada Linux/macOS gunakan `export K6_BINARY="$(command -v k6)"`, periksa `"$K6_BINARY" version`, lalu jalankan `python3 scripts/loadtest/run.py --output "docs/evidence/demo-local/load-$(date +%Y%m%d-%H%M%S)"`.
+
+Alternatif tanpa instalasi k6 pada host adalah mode Docker. Pada PowerShell hapus pilihan native, kemudian jalankan runner:
+
+```powershell
+Remove-Item Env:K6_BINARY -ErrorAction SilentlyContinue
+$loadOutput = 'docs/evidence/demo-local/load-docker-' + (Get-Date -Format 'yyyyMMdd-HHmmss')
+py scripts/loadtest/run.py --output $loadOutput
+```
+
+Pada Linux/macOS gunakan `unset K6_BINARY`. Lingkungan Docker Desktop lokal pernah menghasilkan timing negatif pada k6 container. Runner menolak hasil seperti itu; bila terjadi, ulangi dengan k6 native dan direktori keluaran baru. Hasil negatif tidak dipakai sebagai bukti performa. Pilihan native atau Docker mengubah lokasi pembangkit beban, bukan lokasi service aplikasi.
+
+Runner sementara mengatur delay PVMBG tepat 3 detik dan menjalankan tiga skenario berurutan. Keberhasilan ditandai `PASS seismic-only`, `PASS sustained`, `PASS outage`, dan exit code 0. Pemeriksaan mencakup p95 seismic di bawah 300 ms, sedikitnya 50 koneksi TCP selama minimal 60 detik, error bisnis di luar 429 kurang dari 1%, serta kondisi sumber saat outage dan recovery. JSON, transkrip, dan sampel koneksi tersimpan di direktori `--output`. Respons 429 tetap dilaporkan terpisah dari respons sukses.
+
+Untuk memakai konfigurasi beban standar, gunakan shell yang tidak berisi override skenario dari percobaan sebelumnya. Jangan memakai `--skip-connection-check` untuk bukti persyaratan 50 TCP. [Panduan load test](scripts/loadtest/README.md) menjelaskan opsi smoke test dan definisi metrik lebih lanjut.
+
+### Pemulihan setelah pengujian
+
+Regresi, load test, dan demo yang mengubah state harus berjalan **berurutan** karena dapat menghentikan dependensi sementara. Hentikan urutan jika suatu perintah gagal dan periksa lognya. Setelah selesai, atau jika demo terputus, pulihkan kondisi normal:
+
+```powershell
+py scripts/demo/demo.py restore
+py scripts/demo/demo.py status
+```
+
+`restore` menjalankan service dengan Compose normal, menonaktifkan outage, dan mengembalikan generator PVMBG ke skema 1. Data sintetis serta volume tetap dipertahankan. Status sumber memerlukan beberapa siklus polling untuk kembali sehat.
 
 Hasil pengujian akhir pada lingkungan lokal menunjukkan p95 seismic **12,51 ms**, sedikitnya **50 koneksi TCP selama 87,78 detik**, serta **error bisnis di luar 429 sebesar 0%**. Pada beban sustained, 8.793 respons berhasil dan 33.718 respons ditolak dengan 429 sesuai pembatasan beban. Throughput sukses sebesar 97,59 respons per detik; respons 429 tidak dihitung sebagai throughput sukses.
 
