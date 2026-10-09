@@ -44,6 +44,6 @@ Regresi stack dan load test dijalankan pada implementasi \texttt{a465139}, yang 
 
 Regresi dan load test memakai volume stack utama, sedangkan bootstrap diverifikasi terpisah pada enam volume kosong. Selain skenario outage 20 detik, pengujian tambahan telah menjalankan outage 600 detik dengan recovery 90 detik dan memeriksa pemulihan tanpa restart. Pengujian satu host juga belum membuktikan failover lintas mesin atau kapasitas deployment lain.
 
-Pemeriksaan secret menggunakan Gitleaks tidak menemukan temuan pada histori hingga \texttt{2353479}, dengan bukti pada \reliabilityevidence{secret-scan.txt}. Scan revisi pengumpulan dan verifikasi CI hosted tetap diperlukan sebelum penyerahan. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
+Pemeriksaan secret menggunakan Gitleaks tidak menemukan temuan pada histori hingga \texttt{2353479}, dengan bukti pada \reliabilityevidence{secret-scan.txt}. Scan revisi pengumpulan tetap diperlukan sebelum penyerahan. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
 
-\pending{Status GitHub Actions dan tautan run final: \rule{0.53\linewidth}{0.3pt}.}
+Verifikasi CI hosted: workflow \texttt{foundation} run \texttt{\#21} berhasil pada branch \texttt{main} untuk commit \texttt{013099b}. \href{\RepoURL/actions/workflows/ci.yml}{Tautan workflow GitHub Actions}.

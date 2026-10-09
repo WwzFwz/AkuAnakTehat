@@ -8,13 +8,11 @@
 
 Kontribusi penulisan laporan kedua anggota adalah **Keseluruhan**, sesuai konfirmasi anggota.
 
-## Placeholder yang memang belum diketahui
+## Hal yang masih perlu dilengkapi
 
-1. Deklarasi penggunaan LLM (`sections/12-deklarasi-ai.tex`) sengaja dikosongkan untuk diisi sendiri oleh anggota kelompok.
-2. Status/tautan run GitHub Actions dari akun yang punya akses (`sections/11-verifikasi-dan-batasan.tex`). API tanpa autentikasi mengembalikan 404 saat diperiksa; bukan bukti workflow lulus maupun gagal.
-3. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
+1. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
 
-4. Scan secret untuk histori revisi pengumpulan. Pemeriksaan 8 Oktober menggunakan Gitleaks 8.24.2 melaporkan 46 commit diperiksa hingga `2353479` tanpa temuan. Bukti tersimpan pada `docs/evidence/reliability-2026-10-08/secret-scan.txt`; commit sesudah revisi itu tidak otomatis tercakup.
+2. Scan secret untuk histori revisi pengumpulan. Pemeriksaan 8 Oktober menggunakan Gitleaks 8.24.2 melaporkan 46 commit diperiksa hingga `2353479` tanpa temuan. Bukti tersimpan pada `docs/evidence/reliability-2026-10-08/secret-scan.txt`; commit sesudah revisi itu tidak otomatis tercakup.
 
 ## Status instrumentasi wajib
 

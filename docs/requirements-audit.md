@@ -59,7 +59,7 @@ Nilai referensi gunung api sintetis, interpretasi `since` warning sebagai waktu 
 
 ### G2. Informasi laporan dan penyelesaian kelompok
 
-Kontribusi penulisan kedua anggota telah dikonfirmasi mencakup keseluruhan laporan. Deklarasi penggunaan LLM disediakan sebagai placeholder untuk diisi sendiri oleh anggota. Status hosted CI, demo sinkron, revisi atau tag pengumpulan, dan formulir belum boleh dinyatakan selesai hanya berdasarkan tes lokal. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md). Placeholder ini merupakan informasi yang belum tersedia, bukan komponen Go yang belum dibuat.
+Kontribusi penulisan kedua anggota telah dikonfirmasi mencakup keseluruhan laporan. Pernyataan penggunaan AI sudah dicantumkan. Workflow hosted CI `foundation` run `#21` berhasil pada branch `main` untuk commit `013099b`; demo sinkron, revisi atau tag pengumpulan, dan formulir belum boleh dinyatakan selesai hanya berdasarkan tes lokal. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md). Informasi yang belum tersedia tersebut bukan komponen Go yang belum dibuat.
 
 ## Fitur opsional dan perubahan pembagian file
 

@@ -2,7 +2,7 @@
 \section{Deskripsi Umum dan Lingkup}
 BNPB membutuhkan representasi yang konsisten atas informasi gempa, potensi tsunami, dan aktivitas gunung api dari dua instansi yang otonom. BMKG dan PVMBG memiliki skema, kredensial, serta karakteristik latensi berbeda. Sistem ini mengambil data melalui polling, memetakannya menjadi \texttt{HazardEvent}, menyajikan data sesuai hak akses client, dan menyalurkan perubahan melalui broker kepada consumer independen.
 
-Lingkup Milestone 1 mengikuti dokumen spesifikasi M1 dan konteks tugas terpusat~\cite{spec-m1,spec-central}. Kedua instansi berupa mock yang dibangun kelompok; data serta referensi gunung api bersifat sintetis. Tiga identitas downstream adalah Media, Tim Lapangan, dan BNPB Pusat. Seluruh akses downstream bersifat baca saja. Pelaporan dari lapangan, integrasi sistem instansi nyata, dan pengoperasian banyak instance tidak termasuk implementasi ini.
+Kedua instansi berupa mock yang dibangun kelompok; data serta referensi gunung api bersifat sintetis. Tiga identitas downstream adalah Media, Tim Lapangan, dan BNPB Pusat. Seluruh akses downstream bersifat baca saja. Pelaporan dari lapangan, integrasi sistem instansi nyata, dan pengoperasian banyak instance tidak termasuk implementasi ini.
 
 \subsection{Prinsip rancangan}
 Sistem memisahkan proses ingest, pembacaan data, dan distribusi event. Proses ingest menangani ketidakpastian sumber, sedangkan pembacaan menggunakan data yang sudah tersimpan. Perubahan data selanjutnya diteruskan melalui outbox dan Kafka. Pemisahan ini membuat satu request client tidak harus menunggu HTTP ke instansi sumber. Hasil pembacaan karena itu dapat tertinggal dari kondisi terbaru di sumber. Waktu data dan status sumber disertakan agar pengguna dapat menilai kebaruannya.
