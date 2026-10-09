@@ -10,15 +10,15 @@ Kontribusi penulisan laporan kedua anggota adalah **Keseluruhan**, sesuai konfir
 
 ## Hal yang masih perlu dilengkapi
 
-1. Tautan laporan PDF final dan commit/tag pengumpulan (`appendices/a-matriks-kriteria.tex`). Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
+1. Tautan laporan PDF final, commit/tag `milestone-1`, dan formulir kelompok. Jangan membuat tag final sebelum kelompok menyetujui versi laporan/kode yang dinilai.
 
-2. Scan secret untuk histori revisi pengumpulan. Pemeriksaan 8 Oktober menggunakan Gitleaks 8.24.2 melaporkan 46 commit diperiksa hingga `2353479` tanpa temuan. Bukti tersimpan pada `docs/evidence/reliability-2026-10-08/secret-scan.txt`; commit sesudah revisi itu tidak otomatis tercakup.
+2. Gladi atau demo sinkron sesuai ketentuan pengumpulan.
 
 ## Status instrumentasi wajib
 
 Temuan U7 tentang latency retry HTTP sudah ditutup. Log per percobaan, correlation ID yang sama, deadline bersama, sanitasi, batas retry, pembatalan, dan timeout diverifikasi oleh tes module Client API serta go vet. [Bukti U7](../evidence/http-attempts-2026-10-08/README.md) melengkapi regresi stack dan load test yang sudah dijalankan ulang setelah perubahan instrumentasi pada source `a465139`.
 
-Cari `\pending` serta `[Isi` untuk meninjau bagian yang belum final. Placeholder ini disengaja agar data tidak dikarang.
+Cari `\pending` serta `[Isi` untuk memeriksa apakah masih ada placeholder yang tertinggal.
 
 ## Pemeriksaan fakta dan cakupan
 

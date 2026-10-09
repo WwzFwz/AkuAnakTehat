@@ -6,7 +6,7 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 **Pemilik rencana:** C. **Tahap:** Baseline / pendukung baseline.
 
-**Status:** ci.yml tersedia; eksekusi GitHub Actions belum diverifikasi.
+**Status:** ci.yml tersedia; [workflow foundation run #21](https://github.com/WwzFwz/AkuAnakTehat/actions/runs/37832513217) berhasil pada branch `main` untuk commit `013099b`.
 
 ## Rencana file
 
@@ -32,5 +32,5 @@ Pemeriksaan CI per module dan pemeriksaan kebocoran secret.
 
 ## Langkah implementasi dan verifikasi
 
-- Verifikasi hasil workflow saat dijalankan GitHub Actions.
+- Run #21 sudah diverifikasi pada GitHub Actions; gunakan run terbaru bila workflow dijalankan kembali.
 - Pisahkan pemeriksaan unit dari demo/integrasi yang memerlukan Compose.

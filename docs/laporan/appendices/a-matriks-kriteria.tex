@@ -28,7 +28,7 @@ P2.4 & Model konkurensi, pencegahan tiga kegagalan, konfigurasi load. & Bagian~\
 P3.1 & BMKG dan PVMBG menolak kredensial silang. & HTTP 401 atau 403 pada suite fondasi; E2.\\
 P3.2 & Media hanya ringkasan dan raw eksplisit ditolak. & \texttt{TestQueryIntegration}; E2.\\
 P3.3 & Expiry alami, refresh otomatis, token lama ditolak. & TTL 60 s, sesi CLI 65 s, pemeriksaan 401 dan 200; E2.\\
-P3.4 & Tidak ada secret yang ditulis langsung dalam kode atau tersimpan dalam commit. & Bootstrap, contoh env, ignore, test log; scan hingga \texttt{2353479} tanpa temuan, revisi pengumpulan perlu diperiksa kembali; E10.\\
+P3.4 & Tidak ada secret yang ditulis langsung dalam kode atau tersimpan dalam commit. & Bootstrap, contoh env, ignore, test log; scan final 58 commit hingga \texttt{48987b7} tanpa temuan; \nolinkurl{docs/evidence/reliability-2026-10-09/secret-scan.txt}.\\
 P3.5 & Alasan keamanan mekanisme dan batasnya. & Domain trust, claim, allowlist, replay, transport, dan revocation; Bagian~\ref{sec:p3}.\\
 \midrule
 P4.1 & Penghentian, build ulang, dan pengaktifan kembali satu komponen tanpa deploy yang lain. & Notifier rebuild, baca API tetap berhasil, timestamp start lain tetap; E2.\\

@@ -13,7 +13,7 @@ Pemeriksaan dilakukan pada 8 Oktober 2026. Regresi stack dan k6 dijalankan ulang
 | U3 | Dockerfile per service dan satu orkestrasi | Delapan service mempunyai Dockerfile mandiri; Compose dan bootstrap dari [README utama](../README.md). | Tersedia; bootstrap pada enam volume kosong terisolasi lulus |
 | U4 | Service independen dan kegagalan dipicu nyata | TestPersistenceAndDependencyRecovery, TestIngestPipeline, TestEventPipeline, dan TestIndependentRebuild pada regresi. | Diuji lokal; demo sinkron tetap dilakukan kelompok |
 | U5 | Kredensial instansi terpisah dan kredensial silang ditolak | Mock memakai hash kredensial berbeda dan format header berbeda; TestMockContracts memeriksa penolakan silang. | Diuji lokal |
-| U6 | Secret dari konfigurasi yang tidak di-commit dan .env.example tersedia | [Generator](../scripts/secrets/generate.go), [.gitignore](../.gitignore), [.env.example](../.env.example), test log, dan scan histori. | Implementasi tersedia; scan revisi pengumpulan tetap mengikuti commit yang diperiksa |
+| U6 | Secret dari konfigurasi yang tidak di-commit dan .env.example tersedia | [Generator](../scripts/secrets/generate.go), [.gitignore](../.gitignore), [.env.example](../.env.example), test log, dan [scan final](evidence/reliability-2026-10-09/secret-scan.txt). | Implementasi tersedia; 58 commit hingga `48987b7` dipindai tanpa temuan |
 | U7 | Health, log terstruktur, correlation ID, latency tiap panggilan keluar | Health tersedia pada tiap service; source HTTP, PostgreSQL, Redis, dan Kafka sudah memiliki instrumentasi. Client-api mencatat setiap percobaan HTTP dengan correlation ID, nomor percobaan, durasi, status, dan kategori hasil. | Tersedia; G1 ditutup dengan tes module, lihat bukti di bawah |
 
 ## Kontrak mock dan data
@@ -59,7 +59,7 @@ Nilai referensi gunung api sintetis, interpretasi `since` warning sebagai waktu 
 
 ### G2. Informasi laporan dan penyelesaian kelompok
 
-Kontribusi penulisan kedua anggota telah dikonfirmasi mencakup keseluruhan laporan. Pernyataan penggunaan AI sudah dicantumkan. Workflow hosted CI `foundation` run `#21` berhasil pada branch `main` untuk commit `013099b`; demo sinkron, revisi atau tag pengumpulan, dan formulir belum boleh dinyatakan selesai hanya berdasarkan tes lokal. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md). Informasi yang belum tersedia tersebut bukan komponen Go yang belum dibuat.
+Kontribusi penulisan kedua anggota telah dikonfirmasi mencakup keseluruhan laporan. Pernyataan penggunaan AI sudah dicantumkan. Workflow hosted CI `foundation` [run `#21`](https://github.com/WwzFwz/AkuAnakTehat/actions/runs/37832513217) berhasil pada branch `main` untuk commit `013099b`. Scan Gitleaks final pada revisi `48987b7` juga lulus tanpa temuan. Demo sinkron, tag pengumpulan, dan formulir masih perlu diselesaikan kelompok. Daftar terperinci tetap berada di [review laporan](laporan/REVIEW.md).
 
 ## Fitur opsional dan perubahan pembagian file
 

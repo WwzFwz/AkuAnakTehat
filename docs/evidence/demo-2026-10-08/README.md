@@ -41,8 +41,8 @@ Pada ekspor JSON k6 ini, nilai `thresholds: false` berarti threshold tidak dilan
 - Pengukuran berasal dari satu mesin dengan konfigurasi lokal, bukan bukti kapasitas produksi atau ketersediaan banyak host.
 - Tidak dilakukan manipulasi TTL atau jam untuk demo expiry. CLI benar-benar melewati access TTL 60 detik pada regresi.
 - Uji outage singkat bukan bukti outage 10 atau 20 menit. Gunakan perintah manual pada panduan jika durasi lain diminta penguji.
-- Status workflow GitHub Actions hosted masih belum terkonfirmasi. Hasil lokal tidak dianggap sebagai hasil hosted CI.
-- Bagian laporan yang masih berupa placeholder, tag final, formulir, dan demo sinkron tetap perlu diselesaikan kelompok.
+- Pada saat artefak demo ini dibuat, status workflow GitHub Actions hosted belum terkonfirmasi; hasil lokal tidak dianggap sebagai hasil hosted CI. Verifikasi berikutnya tercatat pada laporan utama.
+- Pada saat artefak demo ini dibuat, laporan masih memiliki placeholder. Status terbaru terkait tag final, formulir, dan demo sinkron mengikuti `docs/laporan/REVIEW.md`.
 
 ## Mengulang
 

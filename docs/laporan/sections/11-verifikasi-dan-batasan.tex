@@ -44,6 +44,6 @@ Regresi stack dan load test dijalankan pada implementasi \texttt{a465139}, yang 
 
 Regresi dan load test memakai volume stack utama, sedangkan bootstrap diverifikasi terpisah pada enam volume kosong. Selain skenario outage 20 detik, pengujian tambahan telah menjalankan outage 600 detik dengan recovery 90 detik dan memeriksa pemulihan tanpa restart. Pengujian satu host juga belum membuktikan failover lintas mesin atau kapasitas deployment lain.
 
-Pemeriksaan secret menggunakan Gitleaks tidak menemukan temuan pada histori hingga \texttt{2353479}, dengan bukti pada \reliabilityevidence{secret-scan.txt}. Scan revisi pengumpulan tetap diperlukan sebelum penyerahan. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
+Pemeriksaan secret final menggunakan Gitleaks 8.24.2 pada revisi \texttt{48987b7} memindai 58 commit dan tidak menemukan kebocoran. Bukti tersedia pada \nolinkurl{docs/evidence/reliability-2026-10-09/secret-scan.txt}. Status kelengkapan persyaratan tersedia pada \codepath{docs/requirements-audit.md}.
 
-Verifikasi CI hosted: workflow \texttt{foundation} run \texttt{\#21} berhasil pada branch \texttt{main} untuk commit \texttt{013099b}. \href{\RepoURL/actions/workflows/ci.yml}{Tautan workflow GitHub Actions}.
+Verifikasi CI hosted: workflow \texttt{foundation} run \texttt{\#21} berhasil pada branch \texttt{main} untuk commit \texttt{013099b}. \href{https://github.com/WwzFwz/AkuAnakTehat/actions/runs/37832513217}{Tautan langsung run GitHub Actions \#21}.
